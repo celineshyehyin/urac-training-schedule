@@ -227,15 +227,15 @@
   <div class="icons">
     <button class="icon-btn clickable" id="searchIconBtn" title="Search schedule">🔍</button>
     <button class="icon-btn" title="Notifications">🔔</button>
-    <button class="icon-btn lang" title="Language">中文</button>
+    <button class="icon-btn lang clickable" id="langBtn" title="Switch language">中文</button>
   </div>
 </header>
 
 <nav class="pillnav">
-  <button data-panel="calendar" class="active">📅 Schedule</button>
-  <button data-panel="exams">📝 Exams</button>
-  <button data-panel="mentors">🤝 Mentors</button>
-  <button data-panel="curriculum">📚 Self-Study</button>
+  <button data-panel="calendar" data-i18n="tab_calendar" class="active">📅 Schedule</button>
+  <button data-panel="exams" data-i18n="tab_exams">📝 Exams</button>
+  <button data-panel="mentors" data-i18n="tab_mentors">🤝 Mentors</button>
+  <button data-panel="curriculum" data-i18n="tab_curriculum">📚 Self-Study</button>
 </nav>
 
 <main>
@@ -263,7 +263,7 @@
 </main>
 
 <footer>
-  Generated from the URAC training workbook. For edits, contact your program coordinator.
+  <span data-i18n="footer">Generated from the URAC training workbook. For edits, contact your program coordinator.</span>
 </footer>
 
 <script>
@@ -276,6 +276,52 @@ const CURRICULUM = [{"Chapter": "1", "Topic": "Study Week-Day 1", "Sub-topic": "
 
 const TODAY = new Date();
 TODAY.setHours(0,0,0,0);
+
+// ---------- Language ----------
+const I18N = {
+  en: {
+    tab_calendar: '📅 Schedule',
+    tab_exams: '📝 Exams',
+    tab_mentors: '🤝 Mentors',
+    tab_curriculum: '📚 Self-Study',
+    badge_today: 'TODAY',
+    badge_done: 'Done',
+    badge_upcoming: 'Upcoming',
+    search_placeholder: 'Search topic, trainer... 搜索',
+    footer: 'Generated from the URAC training workbook. For edits, contact your program coordinator.',
+    empty_calendar: 'No sessions match your search.',
+    lang_btn: '中文',
+  },
+  zh: {
+    tab_calendar: '📅 课程表',
+    tab_exams: '📝 考试',
+    tab_mentors: '🤝 导师',
+    tab_curriculum: '📚 自习',
+    badge_today: '今天',
+    badge_done: '已完成',
+    badge_upcoming: '即将开始',
+    search_placeholder: '搜索主题、讲师... Search',
+    footer: '本内容整理自 URAC 培训手册，如需修改请联系项目协调员。',
+    empty_calendar: '没有符合搜索条件的课程。',
+    lang_btn: 'EN',
+  },
+};
+let LANG = 'en';
+
+function applyLanguage() {
+  const t = I18N[LANG];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t[el.dataset.i18n];
+  });
+  document.getElementById('calSearch').placeholder = t.search_placeholder;
+  document.getElementById('langBtn').textContent = t.lang_btn;
+  renderCalendar();
+}
+
+document.getElementById('langBtn').addEventListener('click', () => {
+  LANG = LANG === 'en' ? 'zh' : 'en';
+  applyLanguage();
+});
 
 // ---------- Tabs ----------
 function activatePanel(name) {
@@ -309,10 +355,11 @@ cohortNames.forEach(name => {
 
 function statusBadge(dateIso) {
   if (!dateIso) return '';
+  const t = I18N[LANG];
   const d = new Date(dateIso);
-  if (d.getTime() === TODAY.getTime()) return '<span class="badge today">TODAY</span>';
-  if (d < TODAY) return '<span class="badge past">Done</span>';
-  return '<span class="badge future">Upcoming</span>';
+  if (d.getTime() === TODAY.getTime()) return `<span class="badge today">${t.badge_today}</span>`;
+  if (d < TODAY) return `<span class="badge past">${t.badge_done}</span>`;
+  return `<span class="badge future">${t.badge_upcoming}</span>`;
 }
 
 function renderCalendar() {
@@ -341,7 +388,7 @@ function renderCalendar() {
   });
 
   if (order.length === 0) {
-    body.innerHTML = '<div class="empty">No sessions match your search.</div>';
+    body.innerHTML = `<div class="empty">${I18N[LANG].empty_calendar}</div>`;
     return;
   }
 
@@ -429,6 +476,8 @@ function renderCurriculum() {
   }).join('');
 }
 renderCurriculum();
+
+applyLanguage();
 </script>
 </body>
 </html>
