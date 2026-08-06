@@ -216,6 +216,87 @@
   }
   .embed-frame-sheet { height: 70vh; min-height: 480px; }
   .embed-frame-form { height: 1500px; }
+
+  .welcome-card {
+    background: linear-gradient(135deg, var(--gold-light), #fff);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+  }
+  .welcome-card h2 { margin: 0 0 4px; font-size: 1.25rem; color: var(--ink); }
+  .welcome-card p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(201,138,26,0.06);
+  }
+  .stat-card .icon-circle {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 8px; font-size: 1.1rem;
+    background: var(--gold-light);
+  }
+  .stat-card .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--ink); }
+  .stat-card .stat-label { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+  .stat-card.clickable { cursor: pointer; }
+  .stat-card.clickable:hover { border-color: var(--gold); }
+  .stat-1 .icon-circle { background: #e7f0e3; }
+  .stat-2 .icon-circle { background: #fbeec7; }
+  .stat-3 .icon-circle { background: #fbe0e3; }
+  .stat-4 .icon-circle { background: #e3ecfb; }
+  .section-label {
+    font-weight: 700;
+    color: var(--gold-dark);
+    margin: 22px 0 10px;
+    font-size: 0.95rem;
+  }
+  .week-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 20px; }
+  .day-chip {
+    flex: 0 0 auto; width: 52px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 10px 6px; text-align: center;
+  }
+  .day-chip .dow { font-size: 0.68rem; color: var(--muted); font-weight: 600; }
+  .day-chip .dom { font-size: 1.05rem; font-weight: 700; margin-top: 2px; }
+  .day-chip.today { background: var(--gold); border-color: var(--gold); }
+  .day-chip.today .dow, .day-chip.today .dom { color: white; }
+  .next-banner {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: white; border-radius: 16px; padding: 18px 20px; margin-bottom: 22px;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .next-banner .text h3 { margin: 0 0 4px; font-size: 1.02rem; }
+  .next-banner .text p { margin: 0; font-size: 0.85rem; opacity: 0.92; }
+  .next-banner button {
+    background: white; color: var(--gold-dark); border: none; border-radius: 999px;
+    padding: 9px 18px; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
+  }
+  .cohort-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .cohort-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px;
+  }
+  .cohort-card h4 { margin: 0 0 4px; font-size: 0.95rem; }
+  .cohort-card .meta { color: var(--muted); font-size: 0.8rem; margin-bottom: 10px; }
+  .cohort-card .chip-current {
+    display: inline-block; background: var(--gold-light); color: var(--gold-dark);
+    font-size: 0.7rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; margin-left: 6px;
+  }
+  .cohort-card button {
+    background: var(--gold-light); color: var(--gold-dark); border: none; border-radius: 999px;
+    padding: 7px 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+  }
+  .cohort-card button:hover { background: var(--gold); color: white; }
+
   footer {
     text-align: center;
     color: var(--muted);
@@ -242,7 +323,8 @@
 </header>
 
 <nav class="pillnav">
-  <button data-panel="calendar" data-i18n="tab_calendar" class="active">📅 Schedule</button>
+  <button data-panel="dashboard" data-i18n="tab_dashboard" class="active">🏠 Dashboard</button>
+  <button data-panel="calendar" data-i18n="tab_calendar">📅 Schedule</button>
   <button data-panel="exams" data-i18n="tab_exams">📝 Exams</button>
   <button data-panel="mentors" data-i18n="tab_mentors">🤝 Mentors</button>
   <button data-panel="curriculum" data-i18n="tab_curriculum">📚 Self-Study</button>
@@ -252,7 +334,51 @@
 
 <main>
 
-  <section id="panel-calendar" class="panel active">
+  <section id="panel-dashboard" class="panel active">
+    <div class="welcome-card">
+      <h2 data-i18n="dash_welcome">Welcome back! 👋</h2>
+      <p id="dashDate"></p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card stat-1">
+        <div class="icon-circle">🧑‍🎓</div>
+        <div class="stat-value" id="statTrainees">0</div>
+        <div class="stat-label" data-i18n="dash_stat_trainees">Trainees</div>
+      </div>
+      <div class="stat-card stat-2">
+        <div class="icon-circle">📅</div>
+        <div class="stat-value" id="statToday">0</div>
+        <div class="stat-label" data-i18n="dash_stat_today">Today's Sessions</div>
+      </div>
+      <div class="stat-card stat-3">
+        <div class="icon-circle">⏳</div>
+        <div class="stat-value" id="statExamDays">–</div>
+        <div class="stat-label" data-i18n="dash_stat_exam">Days to Exam</div>
+      </div>
+      <div class="stat-card stat-4 clickable" id="statFeedbackCard">
+        <div class="icon-circle">💬</div>
+        <div class="stat-value">→</div>
+        <div class="stat-label" data-i18n="dash_stat_feedback">Feedback</div>
+      </div>
+    </div>
+
+    <div class="section-label" data-i18n="dash_this_week">This week</div>
+    <div class="week-strip" id="weekStrip"></div>
+
+    <div class="next-banner">
+      <div class="text">
+        <h3 id="nextBannerTitle"></h3>
+        <p id="nextBannerSub"></p>
+      </div>
+      <button id="nextBannerBtn" data-i18n="dash_view_schedule">View schedule</button>
+    </div>
+
+    <div class="section-label" data-i18n="dash_cohorts">Cohorts</div>
+    <div class="cohort-grid" id="cohortGrid"></div>
+  </section>
+
+  <section id="panel-calendar" class="panel">
     <div class="toolbar">
       <select id="cohortSelect"></select>
       <input type="text" id="calSearch" placeholder="Search topic, trainer... 搜索">
@@ -302,6 +428,7 @@ TODAY.setHours(0,0,0,0);
 // ---------- Language ----------
 const I18N = {
   en: {
+    tab_dashboard: '🏠 Dashboard',
     tab_calendar: '📅 Schedule',
     tab_exams: '📝 Exams',
     tab_mentors: '🤝 Mentors',
@@ -317,8 +444,22 @@ const I18N = {
     ranking_hint: 'Live leaderboard — updates automatically whenever trainers add new marks.',
     feedback_hint: 'Have feedback for a trainer? Fill this in — it goes straight to the program coordinator.',
     lang_btn: '中文',
+    dash_welcome: 'Welcome back! 👋',
+    dash_stat_trainees: 'Trainees',
+    dash_stat_today: "Today's Sessions",
+    dash_stat_exam: 'Days to Exam',
+    dash_stat_feedback: 'Feedback',
+    dash_this_week: 'This week',
+    dash_view_schedule: 'View schedule',
+    dash_cohorts: 'Cohorts',
+    dash_current: 'Current',
+    dash_session_days: '{n} session day(s)',
+    dash_today_sessions: '{n} session(s) today',
+    dash_no_sessions_today: 'No sessions today',
+    dash_next_exam_in: 'Next exam in {n} day(s)',
   },
   zh: {
+    tab_dashboard: '🏠 主页',
     tab_calendar: '📅 课程表',
     tab_exams: '📝 考试',
     tab_mentors: '🤝 导师',
@@ -334,6 +475,19 @@ const I18N = {
     ranking_hint: '实时排行榜 — 讲师每次打分后会自动更新。',
     feedback_hint: '想给讲师留言？填写这里，会直接发送给项目协调员。',
     lang_btn: 'EN',
+    dash_welcome: '欢迎回来！👋',
+    dash_stat_trainees: '学员人数',
+    dash_stat_today: '今日课程',
+    dash_stat_exam: '距考试天数',
+    dash_stat_feedback: '反馈',
+    dash_this_week: '本周',
+    dash_view_schedule: '查看课程表',
+    dash_cohorts: '批次',
+    dash_current: '当前',
+    dash_session_days: '共 {n} 天课程',
+    dash_today_sessions: '今日 {n} 节课程',
+    dash_no_sessions_today: '今日无课程',
+    dash_next_exam_in: '距下次考试还有 {n} 天',
   },
 };
 let LANG = 'en';
@@ -346,6 +500,7 @@ function applyLanguage() {
   document.getElementById('calSearch').placeholder = t.search_placeholder;
   document.getElementById('langBtn').textContent = t.lang_btn;
   renderCalendar();
+  renderDashboard();
 }
 
 document.getElementById('langBtn').addEventListener('click', () => {
@@ -457,6 +612,90 @@ document.getElementById('calSearch').addEventListener('input', renderCalendar);
 cohortSelect.value = cohortNames[0];
 renderCalendar();
 
+// ---------- Dashboard ----------
+function parseDateFromHeader(str) {
+  if (!str) return null;
+  const m = str.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (!m) return null;
+  const d = new Date(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+const currentCohortName = cohortNames.find(n => n.toLowerCase().includes('current')) || cohortNames[0];
+
+function renderDashboard() {
+  const t = I18N[LANG];
+  const todayIso = TODAY.toISOString().slice(0, 10);
+
+  document.getElementById('dashDate').textContent = TODAY.toLocaleDateString(
+    LANG === 'zh' ? 'zh-CN' : 'en-US',
+    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+  );
+
+  document.getElementById('statTrainees').textContent = MENTORS.length;
+
+  const todayRows = (CALENDAR[currentCohortName] || []).filter(
+    r => r.date_iso === todayIso && r.activity && !/lunch|break/i.test(r.activity)
+  );
+  document.getElementById('statToday').textContent = todayRows.length;
+
+  let nextExamDate = null;
+  EXAMS.forEach(e => {
+    const d = parseDateFromHeader(e.date_header);
+    if (d && d >= TODAY && (!nextExamDate || d < nextExamDate)) nextExamDate = d;
+  });
+  const daysToExam = nextExamDate ? Math.round((nextExamDate - TODAY) / 86400000) : null;
+  document.getElementById('statExamDays').textContent = daysToExam === null ? '–' : daysToExam;
+
+  const strip = document.getElementById('weekStrip');
+  strip.innerHTML = '';
+  const dow = TODAY.getDay();
+  const monday = new Date(TODAY);
+  monday.setDate(TODAY.getDate() - ((dow + 6) % 7));
+  const dowLabels = LANG === 'zh' ? ['一', '二', '三', '四', '五', '六', '日'] : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const chip = document.createElement('div');
+    chip.className = 'day-chip' + (d.getTime() === TODAY.getTime() ? ' today' : '');
+    chip.innerHTML = `<div class="dow">${dowLabels[i]}</div><div class="dom">${d.getDate()}</div>`;
+    strip.appendChild(chip);
+  }
+
+  const titleEl = document.getElementById('nextBannerTitle');
+  const subEl = document.getElementById('nextBannerSub');
+  if (todayRows.length) {
+    titleEl.textContent = t.dash_today_sessions.replace('{n}', todayRows.length);
+    subEl.textContent = todayRows.map(r => r.activity).slice(0, 2).join(' · ');
+  } else {
+    titleEl.textContent = t.dash_no_sessions_today;
+    subEl.textContent = daysToExam !== null ? t.dash_next_exam_in.replace('{n}', daysToExam) : '';
+  }
+
+  const grid = document.getElementById('cohortGrid');
+  grid.innerHTML = cohortNames.map(name => {
+    const rows = CALENDAR[name] || [];
+    const days = new Set(rows.map(r => r.date_iso)).size;
+    const isCurrent = name.toLowerCase().includes('current');
+    return `<div class="cohort-card">
+      <h4>${escapeHtml(name.replace('Cohort - ', ''))}${isCurrent ? `<span class="chip-current">${t.dash_current}</span>` : ''}</h4>
+      <div class="meta">${t.dash_session_days.replace('{n}', days)}</div>
+      <button data-cohort="${escapeHtml(name)}">${t.dash_view_schedule}</button>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      cohortSelect.value = btn.dataset.cohort;
+      renderCalendar();
+      activatePanel('calendar');
+    });
+  });
+}
+document.getElementById('nextBannerBtn').addEventListener('click', () => activatePanel('calendar'));
+document.getElementById('statFeedbackCard').addEventListener('click', () => activatePanel('feedback'));
+renderDashboard();
+
 // ---------- Exams ----------
 function renderExams() {
   const body = document.getElementById('examsBody');
@@ -511,5 +750,3 @@ applyLanguage();
 </script>
 </body>
 </html>
-
-  
