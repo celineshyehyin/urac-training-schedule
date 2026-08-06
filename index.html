@@ -6,14 +6,16 @@
 <title>URAC Training Program</title>
 <style>
   :root {
-    --pink: #e85d8a;
-    --pink-light: #fdeef3;
-    --ink: #2b2530;
-    --muted: #857c8a;
-    --border: #ece4e9;
-    --bg: #fffbfd;
-    --card: #ffffff;
-    --green: #3ba272;
+    --gold: #e2a530;
+    --gold-dark: #c98a1a;
+    --gold-light: #fbeec7;
+    --beige: #faf3e0;
+    --ink: #4a3c22;
+    --muted: #a38f61;
+    --border: #ecdfba;
+    --bg: #faf3e0;
+    --card: #fffdf7;
+    --green: #7ea672;
     --amber: #d99a2b;
     --red: #d1495b;
   }
@@ -24,38 +26,76 @@
     background: var(--bg);
     color: var(--ink);
   }
-  header {
-    background: linear-gradient(135deg, var(--pink), #f2a4c0);
-    color: white;
-    padding: 28px 20px 22px;
-    text-align: center;
-  }
-  header h1 { margin: 0 0 4px; font-size: 1.5rem; }
-  header p { margin: 0; opacity: 0.92; font-size: 0.92rem; }
-  nav {
+  header.topbar {
+    background: var(--beige);
+    padding: 18px 20px 10px;
     display: flex;
-    overflow-x: auto;
-    background: white;
-    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: white;
+    font-weight: 800;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(201,138,26,0.35);
+  }
+  header.topbar h1 { margin: 0; font-size: 1.3rem; color: var(--ink); }
+  header.topbar h1 .cn { font-weight: 600; color: var(--gold-dark); }
+  header.topbar p.tagline { margin: 2px 0 0; color: var(--muted); font-size: 0.82rem; }
+  .icons { display: flex; align-items: center; gap: 8px; }
+  .icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: #fffdf7;
+    color: var(--gold-dark);
+    font-size: 1rem;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-btn.lang { width: auto; border-radius: 999px; padding: 0 14px; font-weight: 700; font-size: 0.85rem; }
+  .icon-btn.clickable { cursor: pointer; }
+  .icon-btn.clickable:hover { background: var(--gold-light); }
+  nav.pillnav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: var(--beige);
+    padding: 4px 20px 18px;
     position: sticky;
     top: 0;
     z-index: 10;
   }
-  nav button {
-    flex: 1 0 auto;
-    padding: 14px 16px;
-    background: none;
-    border: none;
-    font-size: 0.95rem;
-    color: var(--muted);
+  nav.pillnav button {
+    padding: 10px 18px;
+    background: #fffdf7;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink);
     cursor: pointer;
-    border-bottom: 3px solid transparent;
     white-space: nowrap;
   }
-  nav button.active {
-    color: var(--pink);
-    border-bottom-color: var(--pink);
-    font-weight: 600;
+  nav.pillnav button.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: white;
+    box-shadow: 0 2px 6px rgba(201,138,26,0.35);
   }
   main { max-width: 900px; margin: 0 auto; padding: 18px 14px 60px; }
   .panel { display: none; }
@@ -69,29 +109,30 @@
   }
   select, input[type=text] {
     padding: 9px 12px;
-    border-radius: 8px;
+    border-radius: 999px;
     border: 1px solid var(--border);
-    background: white;
+    background: var(--card);
     font-size: 0.9rem;
     color: var(--ink);
   }
+  select:focus, input[type=text]:focus { outline: none; border-color: var(--gold); }
   input[type=text] { flex: 1; min-width: 160px; }
   .week-heading {
     margin: 26px 0 10px;
     font-size: 1.02rem;
     font-weight: 700;
-    color: var(--pink);
-    border-bottom: 2px solid var(--pink-light);
+    color: var(--gold-dark);
+    border-bottom: 2px solid var(--gold-light);
     padding-bottom: 6px;
   }
   .week-heading:first-child { margin-top: 4px; }
   .day-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 14px 16px;
     margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 4px rgba(201,138,26,0.06);
   }
   .day-card .day-title {
     font-weight: 700;
@@ -113,7 +154,7 @@
   .slot:first-of-type { border-top: none; }
   .slot .time {
     flex: 0 0 108px;
-    color: var(--pink);
+    color: var(--gold-dark);
     font-weight: 600;
     font-size: 0.8rem;
   }
@@ -126,14 +167,14 @@
     font-weight: 700;
     margin-left: 8px;
   }
-  .badge.today { background: var(--pink); color: white; }
-  .badge.past { background: #eee; color: var(--muted); }
-  .badge.future { background: var(--pink-light); color: var(--pink); }
+  .badge.today { background: var(--gold); color: white; }
+  .badge.past { background: #f1ead3; color: var(--muted); }
+  .badge.future { background: var(--gold-light); color: var(--gold-dark); }
   .exam-card, .mentor-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-left: 4px solid var(--pink);
-    border-radius: 10px;
+    border-left: 4px solid var(--gold);
+    border-radius: 12px;
     padding: 14px 16px;
     margin-bottom: 12px;
   }
@@ -141,14 +182,14 @@
   .exam-card .meta { color: var(--muted); font-size: 0.82rem; margin-bottom: 8px; }
   .exam-card .detail { font-size: 0.88rem; line-height: 1.5; }
   .exam-card .detail div { padding: 2px 0; }
-  table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
   th, td { text-align: left; padding: 10px 12px; font-size: 0.86rem; border-bottom: 1px solid var(--border); }
-  th { background: var(--pink-light); color: var(--pink); font-weight: 700; }
+  th { background: var(--gold-light); color: var(--gold-dark); font-weight: 700; }
   tr:last-child td { border-bottom: none; }
   .chapter {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 12px;
     margin-bottom: 10px;
     overflow: hidden;
   }
@@ -160,7 +201,7 @@
     list-style: none;
   }
   .chapter summary::-webkit-details-marker { display: none; }
-  .chapter summary:before { content: "▸ "; color: var(--pink); }
+  .chapter summary:before { content: "▸ "; color: var(--gold-dark); }
   .chapter[open] summary:before { content: "▾ "; }
   .chapter ul { margin: 0; padding: 0 16px 14px 34px; font-size: 0.86rem; }
   .chapter li { padding: 2px 0; color: var(--ink); }
@@ -175,13 +216,23 @@
 </head>
 <body>
 
-<header>
-  <h1>URAC Training Program 培训项目</h1>
-  <p>Training calendar · exam schedule · mentor directory · self-study syllabus</p>
+<header class="topbar">
+  <div class="brand">
+    <div class="avatar">U</div>
+    <div>
+      <h1>URAC Training <span class="cn">培训项目</span></h1>
+      <p class="tagline">Training calendar · exam schedule · mentor directory · self-study syllabus</p>
+    </div>
+  </div>
+  <div class="icons">
+    <button class="icon-btn clickable" id="searchIconBtn" title="Search schedule">🔍</button>
+    <button class="icon-btn" title="Notifications">🔔</button>
+    <button class="icon-btn lang" title="Language">中文</button>
+  </div>
 </header>
 
-<nav>
-  <button data-panel="calendar" class="active">📅 Training Calendar</button>
+<nav class="pillnav">
+  <button data-panel="calendar" class="active">📅 Schedule</button>
   <button data-panel="exams">📝 Exams</button>
   <button data-panel="mentors">🤝 Mentors</button>
   <button data-panel="curriculum">📚 Self-Study</button>
@@ -227,13 +278,17 @@ const TODAY = new Date();
 TODAY.setHours(0,0,0,0);
 
 // ---------- Tabs ----------
-document.querySelectorAll('nav button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
-  });
+function activatePanel(name) {
+  document.querySelectorAll('nav.pillnav button').forEach(b => b.classList.toggle('active', b.dataset.panel === name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+}
+document.querySelectorAll('nav.pillnav button').forEach(btn => {
+  btn.addEventListener('click', () => activatePanel(btn.dataset.panel));
+});
+document.getElementById('searchIconBtn').addEventListener('click', () => {
+  activatePanel('calendar');
+  document.getElementById('calSearch').focus();
 });
 
 // ---------- Calendar ----------
