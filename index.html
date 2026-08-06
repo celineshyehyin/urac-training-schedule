@@ -206,6 +206,16 @@
   .chapter ul { margin: 0; padding: 0 16px 14px 34px; font-size: 0.86rem; }
   .chapter li { padding: 2px 0; color: var(--ink); }
   .empty { text-align: center; color: var(--muted); padding: 40px 0; }
+  .embed-hint { color: var(--muted); font-size: 0.85rem; margin: 0 0 14px; }
+  .embed-frame {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    display: block;
+  }
+  .embed-frame-sheet { height: 70vh; min-height: 480px; }
+  .embed-frame-form { height: 1500px; }
   footer {
     text-align: center;
     color: var(--muted);
@@ -236,6 +246,8 @@
   <button data-panel="exams" data-i18n="tab_exams">📝 Exams</button>
   <button data-panel="mentors" data-i18n="tab_mentors">🤝 Mentors</button>
   <button data-panel="curriculum" data-i18n="tab_curriculum">📚 Self-Study</button>
+  <button data-panel="ranking" data-i18n="tab_ranking">🏆 Ranking</button>
+  <button data-panel="feedback" data-i18n="tab_feedback">💬 Feedback</button>
 </nav>
 
 <main>
@@ -258,6 +270,16 @@
 
   <section id="panel-curriculum" class="panel">
     <div id="curriculumBody"></div>
+  </section>
+
+  <section id="panel-ranking" class="panel">
+    <p class="embed-hint" data-i18n="ranking_hint">Live leaderboard — updates automatically whenever trainers add new marks.</p>
+    <iframe class="embed-frame embed-frame-sheet" src="https://docs.google.com/spreadsheets/d/1ar9Clp7zhVzRCpMXPDWGlBh6bI-DoRxaT-ZYUHba1y0/pubhtml?gid=2008709704&amp;single=true&amp;widget=true&amp;headers=false" loading="lazy"></iframe>
+  </section>
+
+  <section id="panel-feedback" class="panel">
+    <p class="embed-hint" data-i18n="feedback_hint">Have feedback for a trainer? Fill this in — it goes straight to the program coordinator.</p>
+    <iframe class="embed-frame embed-frame-form" src="https://docs.google.com/forms/d/e/1FAIpQLSd89DSrdnzUGQT57WiJY2gtXIKo0nQuGPKGGlZ046lsiDwaMg/viewform?embedded=true" loading="lazy">Loading…</iframe>
   </section>
 
 </main>
@@ -284,12 +306,16 @@ const I18N = {
     tab_exams: '📝 Exams',
     tab_mentors: '🤝 Mentors',
     tab_curriculum: '📚 Self-Study',
+    tab_ranking: '🏆 Ranking',
+    tab_feedback: '💬 Feedback',
     badge_today: 'TODAY',
     badge_done: 'Done',
     badge_upcoming: 'Upcoming',
     search_placeholder: 'Search topic, trainer... 搜索',
     footer: 'Generated from the URAC training workbook. For edits, contact your program coordinator.',
     empty_calendar: 'No sessions match your search.',
+    ranking_hint: 'Live leaderboard — updates automatically whenever trainers add new marks.',
+    feedback_hint: 'Have feedback for a trainer? Fill this in — it goes straight to the program coordinator.',
     lang_btn: '中文',
   },
   zh: {
@@ -297,12 +323,16 @@ const I18N = {
     tab_exams: '📝 考试',
     tab_mentors: '🤝 导师',
     tab_curriculum: '📚 自习',
+    tab_ranking: '🏆 排行榜',
+    tab_feedback: '💬 反馈',
     badge_today: '今天',
     badge_done: '已完成',
     badge_upcoming: '即将开始',
     search_placeholder: '搜索主题、讲师... Search',
     footer: '本内容整理自 URAC 培训手册，如需修改请联系项目协调员。',
     empty_calendar: '没有符合搜索条件的课程。',
+    ranking_hint: '实时排行榜 — 讲师每次打分后会自动更新。',
+    feedback_hint: '想给讲师留言？填写这里，会直接发送给项目协调员。',
     lang_btn: 'EN',
   },
 };
