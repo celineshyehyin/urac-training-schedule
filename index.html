@@ -221,49 +221,55 @@
   .welcome-card {
     background: linear-gradient(135deg, var(--gold-light), #fff);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px 22px;
-    margin-bottom: 18px;
+    border-radius: 22px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
     gap: 16px;
+    box-shadow: 0 4px 14px rgba(201,138,26,0.08);
   }
   .welcome-icon {
     flex: 0 0 auto;
-    width: 56px; height: 56px; border-radius: 50%;
+    width: 60px; height: 60px; border-radius: 50%;
     background: #f0e2fb;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
   }
-  .welcome-card h2 { margin: 0 0 4px; font-size: 1.25rem; color: var(--ink); }
+  .welcome-card h2 { margin: 0 0 4px; font-size: 1.3rem; color: var(--ink); }
   .welcome-card p { margin: 0; color: var(--muted); font-size: 0.9rem; }
   .stat-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 14px;
+    margin-bottom: 26px;
   }
   .stat-card {
-    background: var(--gold-light);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 14px;
+    border-radius: 20px;
+    padding: 20px 14px;
     text-align: center;
+    transition: transform 0.15s ease;
   }
   .stat-card .icon-circle {
-    width: 44px; height: 44px; border-radius: 50%;
+    width: 46px; height: 46px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 10px; font-size: 1.15rem;
+    margin: 0 auto 12px; font-size: 1.2rem;
     color: white;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
   }
-  .stat-card .stat-value { font-size: 1.6rem; font-weight: 800; color: var(--ink); }
+  .stat-card .stat-value { font-size: 1.7rem; font-weight: 800; color: var(--ink); }
   .stat-card .stat-label {
     font-size: 0.68rem; color: var(--muted); margin-top: 4px;
     text-transform: uppercase; letter-spacing: 0.03em; font-weight: 700;
   }
   .stat-card.clickable { cursor: pointer; }
-  .stat-card.clickable:hover { border-color: var(--gold); }
+  .stat-card.clickable:hover { transform: translateY(-2px); border-color: var(--gold); }
+  .stat-card.c1 { background: #f1eafb; }
+  .stat-card.c2 { background: #e6f6ee; }
+  .stat-card.c3 { background: #fdebf1; }
+  .stat-card.c4 { background: #fdf1de; }
   .stat-1 { background: #8a63d2; }
   .stat-2 { background: #3fa77e; }
   .stat-3 { background: #d1477a; }
@@ -283,49 +289,60 @@
     background: #eee3fb; color: #7a4fc2; font-weight: 700; font-size: 0.82rem;
     padding: 6px 14px; border-radius: 999px;
   }
-  .week-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 22px; }
+  .week-strip { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 8px; margin-bottom: 22px; }
   .day-chip {
-    flex: 0 0 auto; width: 56px;
-    background: var(--gold-light); border: 1px solid var(--border); border-radius: 12px;
-    padding: 12px 6px; text-align: center;
+    flex: 0 0 auto; width: 52px; height: 68px;
+    background: #f4ecd6; border: none; border-radius: 999px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px;
   }
-  .day-chip .dow { font-size: 0.7rem; color: var(--muted); font-weight: 600; }
-  .day-chip .dom { font-size: 1.1rem; font-weight: 700; margin-top: 4px; color: var(--ink); }
-  .day-chip.today { background: var(--gold); border-color: var(--gold); }
+  .day-chip .dow { font-size: 0.66rem; color: var(--muted); font-weight: 600; }
+  .day-chip .dom { font-size: 1.05rem; font-weight: 800; color: var(--ink); }
+  .day-chip.past { background: var(--gold-light); }
+  .day-chip.today {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    box-shadow: 0 4px 12px rgba(201,138,26,0.35);
+  }
   .day-chip.today .dow, .day-chip.today .dom { color: white; }
   .next-banner {
     background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-    color: white; border-radius: 16px; padding: 18px 20px; margin-bottom: 26px;
+    color: white; border-radius: 22px; padding: 20px 22px; margin-bottom: 26px;
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;
+    box-shadow: 0 6px 16px rgba(201,138,26,0.25);
   }
   .next-banner-left { display: flex; align-items: center; gap: 14px; }
   .next-banner-icon {
-    flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+    flex: 0 0 auto; width: 46px; height: 46px; border-radius: 14px;
     background: rgba(255,255,255,0.22);
-    display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
   }
-  .next-banner .text h3 { margin: 0 0 4px; font-size: 1.02rem; }
+  .next-banner-tag {
+    display: inline-block; background: rgba(255,255,255,0.25); color: white;
+    font-size: 0.66rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 2px 10px; border-radius: 999px; margin-bottom: 6px;
+  }
+  .next-banner .text h3 { margin: 0 0 4px; font-size: 1.05rem; }
   .next-banner .text p { margin: 0; font-size: 0.85rem; opacity: 0.92; }
   .next-banner button {
     background: white; color: var(--gold-dark); border: none; border-radius: 999px;
-    padding: 9px 18px; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
+    padding: 10px 20px; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
   }
-  .cohort-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 8px; }
+  .cohort-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 8px; }
   .cohort-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 0 18px 18px; overflow: hidden;
+    box-shadow: 0 3px 10px rgba(201,138,26,0.06);
   }
-  .cohort-icon {
-    width: 40px; height: 40px; border-radius: 10px;
-    background: #cdeee0; color: #2f8462;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.05rem; margin-bottom: 10px;
+  .cohort-thumb {
+    margin: 0 -18px 14px; height: 54px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
   }
   .cohort-card h4 { margin: 0 0 4px; font-size: 0.95rem; }
   .cohort-card .meta { color: var(--muted); font-size: 0.8rem; margin-bottom: 14px; }
   .cohort-card button {
     display: block; width: 100%;
     background: var(--gold-light); color: var(--gold-dark); border: none; border-radius: 999px;
-    padding: 9px 14px; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+    padding: 10px 14px; font-size: 0.85rem; font-weight: 700; cursor: pointer;
   }
   .cohort-card button:hover { background: var(--gold); color: white; }
 
@@ -376,22 +393,22 @@
     </div>
 
     <div class="stat-grid">
-      <div class="stat-card">
+      <div class="stat-card c1">
         <div class="icon-circle stat-1">👥</div>
         <div class="stat-value" id="statTrainees">0</div>
         <div class="stat-label" data-i18n="dash_stat_trainees">Trainees</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card c2">
         <div class="icon-circle stat-2">📅</div>
         <div class="stat-value" id="statToday">0</div>
         <div class="stat-label" data-i18n="dash_stat_today">Today</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card c3">
         <div class="icon-circle stat-3">⏰</div>
         <div class="stat-value" id="statExamDays">–</div>
         <div class="stat-label" data-i18n="dash_stat_exam">Days to Exam</div>
       </div>
-      <div class="stat-card clickable" id="statFeedbackCard">
+      <div class="stat-card c4 clickable" id="statFeedbackCard">
         <div class="icon-circle stat-4">⭐</div>
         <div class="stat-value" id="statFeedback">0</div>
         <div class="stat-label" data-i18n="dash_stat_feedback">Feedback</div>
@@ -408,6 +425,7 @@
       <div class="next-banner-left">
         <div class="next-banner-icon">⏳</div>
         <div class="text">
+          <span class="next-banner-tag" id="nextBannerTag"></span>
           <h3 id="nextBannerTitle"></h3>
           <p id="nextBannerSub"></p>
         </div>
@@ -421,13 +439,13 @@
     <div class="section-label" data-i18n="dash_more">More</div>
     <div class="cohort-grid" id="quickLinkGrid">
       <div class="cohort-card">
-        <div class="cohort-icon">📚</div>
+        <div class="cohort-thumb" style="background:#f1eafb">📚</div>
         <h4 data-i18n="tab_curriculum_full">Self-Study Syllabus</h4>
         <div class="meta" data-i18n="dash_curriculum_hint">Chapters &amp; sub-topics for independent revision.</div>
         <button id="openCurriculumBtn" data-i18n="dash_open">Open</button>
       </div>
       <div class="cohort-card">
-        <div class="cohort-icon">🏆</div>
+        <div class="cohort-thumb" style="background:#fdf1de">🏆</div>
         <h4 data-i18n="tab_ranking_full">Ranking</h4>
         <div class="meta" data-i18n="dash_ranking_hint2">Live leaderboard scored by trainers.</div>
         <button id="openRankingBtn" data-i18n="dash_open">Open</button>
@@ -523,6 +541,8 @@ const I18N = {
     dash_ranking_hint2: 'Live leaderboard scored by trainers.',
     dash_open: 'Open',
     dash_trainees_word: 'trainees',
+    dash_tag_today: 'Today',
+    dash_tag_upcoming: 'Upcoming',
   },
   zh: {
     tab_dashboard: '🏠 主页',
@@ -563,6 +583,8 @@ const I18N = {
     dash_ranking_hint2: '讲师打分的实时排行榜。',
     dash_open: '打开',
     dash_trainees_word: '位学员',
+    dash_tag_today: '今天',
+    dash_tag_upcoming: '即将开始',
   },
 };
 let LANG = 'en';
@@ -734,29 +756,36 @@ function renderDashboard() {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
     const chip = document.createElement('div');
-    chip.className = 'day-chip' + (d.getTime() === TODAY.getTime() ? ' today' : '');
+    let cls = 'day-chip';
+    if (d.getTime() === TODAY.getTime()) cls += ' today';
+    else if (d < TODAY) cls += ' past';
+    chip.className = cls;
     chip.innerHTML = `<div class="dow">${dowLabels[i]}</div><div class="dom">${d.getDate()}</div>`;
     strip.appendChild(chip);
   }
 
   const titleEl = document.getElementById('nextBannerTitle');
   const subEl = document.getElementById('nextBannerSub');
+  const tagEl = document.getElementById('nextBannerTag');
   if (todayRows.length) {
+    tagEl.textContent = t.dash_tag_today;
     titleEl.textContent = t.dash_today_sessions.replace('{n}', todayRows.length);
     subEl.textContent = todayRows.map(r => r.activity).slice(0, 2).join(' · ');
   } else {
+    tagEl.textContent = t.dash_tag_upcoming;
     titleEl.textContent = t.dash_no_sessions_today;
     subEl.textContent = daysToExam !== null ? t.dash_next_exam_in.replace('{n}', daysToExam) : '';
   }
 
+  const thumbColors = ['#cdeee0', '#f1eafb', '#fdebf1', '#fdf1de'];
   const grid = document.getElementById('cohortGrid');
-  grid.innerHTML = cohortNames.map(name => {
+  grid.innerHTML = cohortNames.map((name, i) => {
     const isCurrent = name.toLowerCase().includes('current');
     const shortName = name.replace('Cohort - ', '').replace(/\s*\(current\)/i, '').trim();
     const label = shortName + ' Cohort' + (isCurrent ? ' (' + t.dash_current + ')' : '');
     const traineeCount = isCurrent ? MENTORS.length : 0;
     return `<div class="cohort-card">
-      <div class="cohort-icon">🎓</div>
+      <div class="cohort-thumb" style="background:${thumbColors[i % thumbColors.length]}">🎓</div>
       <h4>${escapeHtml(label)}</h4>
       <div class="meta">${traineeCount} ${t.dash_trainees_word}</div>
       <button data-cohort="${escapeHtml(name)}">${t.dash_view_schedule}</button>
