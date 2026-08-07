@@ -358,6 +358,56 @@
   }
   .cohort-card button:hover { background: var(--gold); color: white; }
 
+  .feedback-form-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 22px;
+    padding: 24px; box-shadow: 0 4px 14px rgba(201,138,26,0.08);
+  }
+  .form-group { margin-bottom: 22px; }
+  .form-group:last-of-type { margin-bottom: 0; }
+  .form-group > label {
+    display: block; font-weight: 700; font-size: 0.86rem; margin-bottom: 9px; color: var(--ink);
+    line-height: 1.4;
+  }
+  .form-group .req { color: var(--red); margin-left: 3px; }
+  .form-group .opt { color: var(--muted); font-weight: 500; font-size: 0.76rem; text-transform: none; letter-spacing: 0; }
+  .form-group select,
+  .form-group input[type=text],
+  .form-group input[type=email],
+  .form-group input[type=date],
+  .form-group textarea {
+    width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border);
+    background: var(--beige); font-size: 0.9rem; color: var(--ink); font-family: inherit;
+  }
+  .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--gold);
+  }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  .scale-options { display: flex; flex-direction: column; gap: 9px; }
+  .scale-option {
+    display: flex; align-items: center; gap: 11px; padding: 12px 14px;
+    border: 1.5px solid var(--border); border-radius: 14px; cursor: pointer;
+    font-size: 0.83rem; line-height: 1.35; background: var(--beige);
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .scale-option input[type=radio] { accent-color: var(--gold-dark); width: 18px; height: 18px; flex: 0 0 auto; }
+  .scale-option:hover { border-color: var(--gold); }
+  .scale-option.selected { border-color: var(--gold); background: var(--gold-light); font-weight: 600; }
+  .submit-btn {
+    width: 100%; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: white;
+    border: none; border-radius: 999px; padding: 15px; font-size: 0.98rem; font-weight: 800;
+    cursor: pointer; box-shadow: 0 4px 12px rgba(201,138,26,0.3); font-family: inherit;
+  }
+  .submit-btn:disabled { opacity: 0.6; cursor: default; }
+  .btn-secondary {
+    width: auto; background: var(--gold-light); color: var(--gold-dark); box-shadow: none;
+    padding: 12px 22px; font-size: 0.88rem;
+  }
+  .btn-secondary:hover { background: var(--gold); color: white; }
+  .form-success { text-align: center; padding: 30px 10px 10px; }
+  .form-success .icon { font-size: 2.8rem; margin-bottom: 10px; }
+  .form-success h3 { margin: 0 0 6px; font-size: 1.15rem; }
+  .form-success p { margin: 0 0 18px; color: var(--muted); font-size: 0.88rem; }
+
   footer {
     text-align: center;
     color: var(--muted);
@@ -508,8 +558,42 @@
         <p class="embed-hint" data-i18n="feedback_hint">Have feedback for a trainer? Fill this in — it goes straight to the program coordinator.</p>
       </div>
     </div>
-    <div class="embed-card">
-      <iframe class="embed-frame embed-frame-form" src="https://docs.google.com/forms/d/e/1FAIpQLSd89DSrdnzUGQT57WiJY2gtXIKo0nQuGPKGGlZ046lsiDwaMg/viewform?embedded=true" loading="lazy">Loading…</iframe>
+    <div class="feedback-form-card">
+      <form id="feedbackForm" novalidate>
+        <div class="form-group">
+          <label for="fbEmail">Email <span class="opt" data-i18n="feedback_optional">(optional)</span></label>
+          <input type="email" id="fbEmail" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="fbTrainer">TRAINER'S NAME 导师<span class="req">*</span></label>
+          <select id="fbTrainer" required>
+            <option value="" data-i18n="feedback_select_placeholder">-- Please select --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="fbTopic">TOPICS 课题<span class="req">*</span></label>
+          <select id="fbTopic" required>
+            <option value="" data-i18n="feedback_select_placeholder">-- Please select --</option>
+          </select>
+          <input type="text" id="fbTopicOther" placeholder="Please specify... 请注明" style="display:none;margin-top:9px">
+        </div>
+        <div class="form-group">
+          <label for="fbDate">DATE 日期 <span class="opt" data-i18n="feedback_optional">(optional)</span></label>
+          <input type="date" id="fbDate">
+        </div>
+        <div id="fbScales"></div>
+        <div class="form-group">
+          <label for="fbComment">WHAT DO YOU LIKE MOST ABOUT THE TRAINER? 您最喜欢导师的哪一点 <span class="opt" data-i18n="feedback_optional">(optional)</span></label>
+          <textarea id="fbComment" rows="3"></textarea>
+        </div>
+        <button type="submit" class="submit-btn" id="fbSubmitBtn" data-i18n="feedback_submit">Submit Feedback</button>
+      </form>
+      <div class="form-success" id="feedbackSuccess" style="display:none">
+        <div class="icon">🎉</div>
+        <h3 data-i18n="feedback_success_title">Thank you!</h3>
+        <p data-i18n="feedback_success_sub">Your feedback has been submitted.</p>
+        <button type="button" class="submit-btn btn-secondary" id="fbAnotherBtn" data-i18n="feedback_submit_another">Submit another response</button>
+      </div>
     </div>
   </section>
 
@@ -576,6 +660,14 @@ const I18N = {
     ranking_title: 'Live Leaderboard',
     tab_feedback_full: 'Feedback',
     feedback_title: 'Feedback on Trainers',
+    feedback_optional: '(optional)',
+    feedback_select_placeholder: '-- Please select --',
+    feedback_submit: 'Submit Feedback',
+    feedback_submitting: 'Submitting...',
+    feedback_success_title: 'Thank you!',
+    feedback_success_sub: 'Your feedback has been submitted.',
+    feedback_submit_another: 'Submit another response',
+    feedback_error_incomplete: 'Please answer all required questions before submitting.',
   },
   zh: {
     tab_dashboard: '🏠 主页',
@@ -621,6 +713,14 @@ const I18N = {
     ranking_title: '实时排行榜',
     tab_feedback_full: '反馈',
     feedback_title: '讲师反馈',
+    feedback_optional: '（选填）',
+    feedback_select_placeholder: '-- 请选择 --',
+    feedback_submit: '提交反馈',
+    feedback_submitting: '提交中...',
+    feedback_success_title: '谢谢！',
+    feedback_success_sub: '您的反馈已提交。',
+    feedback_submit_another: '再提交一份',
+    feedback_error_incomplete: '请填写所有必填项后再提交。',
   },
 };
 let LANG = 'en';
@@ -890,6 +990,177 @@ function renderCurriculum() {
   }).join('');
 }
 renderCurriculum();
+
+// ---------- Feedback form ----------
+const FEEDBACK_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf-aD5Tx_TJNZMhqUi6EcvFEOFFUX94Bc9NyKP_Y_itj3KXTw/formResponse';
+const FEEDBACK_ENTRIES = {
+  email: 'entry.1532369227',
+  trainer: 'entry.2040015762',
+  topic: 'entry.29706533',
+  topicOther: 'entry.29706533.other_option_response',
+  dateYear: 'entry.745435523_year',
+  dateMonth: 'entry.745435523_month',
+  dateDay: 'entry.745435523_day',
+  comment: 'entry.1109977502',
+};
+const FEEDBACK_TRAINERS = [
+  'DR. FONG TOH JENG', 'DR. TAN SOO HUA (JAYE)', 'DR. NG CHIA WEN (JOVYN)', 'DR. NICOLE NG I',
+  'DR. LIM WEN XUAN', 'DR. LIM VIVIAN', 'DR. YUEN SHAN LING (EVE)', 'HRE CELINE TEH SHYEH YIN',
+  'AM YEE WEI TING (NICOLE)', 'AM NG SAN FOO (SHARON)', 'AM WONG PIT KHI (HESTER)',
+  'CONSULTANT LOW AI NI (AINI)', 'CONSULTANT KHOO CHIAO MEI (BERRY)', 'CONSULTANT LAW SOOK WEE (JOEN)',
+  'CONSULTANT KHOO WEI SIN (JANICE)', 'CONSULTANT VIVIEN JASICA LOK LAI YEE', 'THERAPIST LAW YI ERN (ENNA)',
+  'THERAPIST CHAI XIN JIE (KATHERINE)', 'DR. LIM JIA YING (JEM)', 'THERAPIST MARGARET CHIN SIEW THENG',
+  'THERAPIST NG SHI HUI (TIFFANY)', 'THERAPIST CHAN AI MEI',
+];
+const FEEDBACK_TOPICS = [
+  'ABL UR MUST KNOW', 'ABL 5 项管理', 'ABL DISC', 'ABL SKIN ANATOMY, PIGMENTATION,UV AND SUNBLOCK',
+  'ABL SKIN CARE KNOWLEDGE', 'ABL LIGHT THERAPY TREATMENT', 'ABL OXYINFUSION & SRW TREATMENT',
+  'DEMO FACE WASH', 'DEMO OXYINFUSION & SRW', 'DEMO & ROLE PLAY 5 ANGLE PHOTO TAKING',
+  'DEMO & ROLE PLAY SKIN ANALYSIS', 'DEMO CUSTOMER FLOW MADE SIMPLE', 'ROLE CUSTOMER FLOW MADE SIMPLE',
+  'ROLE PLAY FACE WASH PRACTICAL', 'ROLE PLAY OXYINFUSION & SRW', 'ABL THERAPIST 靶心能力',
+  'ABL CUSTOMER FLOW MADE SIMPLE', 'Other:',
+];
+const FEEDBACK_SCALES = [
+  {
+    entry: 'entry.687829424',
+    title: 'THE MATERIALS ARE RELEVANT AND USEFUL 教材贴题和管用',
+    options: [
+      '1. NOT USEFUL /RELEVANT 不贴题和管用',
+      '2. USEFUL/RELEVANT 贴题和管用',
+      '3. VERY USEFUL/REVEVANT 很贴题和管用',
+    ],
+  },
+  {
+    entry: 'entry.985890686',
+    title: "TRAINER'S EXPLANATIONS ARE CLEAR AND EASILY UNDERSTANDABLE 导师的讲解清晰和理解",
+    options: [
+      '1. NOT CLEAR AND COMPLICATED 不清晰和复杂',
+      '2. PARTIALLY CLEAR AND QUITE EASILY UNDERSTANABLE 部分清晰且易理解',
+      '3. VERY CLEAR AND EASILY UNDERSTANABLE 非常清晰和易理解',
+    ],
+  },
+  {
+    entry: 'entry.1439403522',
+    title: 'THE TRAINER IS KNOWLEDGABLE AND ABLE TO ANSWER MY DOUBTS 导师知识渊博，能够解答我的疑问',
+    options: [
+      '1. NOT KNOWLEDGABLE AND UNABLE TO CLEAR MY DOUBTS 没有知识且无法消除我的疑虑',
+      '2. KNOWLEDGABLE AND ABLE TO CLEAR PART OF MY DOUBTS 知识渊博，能够消除我的部分疑虑',
+      '3. VERY KNOWLEDGABLE AND ABLE TO CLEAR ALL OF MY DOUBTS WITH ADDITIONAL INFORMATIONS 知识渊博，能够通过其他信息消除我的所有疑问',
+    ],
+  },
+  {
+    entry: 'entry.631260425',
+    title: 'THE TIME ALLOCATED FOR THE TRAINING IS ADEQUATE 培训分配的时间足够吗？',
+    options: [
+      '1. NOT ADEQUATE 不足够',
+      '2. TOO LENGTHY 太长',
+      '3. ADEQUATE 足够',
+    ],
+  },
+];
+
+function renderFeedbackForm() {
+  const trainerSel = document.getElementById('fbTrainer');
+  FEEDBACK_TRAINERS.forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    trainerSel.appendChild(opt);
+  });
+
+  const topicSel = document.getElementById('fbTopic');
+  FEEDBACK_TOPICS.forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name === 'Other:' ? 'Other... 其他' : name;
+    topicSel.appendChild(opt);
+  });
+  topicSel.addEventListener('change', () => {
+    document.getElementById('fbTopicOther').style.display = topicSel.value === 'Other:' ? 'block' : 'none';
+  });
+
+  const scalesWrap = document.getElementById('fbScales');
+  scalesWrap.innerHTML = FEEDBACK_SCALES.map((scale, si) => `
+    <div class="form-group">
+      <label>${escapeHtml(scale.title)}<span class="req">*</span></label>
+      <div class="scale-options">
+        ${scale.options.map(opt => `
+          <label class="scale-option">
+            <input type="radio" name="fbScale${si}" value="${escapeHtml(opt)}" required>
+            <span>${escapeHtml(opt)}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  scalesWrap.querySelectorAll('.scale-option input').forEach(input => {
+    input.addEventListener('change', () => {
+      const group = input.closest('.scale-options');
+      group.querySelectorAll('.scale-option').forEach(l => l.classList.remove('selected'));
+      input.closest('.scale-option').classList.add('selected');
+    });
+  });
+}
+renderFeedbackForm();
+
+function resetFeedbackForm() {
+  const form = document.getElementById('feedbackForm');
+  form.reset();
+  form.querySelectorAll('.scale-option.selected').forEach(l => l.classList.remove('selected'));
+  document.getElementById('fbTopicOther').style.display = 'none';
+  form.style.display = 'block';
+  document.getElementById('feedbackSuccess').style.display = 'none';
+}
+
+document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const form = e.target;
+  const trainer = document.getElementById('fbTrainer').value;
+  const topic = document.getElementById('fbTopic').value;
+  let missingScale = false;
+  FEEDBACK_SCALES.forEach((scale, si) => {
+    if (!form.querySelector(`input[name="fbScale${si}"]:checked`)) missingScale = true;
+  });
+  if (!trainer || !topic || missingScale) {
+    alert(I18N[LANG].feedback_error_incomplete);
+    return;
+  }
+
+  const btn = document.getElementById('fbSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = I18N[LANG].feedback_submitting;
+
+  const params = new URLSearchParams();
+  params.append(FEEDBACK_ENTRIES.email, document.getElementById('fbEmail').value);
+  params.append(FEEDBACK_ENTRIES.trainer, trainer);
+  params.append(FEEDBACK_ENTRIES.topic, topic);
+  if (topic === 'Other:') {
+    params.append(FEEDBACK_ENTRIES.topicOther, document.getElementById('fbTopicOther').value);
+  }
+  const dateVal = document.getElementById('fbDate').value;
+  if (dateVal) {
+    const [y, m, d] = dateVal.split('-');
+    params.append(FEEDBACK_ENTRIES.dateYear, y);
+    params.append(FEEDBACK_ENTRIES.dateMonth, String(parseInt(m, 10)));
+    params.append(FEEDBACK_ENTRIES.dateDay, String(parseInt(d, 10)));
+  }
+  FEEDBACK_SCALES.forEach((scale, si) => {
+    const checked = form.querySelector(`input[name="fbScale${si}"]:checked`);
+    params.append(scale.entry, checked.value);
+  });
+  params.append(FEEDBACK_ENTRIES.comment, document.getElementById('fbComment').value);
+
+  fetch(FEEDBACK_FORM_URL, { method: 'POST', mode: 'no-cors', body: params })
+    .catch(() => {})
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = I18N[LANG].feedback_submit;
+      form.style.display = 'none';
+      document.getElementById('feedbackSuccess').style.display = 'block';
+    });
+});
+document.getElementById('fbAnotherBtn').addEventListener('click', resetFeedbackForm);
 
 applyLanguage();
 </script>
