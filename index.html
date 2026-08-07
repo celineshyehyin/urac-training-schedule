@@ -1141,7 +1141,7 @@ function renderCalendar() {
 //     the whole cell is nothing but a trainer credit on its own.
 // Both get split apart here so each trainer renders as its own pill instead
 // of being squashed into one run-on line with the topic.
-const TRAINER_LINE_RE = /^(DR\.?|CEO|COO|LPO|AM|AAM|CONSULTANT|THERAPIST|MENTOR|ASSESSOR)/i;
+const TRAINER_LINE_RE = /^(DR\.?|CEO|COO|LPO|AM|AAM|CONSULTANT|THERAPIST|MENTOR|ASSESSOR)\b/i;
 function formatSlot(s) {
   const raw = s.activity || '';
   const blocks = raw.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
