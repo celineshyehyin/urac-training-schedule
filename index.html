@@ -165,12 +165,21 @@
   .day-card .day-sub {
     color: var(--muted);
     font-size: 0.82rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .day-note-pill {
+    background: var(--gold-light); color: var(--gold-dark);
+    font-size: 0.68rem; font-weight: 700;
+    padding: 2px 9px; border-radius: 999px;
   }
   .slot {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
-    padding: 8px 0;
+    padding: 10px 0;
     border-top: 1px dashed var(--border);
     font-size: 0.88rem;
   }
@@ -184,8 +193,22 @@
     padding: 4px 10px;
     border-radius: 999px;
     white-space: nowrap;
+    margin-top: 1px;
   }
-  .slot .activity { flex: 1; white-space: pre-line; }
+  .activity-wrap { flex: 1; min-width: 0; }
+  .slot .activity { white-space: pre-line; }
+  .activity-trainer {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    background: #f1eafb;
+    color: #7a4fc2;
+    font-size: 0.74rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
   .badge {
     display: inline-block;
     padding: 2px 9px;
@@ -1080,22 +1103,47 @@ function renderCalendar() {
     const dayStatus = dayStatusClass(day.date_iso);
     const dayNumMatch = (day.day_label || '').match(/\d+/);
     const avatarText = dayNumMatch ? dayNumMatch[0] : '📅';
+    // A day's "date" cell sometimes carries an extra annotation on a second
+    // line (e.g. a date followed by "Management Meeting") -- split that off
+    // into its own small badge instead of running it straight into the date text.
+    const dateLines = (day.date || '').split('\n').map(s => s.trim()).filter(Boolean);
+    const dateMain = dateLines[0] || '';
+    const dateNotes = dateLines.slice(1);
+
     card.innerHTML = `
       <div class="day-card-head">
         <div class="day-avatar status-${dayStatus}">${avatarText}</div>
         <div>
           <div class="day-title">${escapeHtml(day.day_label || '')} ${badge}</div>
-          <div class="day-sub">${escapeHtml(day.weekday || '')} ${escapeHtml(day.date || '')}</div>
+          <div class="day-sub">
+            ${escapeHtml(day.weekday || '')} ${escapeHtml(dateMain)}
+            ${dateNotes.map(n => `<span class="day-note-pill">📌 ${escapeHtml(n)}</span>`).join('')}
+          </div>
         </div>
       </div>
-      ${day.slots.map(s => `
-        <div class="slot">
-          <div class="time">${escapeHtml(s.time_slot || '')}</div>
-          <div class="activity">${escapeHtml(s.activity || '')}</div>
-        </div>`).join('')}
+      ${day.slots.map(s => formatSlot(s)).join('')}
     `;
     body.appendChild(card);
   });
+}
+
+// A slot's "activity" cell sometimes bundles the topic and the assigned
+// trainer(s) together, separated by a blank line. Split those apart so the
+// trainer name reads as its own labeled line instead of running into the
+// topic text.
+function formatSlot(s) {
+  const raw = s.activity || '';
+  const parts = raw.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+  const topic = parts[0] || '';
+  const trainer = parts.slice(1).join(' · ');
+  return `
+    <div class="slot">
+      <div class="time">${escapeHtml(s.time_slot || '')}</div>
+      <div class="activity-wrap">
+        <div class="activity">${escapeHtml(topic)}</div>
+        ${trainer ? `<div class="activity-trainer">🧑‍🏫 ${escapeHtml(trainer)}</div>` : ''}
+      </div>
+    </div>`;
 }
 
 function escapeHtml(s) {
