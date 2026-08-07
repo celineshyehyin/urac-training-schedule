@@ -414,6 +414,28 @@
     font-size: 0.78rem;
     padding: 20px;
   }
+
+  .pin-modal-overlay {
+    position: fixed; inset: 0; background: rgba(74,60,34,0.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; padding: 20px;
+  }
+  .pin-modal {
+    background: var(--card); border-radius: 22px; padding: 26px 24px;
+    max-width: 340px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    text-align: center;
+  }
+  .pin-modal h3 { margin: 0 0 8px; font-size: 1.1rem; color: var(--ink); }
+  .pin-modal p { margin: 0 0 16px; font-size: 0.85rem; color: var(--muted); }
+  .pin-modal input {
+    width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border);
+    background: var(--beige); font-size: 0.95rem; text-align: center; letter-spacing: 0.05em;
+    font-family: inherit; margin-bottom: 6px;
+  }
+  .pin-modal input:focus { outline: none; border-color: var(--gold); }
+  .pin-error { color: var(--red) !important; font-size: 0.78rem !important; margin: 6px 0 0 !important; }
+  .pin-modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .pin-modal-actions .submit-btn { padding: 11px; font-size: 0.85rem; }
 </style>
 </head>
 <body>
@@ -428,10 +450,23 @@
   </div>
   <div class="icons">
     <button class="icon-btn clickable" id="searchIconBtn" title="Search schedule">🔍</button>
-    <button class="icon-btn" title="Notifications">🔔</button>
+    <button class="icon-btn clickable" id="trainerViewBtn" title="Trainer view">🔒</button>
     <button class="icon-btn lang clickable" id="langBtn" title="Switch language">中文</button>
   </div>
 </header>
+
+<div class="pin-modal-overlay" id="pinModalOverlay" style="display:none">
+  <div class="pin-modal">
+    <h3>Trainer Access</h3>
+    <p>Enter the trainer PIN to view past cohorts and full roster history.</p>
+    <input type="password" id="pinInput" placeholder="PIN" autocomplete="off">
+    <p class="pin-error" id="pinError" style="display:none">Incorrect PIN. Please try again.</p>
+    <div class="pin-modal-actions">
+      <button type="button" class="submit-btn btn-secondary" id="pinCancelBtn">Cancel</button>
+      <button type="button" class="submit-btn" id="pinSubmitBtn">Unlock</button>
+    </div>
+  </div>
+</div>
 
 <nav class="pillnav">
   <button data-panel="dashboard" data-i18n="tab_dashboard" class="active">🏠 Dashboard</button>
@@ -528,6 +563,9 @@
   </section>
 
   <section id="panel-mentors" class="panel">
+    <div class="toolbar">
+      <select id="rosterCohortSelect"></select>
+    </div>
     <div id="mentorsBody"></div>
   </section>
 
@@ -757,6 +795,79 @@ document.getElementById('searchIconBtn').addEventListener('click', () => {
   document.getElementById('calSearch').focus();
 });
 
+// ---------- Trainer access (soft gate -- hides past cohorts on this public site) ----------
+const TRAINER_PIN = "TRAINERSOFLOVE";
+const TRAINER_STORAGE_KEY = "uracTrainerUnlocked";
+
+function isTrainerUnlocked() {
+  return localStorage.getItem(TRAINER_STORAGE_KEY) === '1';
+}
+
+function isCohortPast(name) {
+  if (!name) return false;
+  if (name.toLowerCase().includes('current')) return false;
+  const rows = CALENDAR[name];
+  if (!rows || !rows.length) return false; // unknown shape -- don't hide it
+  const todayIso = TODAY.toISOString().slice(0, 10);
+  let maxDate = '';
+  rows.forEach(r => { if (r.date_iso && r.date_iso > maxDate) maxDate = r.date_iso; });
+  return !!maxDate && maxDate < todayIso;
+}
+
+function updateTrainerViewBtn() {
+  const btn = document.getElementById('trainerViewBtn');
+  if (isTrainerUnlocked()) {
+    btn.textContent = '🔓';
+    btn.title = 'Trainer view (unlocked) -- click to lock again';
+  } else {
+    btn.textContent = '🔒';
+    btn.title = 'Trainer view -- unlock to see past cohorts';
+  }
+}
+
+function openPinModal() {
+  document.getElementById('pinError').style.display = 'none';
+  document.getElementById('pinInput').value = '';
+  document.getElementById('pinModalOverlay').style.display = 'flex';
+  document.getElementById('pinInput').focus();
+}
+function closePinModal() {
+  document.getElementById('pinModalOverlay').style.display = 'none';
+}
+
+document.getElementById('trainerViewBtn').addEventListener('click', () => {
+  if (isTrainerUnlocked()) {
+    localStorage.removeItem(TRAINER_STORAGE_KEY);
+    updateTrainerViewBtn();
+    populateCohortSelect();
+    populateRosterCohortSelect();
+    renderCalendar();
+    renderMentors();
+    renderDashboard();
+  } else {
+    openPinModal();
+  }
+});
+document.getElementById('pinCancelBtn').addEventListener('click', closePinModal);
+document.getElementById('pinSubmitBtn').addEventListener('click', () => {
+  const val = document.getElementById('pinInput').value.trim();
+  if (val === TRAINER_PIN) {
+    localStorage.setItem(TRAINER_STORAGE_KEY, '1');
+    closePinModal();
+    updateTrainerViewBtn();
+    populateCohortSelect();
+    populateRosterCohortSelect();
+    renderCalendar();
+    renderMentors();
+    renderDashboard();
+  } else {
+    document.getElementById('pinError').style.display = 'block';
+  }
+});
+document.getElementById('pinInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('pinSubmitBtn').click();
+});
+
 // ---------- Calendar ----------
 let CALENDAR = {}, EXAMS = [], MENTORS = [], CURRICULUM = [];
 const cohortSelect = document.getElementById('cohortSelect');
@@ -764,13 +875,17 @@ let cohortNames = [];
 
 function populateCohortSelect() {
   cohortSelect.innerHTML = '';
-  cohortNames = Object.keys(CALENDAR);
+  let names = Object.keys(CALENDAR);
   // order: current first
-  cohortNames.sort((a,b) => {
+  names.sort((a,b) => {
     const ca = a.includes('current') ? 0 : 1;
     const cb = b.includes('current') ? 0 : 1;
     return ca - cb;
   });
+  if (!isTrainerUnlocked()) {
+    names = names.filter(n => !isCohortPast(n));
+  }
+  cohortNames = names.length ? names : Object.keys(CALENDAR).slice(0, 1);
   cohortNames.forEach(name => {
     const opt = document.createElement('option');
     opt.value = name;
@@ -864,6 +979,17 @@ function parseDateFromHeader(str) {
 
 let currentCohortName = null;
 
+// Finds the Roster tab's "Cohort" column, if the sheet has one (case-insensitive).
+function mentorsCohortColumn() {
+  if (!MENTORS.length) return null;
+  return Object.keys(MENTORS[0]).find(k => k.trim().toLowerCase() === 'cohort') || null;
+}
+function mentorsCountForCohort(name) {
+  const col = mentorsCohortColumn();
+  if (!col) return null; // no cohort column -- caller should fall back
+  return MENTORS.filter(m => m[col] === name).length;
+}
+
 function renderDashboard() {
   const t = I18N[LANG];
   const todayIso = TODAY.toISOString().slice(0, 10);
@@ -873,7 +999,10 @@ function renderDashboard() {
     { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
   );
 
-  document.getElementById('statTrainees').textContent = MENTORS.length;
+  const currentTraineeCount = currentCohortName !== null && mentorsCountForCohort(currentCohortName) !== null
+    ? mentorsCountForCohort(currentCohortName)
+    : MENTORS.length;
+  document.getElementById('statTrainees').textContent = currentTraineeCount;
   document.getElementById('statFeedback').textContent = '0';
 
   const todayRows = (CALENDAR[currentCohortName] || []).filter(
@@ -926,7 +1055,8 @@ function renderDashboard() {
     const isCurrent = name.toLowerCase().includes('current');
     const shortName = name.replace('Cohort - ', '').replace(/\s*\(current\)/i, '').trim();
     const label = shortName + ' Cohort' + (isCurrent ? ' (' + t.dash_current + ')' : '');
-    const traineeCount = isCurrent ? MENTORS.length : 0;
+    const mCount = mentorsCountForCohort(name);
+    const traineeCount = mCount !== null ? mCount : (isCurrent ? MENTORS.length : 0);
     return `<div class="cohort-card">
       <div class="cohort-thumb" style="background:${thumbColors[i % thumbColors.length]}">🎓</div>
       <h4>${escapeHtml(label)}</h4>
@@ -959,13 +1089,51 @@ function renderExams() {
   `).join('');
 }
 
-// ---------- Mentors ----------
+// ---------- Mentors / Roster ----------
+const rosterCohortSelect = document.getElementById('rosterCohortSelect');
+let rosterCohortNames = [];
+
+function populateRosterCohortSelect() {
+  rosterCohortSelect.innerHTML = '';
+  const col = mentorsCohortColumn();
+  if (!col) {
+    rosterCohortSelect.style.display = 'none';
+    rosterCohortNames = [];
+    return;
+  }
+  rosterCohortSelect.style.display = '';
+  let names = [...new Set(MENTORS.map(m => m[col]).filter(Boolean))];
+  names.sort((a, b) => {
+    const ca = a.toLowerCase().includes('current') ? 0 : 1;
+    const cb = b.toLowerCase().includes('current') ? 0 : 1;
+    return ca - cb;
+  });
+  if (!isTrainerUnlocked()) {
+    names = names.filter(n => !isCohortPast(n));
+  }
+  rosterCohortNames = names;
+  names.forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    rosterCohortSelect.appendChild(opt);
+  });
+  if (names.length) rosterCohortSelect.value = names[0];
+}
+rosterCohortSelect.addEventListener('change', renderMentors);
+
 function renderMentors() {
   const body = document.getElementById('mentorsBody');
   if (!MENTORS.length) { body.innerHTML = '<div class="empty">No mentor data.</div>'; return; }
-  const cols = Object.keys(MENTORS[0]);
+  const cohortCol = mentorsCohortColumn();
+  let rows = MENTORS;
+  if (cohortCol && rosterCohortSelect.value) {
+    rows = MENTORS.filter(m => m[cohortCol] === rosterCohortSelect.value);
+  }
+  if (!rows.length) { body.innerHTML = '<div class="empty">No mentor data.</div>'; return; }
+  const cols = Object.keys(rows[0]).filter(c => c !== cohortCol);
   let tbl = '<table><thead><tr>' + cols.map(c => `<th>${escapeHtml(c)}</th>`).join('') + '</tr></thead><tbody>';
-  MENTORS.forEach(m => {
+  rows.forEach(m => {
     tbl += '<tr>' + cols.map(c => `<td>${escapeHtml(m[c] || '')}</td>`).join('') + '</tr>';
   });
   tbl += '</tbody></table>';
@@ -1257,6 +1425,8 @@ async function init() {
     CURRICULUM = FALLBACK_CURRICULUM;
   }
   populateCohortSelect();
+  populateRosterCohortSelect();
+  updateTrainerViewBtn();
   currentCohortName = cohortNames.find(n => n.toLowerCase().includes('current')) || cohortNames[0];
   renderCalendar();
   renderExams();
