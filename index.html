@@ -358,6 +358,30 @@
   }
   .cohort-card button:hover { background: var(--gold); color: white; }
 
+  .roster-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  .trainee-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+  .trainee-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 20px 16px; text-align: center;
+    box-shadow: 0 3px 10px rgba(201,138,26,0.06);
+  }
+  .trainee-avatar {
+    width: 50px; height: 50px; border-radius: 50%; margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: white; font-size: 1.02rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  .trainee-card h4 { margin: 0 0 8px; font-size: 0.95rem; color: var(--ink); }
+  .trainee-card .badge-outlet {
+    display: inline-block; background: var(--gold-light); color: var(--gold-dark);
+    font-size: 0.7rem; font-weight: 700; padding: 3px 11px; border-radius: 999px;
+  }
+  .trainee-card .trainee-meta {
+    font-size: 0.78rem; color: var(--muted); text-align: left; margin-top: 12px;
+    line-height: 1.7; border-top: 1px dashed var(--border); padding-top: 10px;
+  }
+  .trainee-card .trainee-meta div { display: flex; gap: 6px; align-items: flex-start; }
+
   .feedback-form-card {
     background: var(--card); border: 1px solid var(--border); border-radius: 22px;
     padding: 24px; box-shadow: 0 4px 14px rgba(201,138,26,0.08);
@@ -563,10 +587,19 @@
   </section>
 
   <section id="panel-mentors" class="panel">
+    <h1 class="page-title" data-i18n="tab_mentors_full">Roster</h1>
+    <div class="welcome-card">
+      <div class="welcome-icon icon-amber">👥</div>
+      <div>
+        <h2 data-i18n="roster_title">Trainee Roster</h2>
+        <p class="embed-hint" data-i18n="roster_hint">Meet this batch's trainees, class monitor, and mentors.</p>
+      </div>
+    </div>
     <div class="toolbar">
       <select id="rosterCohortSelect"></select>
     </div>
-    <div id="mentorsBody"></div>
+    <div class="roster-pills" id="rosterInfo"></div>
+    <div class="trainee-grid" id="mentorsBody"></div>
   </section>
 
   <section id="panel-curriculum" class="panel">
@@ -698,6 +731,9 @@ const I18N = {
     dash_tag_today: 'Today',
     dash_tag_upcoming: 'Upcoming',
     ranking_title: 'Live Leaderboard',
+    tab_mentors_full: 'Roster',
+    roster_title: 'Trainee Roster',
+    roster_hint: "Meet this batch's trainees, class monitor, and mentors.",
     tab_feedback_full: 'Feedback',
     feedback_title: 'Feedback on Trainers',
     feedback_optional: '(optional)',
@@ -751,6 +787,9 @@ const I18N = {
     dash_tag_today: '今天',
     dash_tag_upcoming: '即将开始',
     ranking_title: '实时排行榜',
+    tab_mentors_full: '名册',
+    roster_title: '学员名册',
+    roster_hint: '查看本批次学员、班长和导师。',
     tab_feedback_full: '反馈',
     feedback_title: '讲师反馈',
     feedback_optional: '（选填）',
@@ -1155,22 +1194,65 @@ function populateRosterCohortSelect() {
 }
 rosterCohortSelect.addEventListener('change', renderMentors);
 
+const TRAINEE_AVATAR_COLORS = ['#8a63d2', '#3fa77e', '#d1477a', '#d98a2b', '#4f9bd1', '#c77dd1'];
+
 function renderMentors() {
   const body = document.getElementById('mentorsBody');
-  if (!MENTORS.length) { body.innerHTML = '<div class="empty">No mentor data.</div>'; return; }
+  const infoEl = document.getElementById('rosterInfo');
+  if (!MENTORS.length) { body.innerHTML = '<div class="empty">No mentor data.</div>'; if (infoEl) infoEl.innerHTML = ''; return; }
   const cohortCol = mentorsCohortColumn();
   let rows = MENTORS;
   if (cohortCol && rosterCohortSelect.value) {
     rows = MENTORS.filter(m => m[cohortCol] === rosterCohortSelect.value);
   }
-  if (!rows.length) { body.innerHTML = '<div class="empty">No mentor data.</div>'; return; }
-  const cols = Object.keys(rows[0]).filter(c => c !== cohortCol && c !== '__blockIndex');
-  let tbl = '<table><thead><tr>' + cols.map(c => `<th>${escapeHtml(c)}</th>`).join('') + '</tr></thead><tbody>';
-  rows.forEach(m => {
-    tbl += '<tr>' + cols.map(c => `<td>${escapeHtml(m[c] || '')}</td>`).join('') + '</tr>';
-  });
-  tbl += '</tbody></table>';
-  body.innerHTML = tbl;
+  if (!rows.length) { body.innerHTML = '<div class="empty">No mentor data.</div>'; if (infoEl) infoEl.innerHTML = ''; return; }
+
+  const allCols = Object.keys(rows[0]).filter(c => c !== cohortCol && c !== '__blockIndex');
+  const findCol = (pattern) => allCols.find(c => pattern.test(c));
+  const nameCol = findCol(/trainees?/i) || allCols[0];
+  const outletCol = findCol(/outlet/i);
+  const positionCol = findCol(/position/i);
+  const angelCol = findCol(/angel/i);
+  const mentorCol = allCols.find(c => /^mentor$/i.test(c.trim())) || findCol(/mentor/i);
+  const monitorCol = findCol(/class\s*monitor/i);
+  const headTeacherCol = allCols.find(c => c.includes('班主任')) || findCol(/head\s*teacher/i);
+
+  // Class Monitor / 班主任 are one-per-batch, not one-per-trainee -- pull
+  // whichever row happens to carry the value and show it once, instead of a
+  // column that's blank for everyone else.
+  const firstNonEmpty = (col) => {
+    if (!col) return '';
+    const hit = rows.find(r => (r[col] || '').trim());
+    return hit ? hit[col].trim() : '';
+  };
+  const classMonitor = firstNonEmpty(monitorCol);
+  const headTeacher = firstNonEmpty(headTeacherCol);
+
+  if (infoEl) {
+    const pills = [`<span class="date-pill">👥 ${rows.length} trainees</span>`];
+    if (classMonitor) pills.push(`<span class="date-pill">🎯 Class Monitor: ${escapeHtml(classMonitor)}</span>`);
+    if (headTeacher) pills.push(`<span class="date-pill">👩‍🏫 班主任: ${escapeHtml(headTeacher)}</span>`);
+    infoEl.innerHTML = pills.join('');
+  }
+
+  body.innerHTML = rows.map((m, i) => {
+    const name = (m[nameCol] || '').trim();
+    const initials = name.split(/\s+/).filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase() || '?';
+    const outlet = outletCol ? (m[outletCol] || '').trim() : '';
+    const position = positionCol ? (m[positionCol] || '').trim() : '';
+    const angel = angelCol ? (m[angelCol] || '').trim() : '';
+    const mentor = mentorCol ? (m[mentorCol] || '').trim() : '';
+    const badgeText = [outlet, position].filter(Boolean).join(' · ');
+    return `<div class="trainee-card">
+      <div class="trainee-avatar" style="background:${TRAINEE_AVATAR_COLORS[i % TRAINEE_AVATAR_COLORS.length]}">${escapeHtml(initials)}</div>
+      <h4>${escapeHtml(name)}</h4>
+      ${badgeText ? `<span class="badge-outlet">${escapeHtml(badgeText)}</span>` : ''}
+      ${(angel || mentor) ? `<div class="trainee-meta">
+        ${angel ? `<div>🧑‍🤝‍🧑&nbsp;Angel: ${escapeHtml(angel)}</div>` : ''}
+        ${mentor ? `<div>🎓&nbsp;Mentor: ${escapeHtml(mentor)}</div>` : ''}
+      </div>` : ''}
+    </div>`;
+  }).join('');
 }
 
 // ---------- Curriculum ----------
