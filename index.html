@@ -1271,7 +1271,7 @@ function renderExams() {
         <div class="exam-icon">📝</div>
         <div class="exam-title-wrap">
           <h3>${escapeHtml(e.section || e.source_sheet)}</h3>
-          <div class="meta">${escapeHtml(e.source_sheet)}</div>
+          ${e.section ? `<div class="meta">${escapeHtml(e.source_sheet)}</div>` : ''}
         </div>
         ${e.date_header ? `<span class="date-pill exam-date-pill">📅 ${escapeHtml(e.date_header)}</span>` : ''}
       </div>
