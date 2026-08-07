@@ -121,22 +121,42 @@
   select:focus, input[type=text]:focus { outline: none; border-color: var(--gold); }
   input[type=text] { flex: 1; min-width: 160px; }
   .week-heading {
-    margin: 26px 0 10px;
-    font-size: 1.02rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 26px 0 12px;
+    font-size: 0.86rem;
     font-weight: 700;
     color: var(--gold-dark);
-    border-bottom: 2px solid var(--gold-light);
-    padding-bottom: 6px;
+    background: var(--gold-light);
+    padding: 7px 16px;
+    border-radius: 999px;
   }
   .week-heading:first-child { margin-top: 4px; }
   .day-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 4px rgba(201,138,26,0.06);
+    border-radius: 20px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 3px 10px rgba(201,138,26,0.06);
   }
+  .day-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .day-avatar {
+    flex: 0 0 auto;
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: white; font-size: 0.95rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  .day-avatar.status-past { background: linear-gradient(135deg, #d8cfae, #bcae82); }
+  .day-avatar.status-today { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); }
+  .day-avatar.status-future { background: var(--gold-light); color: var(--gold-dark); }
   .day-card .day-title {
     font-weight: 700;
     font-size: 0.98rem;
@@ -145,21 +165,25 @@
   .day-card .day-sub {
     color: var(--muted);
     font-size: 0.82rem;
-    margin-bottom: 10px;
   }
   .slot {
     display: flex;
+    align-items: center;
     gap: 10px;
-    padding: 7px 0;
+    padding: 8px 0;
     border-top: 1px dashed var(--border);
     font-size: 0.88rem;
   }
   .slot:first-of-type { border-top: none; }
   .slot .time {
-    flex: 0 0 108px;
-    color: var(--gold-dark);
-    font-weight: 600;
-    font-size: 0.8rem;
+    flex: 0 0 auto;
+    background: #e8f3fb;
+    color: #2f6fa3;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
   }
   .slot .activity { flex: 1; white-space: pre-line; }
   .badge {
@@ -176,15 +200,46 @@
   .exam-card, .mentor-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-left: 4px solid var(--gold);
-    border-radius: 12px;
-    padding: 14px 16px;
+    border-radius: 20px;
+    padding: 18px 18px 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 3px 10px rgba(201,138,26,0.06);
+  }
+  .exam-card-head {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
     margin-bottom: 12px;
   }
-  .exam-card h3 { margin: 0 0 4px; font-size: 1rem; }
-  .exam-card .meta { color: var(--muted); font-size: 0.82rem; margin-bottom: 8px; }
-  .exam-card .detail { font-size: 0.88rem; line-height: 1.5; }
-  .exam-card .detail div { padding: 2px 0; }
+  .exam-icon {
+    flex: 0 0 auto;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--gold-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .exam-card-head .exam-title-wrap { flex: 1; min-width: 140px; }
+  .exam-card-head h3 { margin: 0 0 2px; font-size: 1rem; color: var(--ink); }
+  .exam-card-head .meta { color: var(--muted); font-size: 0.78rem; }
+  .exam-date-pill { flex: 0 0 auto; white-space: nowrap; }
+  .exam-lines { display: flex; flex-direction: column; gap: 8px; }
+  .exam-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+  }
+  .exam-line:first-child { border-top: none; padding-top: 0; }
+  .exam-chip {
+    background: var(--gold-light); color: var(--gold-dark);
+    font-size: 0.76rem; font-weight: 600;
+    padding: 4px 11px; border-radius: 999px;
+  }
+  .exam-chip-time { background: #e8f3fb; color: #2f6fa3; }
+  .exam-chip-format { background: #eafaf0; color: #2f8a55; }
+  .exam-chip-all { background: #f1ead3; color: var(--muted); }
   table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
   th, td { text-align: left; padding: 10px 12px; font-size: 0.86rem; border-bottom: 1px solid var(--border); }
   th { background: var(--gold-light); color: var(--gold-dark); font-weight: 700; }
@@ -575,6 +630,14 @@
   </section>
 
   <section id="panel-calendar" class="panel">
+    <h1 class="page-title" data-i18n="tab_calendar_full">Schedule</h1>
+    <div class="welcome-card">
+      <div class="welcome-icon icon-amber">📅</div>
+      <div>
+        <h2 data-i18n="schedule_title">Training Schedule</h2>
+        <p class="embed-hint" data-i18n="schedule_hint">Browse each cohort's day-by-day sessions and timings.</p>
+      </div>
+    </div>
     <div class="toolbar">
       <select id="cohortSelect"></select>
       <input type="text" id="calSearch" placeholder="Search topic, trainer... 搜索">
@@ -583,6 +646,14 @@
   </section>
 
   <section id="panel-exams" class="panel">
+    <h1 class="page-title" data-i18n="tab_exams_full">Exams</h1>
+    <div class="welcome-card">
+      <div class="welcome-icon icon-pink">📝</div>
+      <div>
+        <h2 data-i18n="exams_title">Exam Schedule</h2>
+        <p class="embed-hint" data-i18n="exams_hint">Timetables and room assignments for every assessment.</p>
+      </div>
+    </div>
     <div id="examsBody"></div>
   </section>
 
@@ -731,6 +802,12 @@ const I18N = {
     dash_tag_today: 'Today',
     dash_tag_upcoming: 'Upcoming',
     ranking_title: 'Live Leaderboard',
+    tab_calendar_full: 'Schedule',
+    schedule_title: 'Training Schedule',
+    schedule_hint: "Browse each cohort's day-by-day sessions and timings.",
+    tab_exams_full: 'Exams',
+    exams_title: 'Exam Schedule',
+    exams_hint: 'Timetables and room assignments for every assessment.',
     tab_mentors_full: 'Roster',
     roster_title: 'Trainee Roster',
     roster_hint: "Meet this batch's trainees, class monitor, and mentors.",
@@ -787,6 +864,12 @@ const I18N = {
     dash_tag_today: '今天',
     dash_tag_upcoming: '即将开始',
     ranking_title: '实时排行榜',
+    tab_calendar_full: '课程表',
+    schedule_title: '培训课程表',
+    schedule_hint: '查看各批次每日课程安排与时间。',
+    tab_exams_full: '考试',
+    exams_title: '考试安排',
+    exams_hint: '各项考核的时间表与场地安排。',
     tab_mentors_full: '名册',
     roster_title: '学员名册',
     roster_hint: '查看本批次学员、班长和导师。',
@@ -943,6 +1026,14 @@ function statusBadge(dateIso) {
   return `<span class="badge future">${t.badge_upcoming}</span>`;
 }
 
+function dayStatusClass(dateIso) {
+  if (!dateIso) return 'future';
+  const d = new Date(dateIso);
+  if (d.getTime() === TODAY.getTime()) return 'today';
+  if (d < TODAY) return 'past';
+  return 'future';
+}
+
 function renderCalendar() {
   const cohort = cohortSelect.value;
   const search = document.getElementById('calSearch').value.trim().toLowerCase();
@@ -979,19 +1070,27 @@ function renderCalendar() {
     if (day.week !== lastWeek) {
       const h = document.createElement('div');
       h.className = 'week-heading';
-      h.textContent = day.week || 'Other';
+      h.textContent = '🗓️ ' + (day.week || 'Other');
       body.appendChild(h);
       lastWeek = day.week;
     }
     const card = document.createElement('div');
     card.className = 'day-card';
     const badge = statusBadge(day.date_iso);
+    const dayStatus = dayStatusClass(day.date_iso);
+    const dayNumMatch = (day.day_label || '').match(/\d+/);
+    const avatarText = dayNumMatch ? dayNumMatch[0] : '📅';
     card.innerHTML = `
-      <div class="day-title">${day.day_label || ''} ${badge}</div>
-      <div class="day-sub">${day.weekday || ''} ${day.date || ''}</div>
+      <div class="day-card-head">
+        <div class="day-avatar status-${dayStatus}">${avatarText}</div>
+        <div>
+          <div class="day-title">${escapeHtml(day.day_label || '')} ${badge}</div>
+          <div class="day-sub">${escapeHtml(day.weekday || '')} ${escapeHtml(day.date || '')}</div>
+        </div>
+      </div>
       ${day.slots.map(s => `
         <div class="slot">
-          <div class="time">${s.time_slot || ''}</div>
+          <div class="time">${escapeHtml(s.time_slot || '')}</div>
           <div class="activity">${escapeHtml(s.activity || '')}</div>
         </div>`).join('')}
     `;
@@ -1139,15 +1238,46 @@ document.getElementById('openCurriculumBtn').addEventListener('click', () => act
 document.getElementById('openRankingBtn').addEventListener('click', () => activatePanel('ranking'));
 
 // ---------- Exams ----------
+// Exam detail cells are free-form text where "/" separates fields within one
+// original row and "|" separates rows -- the schema differs per source sheet,
+// so instead of forcing fixed column names, each "/"-separated field becomes
+// its own chip, with a few recognizable patterns (times, Zoom/On-site, "ALL")
+// getting distinct colors so they read as structured data at a glance.
+function examChipClass(part) {
+  if (/^\d{1,4}(:\d{2})?\s*[ap]m\s*-\s*\d{1,4}(:\d{2})?\s*[ap]m$/i.test(part)) return { cls: 'exam-chip-time', icon: '🕒 ' };
+  if (/^zoom$/i.test(part) || /^online$/i.test(part)) return { cls: 'exam-chip-format', icon: '💻 ' };
+  if (/^on site/i.test(part) || /线下/.test(part)) return { cls: 'exam-chip-format', icon: '🏢 ' };
+  if (/^all$/i.test(part)) return { cls: 'exam-chip-all', icon: '' };
+  return { cls: '', icon: '' };
+}
+
+function renderExamLine(line) {
+  const parts = line.split('/').map(p => p.trim()).filter(Boolean);
+  if (!parts.length) return '';
+  return `<div class="exam-line">${parts.map(p => {
+    const { cls, icon } = examChipClass(p);
+    return `<span class="exam-chip ${cls}">${icon}${escapeHtml(p)}</span>`;
+  }).join('')}</div>`;
+}
+
 function renderExams() {
   const body = document.getElementById('examsBody');
-  body.innerHTML = EXAMS.map(e => `
+  if (!EXAMS.length) { body.innerHTML = `<div class="empty">${I18N[LANG].empty_calendar}</div>`; return; }
+  body.innerHTML = EXAMS.map(e => {
+    const lines = (e.detail || '').split('|').map(s => s.trim()).filter(Boolean);
+    return `
     <div class="exam-card">
-      <h3>${escapeHtml(e.section || e.source_sheet)}</h3>
-      <div class="meta">${escapeHtml(e.date_header || '')} &middot; ${escapeHtml(e.source_sheet)}</div>
-      <div class="detail">${(e.detail || '').split('|').map(part => `<div>${escapeHtml(part.trim())}</div>`).join('')}</div>
-    </div>
-  `).join('');
+      <div class="exam-card-head">
+        <div class="exam-icon">📝</div>
+        <div class="exam-title-wrap">
+          <h3>${escapeHtml(e.section || e.source_sheet)}</h3>
+          <div class="meta">${escapeHtml(e.source_sheet)}</div>
+        </div>
+        ${e.date_header ? `<span class="date-pill exam-date-pill">📅 ${escapeHtml(e.date_header)}</span>` : ''}
+      </div>
+      <div class="exam-lines">${lines.map(renderExamLine).join('')}</div>
+    </div>`;
+  }).join('');
 }
 
 // ---------- Mentors / Roster ----------
