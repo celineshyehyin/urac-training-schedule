@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>URAC Training Program</title>
-<!-- build: retry deploy -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -211,10 +210,17 @@
   .chapter li { padding: 2px 0; color: var(--ink); }
   .empty { text-align: center; color: var(--muted); padding: 40px 0; }
   .embed-hint { color: var(--muted); font-size: 0.85rem; margin: 0 0 14px; }
+  .embed-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 10px;
+    box-shadow: 0 4px 14px rgba(201,138,26,0.08);
+  }
   .embed-frame {
     width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    border: none;
+    border-radius: 16px;
     background: var(--card);
     display: block;
   }
@@ -243,6 +249,8 @@
   }
   .welcome-card h2 { margin: 0 0 4px; font-size: 1.3rem; color: var(--ink); }
   .welcome-card p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  .welcome-icon.icon-amber { background: #fdf1de; }
+  .welcome-icon.icon-pink { background: #fdebf1; }
   .stat-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -478,13 +486,31 @@
   </section>
 
   <section id="panel-ranking" class="panel">
-    <p class="embed-hint" data-i18n="ranking_hint">Live leaderboard — updates automatically whenever trainers add new marks.</p>
-    <iframe class="embed-frame embed-frame-sheet" src="https://docs.google.com/spreadsheets/d/1ar9Clp7zhVzRCpMXPDWGlBh6bI-DoRxaT-ZYUHba1y0/pubhtml?gid=2008709704&amp;single=true&amp;widget=true&amp;headers=false" loading="lazy"></iframe>
+    <h1 class="page-title" data-i18n="tab_ranking_full">Ranking</h1>
+    <div class="welcome-card">
+      <div class="welcome-icon icon-amber">🏆</div>
+      <div>
+        <h2 data-i18n="ranking_title">Live Leaderboard</h2>
+        <p class="embed-hint" data-i18n="ranking_hint">Live leaderboard — updates automatically whenever trainers add new marks.</p>
+      </div>
+    </div>
+    <div class="embed-card">
+      <iframe class="embed-frame embed-frame-sheet" src="https://docs.google.com/spreadsheets/d/1ar9Clp7zhVzRCpMXPDWGlBh6bI-DoRxaT-ZYUHba1y0/pubhtml?gid=2008709704&amp;single=true&amp;widget=true&amp;headers=false" loading="lazy"></iframe>
+    </div>
   </section>
 
   <section id="panel-feedback" class="panel">
-    <p class="embed-hint" data-i18n="feedback_hint">Have feedback for a trainer? Fill this in — it goes straight to the program coordinator.</p>
-    <iframe class="embed-frame embed-frame-form" src="https://docs.google.com/forms/d/e/1FAIpQLSd89DSrdnzUGQT57WiJY2gtXIKo0nQuGPKGGlZ046lsiDwaMg/viewform?embedded=true" loading="lazy">Loading…</iframe>
+    <h1 class="page-title" data-i18n="tab_feedback_full">Feedback</h1>
+    <div class="welcome-card">
+      <div class="welcome-icon icon-pink">⭐</div>
+      <div>
+        <h2 data-i18n="feedback_title">Feedback on Trainers</h2>
+        <p class="embed-hint" data-i18n="feedback_hint">Have feedback for a trainer? Fill this in — it goes straight to the program coordinator.</p>
+      </div>
+    </div>
+    <div class="embed-card">
+      <iframe class="embed-frame embed-frame-form" src="https://docs.google.com/forms/d/e/1FAIpQLSd89DSrdnzUGQT57WiJY2gtXIKo0nQuGPKGGlZ046lsiDwaMg/viewform?embedded=true" loading="lazy">Loading…</iframe>
+    </div>
   </section>
 
 </main>
@@ -547,6 +573,9 @@ const I18N = {
     dash_trainees_word: 'trainees',
     dash_tag_today: 'Today',
     dash_tag_upcoming: 'Upcoming',
+    ranking_title: 'Live Leaderboard',
+    tab_feedback_full: 'Feedback',
+    feedback_title: 'Feedback on Trainers',
   },
   zh: {
     tab_dashboard: '🏠 主页',
@@ -589,6 +618,9 @@ const I18N = {
     dash_trainees_word: '位学员',
     dash_tag_today: '今天',
     dash_tag_upcoming: '即将开始',
+    ranking_title: '实时排行榜',
+    tab_feedback_full: '反馈',
+    feedback_title: '讲师反馈',
   },
 };
 let LANG = 'en';
