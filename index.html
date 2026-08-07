@@ -979,15 +979,39 @@ function parseDateFromHeader(str) {
 
 let currentCohortName = null;
 
-// Finds the Roster tab's "Cohort" column, if the sheet has one (case-insensitive).
+// Finds the Roster tab's "Cohort" column, if the sheet has one. This is always
+// present when MENTORS came from parseRoster() (it's added automatically per
+// monthly block); it's only absent for the static offline fallback snapshot.
 function mentorsCohortColumn() {
   if (!MENTORS.length) return null;
-  return Object.keys(MENTORS[0]).find(k => k.trim().toLowerCase() === 'cohort') || null;
+  return ('Cohort' in MENTORS[0]) ? 'Cohort' : null;
 }
-function mentorsCountForCohort(name) {
+// Highest __blockIndex present = the most recently added (current) batch.
+function mentorsCurrentBlockIndex() {
+  let max = -1;
+  MENTORS.forEach(m => { if (typeof m.__blockIndex === 'number' && m.__blockIndex > max) max = m.__blockIndex; });
+  return max;
+}
+// Fuzzy-matches a Calendar cohort name (e.g. "Cohort - Aug 2026 (current)")
+// against Roster cohort labels (e.g. "Aug 2026") since they're written
+// independently by the trainer and won't match character-for-character.
+function mentorsCountForCohort(calendarCohortName) {
   const col = mentorsCohortColumn();
-  if (!col) return null; // no cohort column -- caller should fall back
-  return MENTORS.filter(m => m[col] === name).length;
+  if (!col) return null; // no cohort info -- caller should fall back
+  const target = (calendarCohortName || '').toLowerCase();
+  const n = MENTORS.filter(m => {
+    const label = (m[col] || '').toLowerCase();
+    return label && (target.includes(label) || label.includes(target));
+  }).length;
+  return n || null;
+}
+// Trainee count for the most recently added roster batch (reliable even if
+// the Roster's cohort label doesn't textually match the Calendar's).
+function mentorsCurrentCount() {
+  const col = mentorsCohortColumn();
+  if (!col) return null;
+  const maxIdx = mentorsCurrentBlockIndex();
+  return MENTORS.filter(m => m.__blockIndex === maxIdx).length;
 }
 
 function renderDashboard() {
@@ -999,9 +1023,7 @@ function renderDashboard() {
     { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
   );
 
-  const currentTraineeCount = currentCohortName !== null && mentorsCountForCohort(currentCohortName) !== null
-    ? mentorsCountForCohort(currentCohortName)
-    : MENTORS.length;
+  const currentTraineeCount = mentorsCurrentCount() !== null ? mentorsCurrentCount() : MENTORS.length;
   document.getElementById('statTrainees').textContent = currentTraineeCount;
   document.getElementById('statFeedback').textContent = '0';
 
@@ -1093,29 +1115,40 @@ function renderExams() {
 const rosterCohortSelect = document.getElementById('rosterCohortSelect');
 let rosterCohortNames = [];
 
+// Maps each distinct Roster cohort label to its block index (the order it
+// appears in the sheet), so "most recently added" = current, everything
+// earlier = past.
+function rosterCohortBlockMap() {
+  const col = mentorsCohortColumn();
+  if (!col) return null;
+  const map = new Map();
+  MENTORS.forEach(m => {
+    const label = m[col];
+    if (!label) return;
+    if (!map.has(label) || m.__blockIndex > map.get(label)) map.set(label, m.__blockIndex);
+  });
+  return map;
+}
+
 function populateRosterCohortSelect() {
   rosterCohortSelect.innerHTML = '';
-  const col = mentorsCohortColumn();
-  if (!col) {
+  const map = rosterCohortBlockMap();
+  if (!map || !map.size) {
     rosterCohortSelect.style.display = 'none';
     rosterCohortNames = [];
     return;
   }
-  rosterCohortSelect.style.display = '';
-  let names = [...new Set(MENTORS.map(m => m[col]).filter(Boolean))];
-  names.sort((a, b) => {
-    const ca = a.toLowerCase().includes('current') ? 0 : 1;
-    const cb = b.toLowerCase().includes('current') ? 0 : 1;
-    return ca - cb;
-  });
+  const maxIdx = Math.max(...map.values());
+  let names = [...map.keys()].sort((a, b) => map.get(b) - map.get(a)); // most recent first
   if (!isTrainerUnlocked()) {
-    names = names.filter(n => !isCohortPast(n));
+    names = names.filter(n => map.get(n) === maxIdx);
   }
   rosterCohortNames = names;
+  rosterCohortSelect.style.display = names.length > 1 ? '' : 'none';
   names.forEach(name => {
     const opt = document.createElement('option');
     opt.value = name;
-    opt.textContent = name;
+    opt.textContent = name + (map.get(name) === maxIdx ? ' (Current)' : '');
     rosterCohortSelect.appendChild(opt);
   });
   if (names.length) rosterCohortSelect.value = names[0];
@@ -1131,7 +1164,7 @@ function renderMentors() {
     rows = MENTORS.filter(m => m[cohortCol] === rosterCohortSelect.value);
   }
   if (!rows.length) { body.innerHTML = '<div class="empty">No mentor data.</div>'; return; }
-  const cols = Object.keys(rows[0]).filter(c => c !== cohortCol);
+  const cols = Object.keys(rows[0]).filter(c => c !== cohortCol && c !== '__blockIndex');
   let tbl = '<table><thead><tr>' + cols.map(c => `<th>${escapeHtml(c)}</th>`).join('') + '</tr></thead><tbody>';
   rows.forEach(m => {
     tbl += '<tr>' + cols.map(c => `<td>${escapeHtml(m[c] || '')}</td>`).join('') + '</tr>';
@@ -1334,9 +1367,9 @@ document.getElementById('feedbackForm').addEventListener('submit', function (e) 
 document.getElementById('fbAnotherBtn').addEventListener('click', resetFeedbackForm);
 
 // ---------- Live Google Sheet data loading ----------
-// Parses RFC4180-ish CSV: handles quoted fields containing commas,
-// double-quotes ("" escape), and embedded newlines.
-function parseCSV(text) {
+// Tokenizes RFC4180-ish CSV into rows of raw string arrays: handles quoted
+// fields containing commas, double-quotes ("" escape), and embedded newlines.
+function tokenizeCSV(text) {
   const rows = [];
   let row = [];
   let field = '';
@@ -1365,6 +1398,12 @@ function parseCSV(text) {
   }
   if (field.length || row.length) { row.push(field); rows.push(row); }
   while (rows.length && rows[rows.length - 1].every(v => v === '')) rows.pop();
+  return rows;
+}
+
+// Simple sheet: first row is the header, rest are data rows.
+function parseCSV(text) {
+  const rows = tokenizeCSV(text);
   if (!rows.length) return [];
   const header = rows[0];
   return rows.slice(1).map(r => {
@@ -1374,14 +1413,57 @@ function parseCSV(text) {
   });
 }
 
+// Roster sheet: supports being organised as stacked monthly blocks separated
+// by a blank row, each with its own header row (e.g. "No, Aug 2026 Trainees,
+// Outlet, ..."), which is how trainers naturally add each new batch. Every
+// row gets a synthetic Cohort label (taken from whichever header column
+// contains "Trainees") and a block index so later code can tell which batch
+// is most recent. A plain single-table sheet (no blank rows) still works --
+// it just becomes one block.
+function parseRoster(text) {
+  const allRows = tokenizeCSV(text);
+  const blocks = [];
+  let block = [];
+  allRows.forEach(r => {
+    const isBlank = r.every(v => v.trim() === '');
+    if (isBlank) {
+      if (block.length) { blocks.push(block); block = []; }
+    } else {
+      block.push(r);
+    }
+  });
+  if (block.length) blocks.push(block);
+
+  const result = [];
+  blocks.forEach((b, blockIndex) => {
+    if (b.length < 2) return; // needs a header + at least one data row
+    const header = b[0];
+    let traineeColIdx = header.findIndex(h => /trainees?/i.test(h));
+    if (traineeColIdx === -1) traineeColIdx = header.length > 1 ? 1 : 0;
+    const cohortLabel = (header[traineeColIdx] || ('Batch ' + (blockIndex + 1)))
+      .replace(/trainees?/i, '').trim() || ('Batch ' + (blockIndex + 1));
+    const canonicalHeader = header.map((h, i) => i === traineeColIdx ? 'Trainees' : h);
+    for (let i = 1; i < b.length; i++) {
+      const r = b[i];
+      if (r.every(v => v.trim() === '')) continue;
+      const obj = {};
+      canonicalHeader.forEach((h, j) => { obj[h] = r[j] !== undefined ? r[j] : ''; });
+      obj['Cohort'] = cohortLabel;
+      obj['__blockIndex'] = blockIndex;
+      result.push(obj);
+    }
+  });
+  return result;
+}
+
 function csvUrl(gid) {
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
 }
 
-async function fetchSheet(gid) {
+async function fetchSheet(gid, parser) {
   const res = await fetch(csvUrl(gid), { cache: 'no-store' });
   if (!res.ok) throw new Error('HTTP ' + res.status);
-  return parseCSV(await res.text());
+  return (parser || parseCSV)(await res.text());
 }
 
 function groupCalendarByCohort(rows) {
@@ -1398,7 +1480,7 @@ async function loadLiveData() {
   const [calRows, examRows, rosterRows, curRows] = await Promise.all([
     fetchSheet(SHEET_GIDS.calendar),
     fetchSheet(SHEET_GIDS.exams),
-    fetchSheet(SHEET_GIDS.roster),
+    fetchSheet(SHEET_GIDS.roster, parseRoster),
     fetchSheet(SHEET_GIDS.curriculum),
   ]);
   CALENDAR = groupCalendarByCohort(calRows);
