@@ -1328,10 +1328,34 @@ document.getElementById('openRankingBtn').addEventListener('click', () => activa
 
 // ---------- Exams ----------
 // Exam detail cells are free-form text where "/" separates fields within one
-// original row and "|" separates rows -- the schema differs per source sheet,
-// so instead of forcing fixed column names, each "/"-separated field becomes
+// line and "|" separates lines -- the schema differs per source sheet, so
+// instead of forcing fixed column names, each "/"-separated field becomes
 // its own chip, with a few recognizable patterns (times, Zoom/On-site, "ALL")
 // getting distinct colors so they read as structured data at a glance.
+//
+// To keep the sheet itself easy to maintain by hand, rows sharing the same
+// source_sheet + section + date_header are treated as one exam card and
+// their "detail" values are joined with " | " automatically -- so adding a
+// new month's exam just means adding one new row per line (no need to type
+// "|" to separate lines inside a single cell). A "/" is still used within a
+// row only when that one line has more than one part (e.g. "Topic / ALL").
+function parseExams(text) {
+  const rows = parseCSV(text);
+  const groups = [];
+  const indexByKey = new Map();
+  rows.forEach(r => {
+    const key = [r.source_sheet || '', r.section || '', r.date_header || ''].join('\u0000');
+    if (!indexByKey.has(key)) {
+      indexByKey.set(key, groups.length);
+      groups.push({ source_sheet: r.source_sheet || '', section: r.section || '', date_header: r.date_header || '', detail: '' });
+    }
+    const g = groups[indexByKey.get(key)];
+    const d = (r.detail || '').trim();
+    if (d) g.detail = g.detail ? g.detail + ' | ' + d : d;
+  });
+  return groups;
+}
+
 function examChipClass(part) {
   if (/^\d{1,4}(:\d{2})?\s*[ap]m\s*-\s*\d{1,4}(:\d{2})?\s*[ap]m$/i.test(part)) return { cls: 'exam-chip-time', icon: '🕒 ' };
   if (/^zoom$/i.test(part) || /^online$/i.test(part)) return { cls: 'exam-chip-format', icon: '💻 ' };
@@ -1848,7 +1872,7 @@ function groupCalendarByCohort(rows) {
 async function loadLiveData() {
   const [calRows, examRows, rosterRows] = await Promise.all([
     fetchSheet(SHEET_GIDS.calendar),
-    fetchSheet(SHEET_GIDS.exams),
+    fetchSheet(SHEET_GIDS.exams, parseExams),
     fetchSheet(SHEET_GIDS.roster, parseRoster),
   ]);
   CALENDAR = groupCalendarByCohort(calRows);
