@@ -1092,7 +1092,7 @@ const I18N = {
     ask_sugg_next_exam: '下次考试是什么时候？',
     ask_sugg_today: '今天有什么课？',
     ask_sugg_ranking: '看看排行榜',
-    ask_sugg_mentors: '导师有哪些？',
+    ask_sugg_mentors: 'Mentor 有哪些？',
     ask_sugg_faq: '什么是 URAC？',
     ask_fallback: '嗯～这个苗苗还不太确定呢 🌱 可以试着问我 URAC 课程、下次考试、今天的课程、某一天（例如"第25天"）、排行榜，或某位导师的名字哦！如果苗苗真的帮不上忙，可以 WhatsApp 联系 HR Celine（018-4615455）或 HR Khai Xuan（017-4116266）💛',
     ask_ans_next_exam_intro: '📅 苗苗来报告好消息～你的下次考试是 {date}，也就是还有 {days} 天哦！来看看内容：',
@@ -1129,6 +1129,16 @@ function applyLanguage() {
 document.getElementById('langBtn').addEventListener('click', () => {
   LANG = LANG === 'en' ? 'zh' : 'en';
   applyLanguage();
+  // If the trainee hasn't actually asked Miao Miao anything yet (just the
+  // auto-greeting is showing), refresh it in the newly selected language so
+  // it doesn't contradict the chat header above it. Once a real
+  // conversation has started, leave the history alone.
+  if (typeof chatHistory !== 'undefined' && chatHistory.length <= 1) {
+    chatHistory = [];
+    const list = document.getElementById('chatMessages');
+    if (list) list.innerHTML = '';
+    if (miaoChatWindow && miaoChatWindow.style.display === 'flex') ensureChatGreeting();
+  }
 });
 
 // ---------- Tabs ----------
