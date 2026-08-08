@@ -1227,7 +1227,7 @@ function populateCohortSelect() {
   cohortNames.forEach(name => {
     const opt = document.createElement('option');
     opt.value = name;
-    opt.textContent = name;
+    opt.textContent = cohortDisplayName(name);
     cohortSelect.appendChild(opt);
   });
   cohortSelect.value = cohortNames[0];
@@ -1376,6 +1376,15 @@ function parseDateFromHeader(str) {
 
 let currentCohortName = null;
 
+// Strips the internal "Cohort - " prefix and "Cohort" wording from a raw
+// Calendar cohort key (e.g. "Cohort - Aug 2026 (current)") so trainees just
+// see the month, e.g. "Aug 2026 (Current)".
+function cohortDisplayName(name) {
+  const isCurrent = (name || '').toLowerCase().includes('current');
+  const shortName = (name || '').replace(/^Cohort\s*-\s*/i, '').replace(/\s*\(current\)/i, '').trim();
+  return shortName + (isCurrent ? ' (Current)' : '');
+}
+
 // Finds the Roster tab's "Cohort" column, if the sheet has one. This is always
 // present when MENTORS came from parseRoster() (it's added automatically per
 // monthly block); it's only absent for the static offline fallback snapshot.
@@ -1472,8 +1481,8 @@ function renderDashboard() {
   const grid = document.getElementById('cohortGrid');
   grid.innerHTML = cohortNames.map((name, i) => {
     const isCurrent = name.toLowerCase().includes('current');
-    const shortName = name.replace('Cohort - ', '').replace(/\s*\(current\)/i, '').trim();
-    const label = shortName + ' Cohort' + (isCurrent ? ' (' + t.dash_current + ')' : '');
+    const shortName = name.replace(/^Cohort\s*-\s*/i, '').replace(/\s*\(current\)/i, '').trim();
+    const label = shortName + (isCurrent ? ' (' + t.dash_current + ')' : '');
     const mCount = mentorsCountForCohort(name);
     const traineeCount = mCount !== null ? mCount : (isCurrent ? MENTORS.length : 0);
     return `<div class="cohort-card">
