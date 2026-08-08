@@ -546,6 +546,54 @@
   .form-success h3 { margin: 0 0 6px; font-size: 1.15rem; }
   .form-success p { margin: 0 0 18px; color: var(--muted); font-size: 0.88rem; }
 
+  .welcome-icon.icon-mint { background: #cdeee0; }
+  .chat-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 22px;
+    padding: 16px; box-shadow: 0 4px 14px rgba(201,138,26,0.08);
+    display: flex; flex-direction: column; height: 60vh; min-height: 420px;
+  }
+  .chat-messages {
+    flex: 1 1 auto; overflow-y: auto; padding: 6px 4px 10px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .chat-bubble-row { display: flex; }
+  .chat-bubble-row.user { justify-content: flex-end; }
+  .chat-bubble-row.bot { justify-content: flex-start; }
+  .chat-bubble {
+    max-width: 82%; padding: 11px 15px; border-radius: 18px; font-size: 0.88rem;
+    line-height: 1.5; white-space: pre-line;
+  }
+  .chat-bubble-row.user .chat-bubble {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: white;
+    border-bottom-right-radius: 4px;
+  }
+  .chat-bubble-row.bot .chat-bubble {
+    background: var(--beige); color: var(--ink); border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+  .chat-suggestions {
+    display: flex; flex-wrap: wrap; gap: 8px; padding: 2px 4px 12px;
+  }
+  .chat-suggestion-btn {
+    background: var(--gold-light); color: var(--gold-dark); border: none;
+    border-radius: 999px; padding: 8px 14px; font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .chat-suggestion-btn:hover { background: var(--gold); color: white; }
+  .chat-input-row {
+    display: flex; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+  }
+  .chat-input-row input[type=text] {
+    flex: 1 1 auto; padding: 12px 16px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--beige); font-size: 0.9rem; color: var(--ink); font-family: inherit;
+  }
+  .chat-input-row input[type=text]:focus { outline: none; border-color: var(--gold); }
+  .chat-send-btn {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: white;
+    border: none; border-radius: 999px; padding: 0 22px; font-size: 0.9rem; font-weight: 800;
+    cursor: pointer; font-family: inherit; flex: 0 0 auto;
+  }
+
   footer {
     text-align: center;
     color: var(--muted);
@@ -612,6 +660,7 @@
   <button data-panel="exams" data-i18n="tab_exams">📝 Exams</button>
   <button data-panel="mentors" data-i18n="tab_mentors">👥 Roster</button>
   <button data-panel="feedback" data-i18n="tab_feedback">⭐ Feedback</button>
+  <button data-panel="ask" data-i18n="tab_ask">🤖 Ask</button>
 </nav>
 
 <main>
@@ -786,6 +835,25 @@
     </div>
   </section>
 
+  <section id="panel-ask" class="panel">
+    <h1 class="page-title" data-i18n="tab_ask_full">Ask</h1>
+    <div class="welcome-card">
+      <div class="welcome-icon icon-mint">🤖</div>
+      <div>
+        <h2 data-i18n="ask_title">Ask URAC Bot</h2>
+        <p class="embed-hint" data-i18n="ask_hint">Ask about your schedule, exams, mentors, or ranking — answers come straight from this site's own data.</p>
+      </div>
+    </div>
+    <div class="chat-card">
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-suggestions" id="chatSuggestions"></div>
+      <form class="chat-input-row" id="chatForm">
+        <input type="text" id="chatInput" autocomplete="off" data-i18n-placeholder="ask_placeholder" placeholder="Ask a question...">
+        <button type="submit" class="chat-send-btn" data-i18n="ask_send">Send</button>
+      </form>
+    </div>
+  </section>
+
 </main>
 
 <footer>
@@ -816,6 +884,7 @@ const I18N = {
     tab_mentors: '👥 Roster',
     tab_ranking: '🏆 Ranking',
     tab_feedback: '⭐ Feedback',
+    tab_ask: '🤖 Ask',
     badge_today: 'TODAY',
     badge_done: 'Done',
     badge_upcoming: 'Upcoming',
@@ -869,6 +938,26 @@ const I18N = {
     feedback_success_sub: 'Your feedback has been submitted.',
     feedback_submit_another: 'Submit another response',
     feedback_error_incomplete: 'Please answer all required questions before submitting.',
+    tab_ask_full: 'Ask',
+    ask_title: 'Ask URAC Bot',
+    ask_hint: "Ask about your schedule, exams, mentors, or ranking — answers come straight from this site's own data.",
+    ask_placeholder: 'Ask a question... e.g. "when is the next exam?"',
+    ask_send: 'Send',
+    ask_greeting: "Hi! I'm URAC Bot 🤖 Ask me about the schedule, exams, mentors, or ranking — tap a suggestion below or type your own question.",
+    ask_sugg_next_exam: 'When is the next exam?',
+    ask_sugg_today: "What's on today?",
+    ask_sugg_ranking: 'Show me the ranking',
+    ask_sugg_mentors: 'Who are the mentors?',
+    ask_fallback: "Sorry, I don't have an answer for that yet. Try asking about the next exam, today's schedule, a specific day (e.g. day 25), the ranking, or a mentor's name.",
+    ask_ans_next_exam_intro: 'The next exam is on {date} — {days} day(s) from today:',
+    ask_ans_no_exam: "I don't see any upcoming exams scheduled yet.",
+    ask_ans_today_none: 'No sessions are scheduled for today.',
+    ask_ans_today_header: "Today's sessions ({n}):",
+    ask_ans_day_not_found: "I couldn't find that day in the schedule. Try asking like: what's on day 25",
+    ask_ans_ranking_header: 'Current leaderboard:',
+    ask_ans_ranking_none: "No ranking data yet — marks haven't been submitted.",
+    ask_ans_mentor_none: "I couldn't find that name on the roster. Try asking with the trainee's exact name.",
+    ask_ans_mentors_header: 'Mentors on the current roster:',
   },
   zh: {
     tab_dashboard: '🏠 主页',
@@ -877,6 +966,7 @@ const I18N = {
     tab_mentors: '👥 名册',
     tab_ranking: '🏆 排行榜',
     tab_feedback: '⭐ 反馈',
+    tab_ask: '🤖 问答',
     badge_today: '今天',
     badge_done: '已完成',
     badge_upcoming: '即将开始',
@@ -930,6 +1020,26 @@ const I18N = {
     feedback_success_sub: '您的反馈已提交。',
     feedback_submit_another: '再提交一份',
     feedback_error_incomplete: '请填写所有必填项后再提交。',
+    tab_ask_full: '问答',
+    ask_title: '问问 URAC 机器人',
+    ask_hint: '询问课程表、考试、导师或排行榜 — 答案直接来自本站的数据。',
+    ask_placeholder: '输入问题... 例如"下次考试是什么时候？"',
+    ask_send: '发送',
+    ask_greeting: '你好！我是 URAC 机器人 🤖 你可以问我课程表、考试、导师或排行榜 — 点击下方建议或自己输入问题。',
+    ask_sugg_next_exam: '下次考试是什么时候？',
+    ask_sugg_today: '今天有什么课？',
+    ask_sugg_ranking: '看看排行榜',
+    ask_sugg_mentors: '导师有哪些？',
+    ask_fallback: '抱歉，我暂时无法回答这个问题。可以试着问下次考试、今天的课程、某一天（例如"第25天"）、排行榜，或某位导师的名字。',
+    ask_ans_next_exam_intro: '下次考试是 {date} — 距今还有 {days} 天：',
+    ask_ans_no_exam: '暂时没有安排中的考试。',
+    ask_ans_today_none: '今天没有安排课程。',
+    ask_ans_today_header: '今天的课程（{n} 节）：',
+    ask_ans_day_not_found: '我找不到那一天的课程表。可以试着问"第25天有什么课"。',
+    ask_ans_ranking_header: '当前排行榜：',
+    ask_ans_ranking_none: '暂无排行数据 — 还没有提交分数。',
+    ask_ans_mentor_none: '在名册上找不到这个名字，请尝试输入学员的完整姓名。',
+    ask_ans_mentors_header: '当前批次的导师：',
   },
 };
 let LANG = 'en';
@@ -939,10 +1049,14 @@ function applyLanguage() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     el.textContent = t[el.dataset.i18n];
   });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t[el.dataset.i18nPlaceholder];
+  });
   document.getElementById('calSearch').placeholder = t.search_placeholder;
   document.getElementById('langBtn').textContent = t.lang_btn;
   renderCalendar();
   renderDashboard();
+  renderChatSuggestions();
 }
 
 document.getElementById('langBtn').addEventListener('click', () => {
@@ -955,6 +1069,7 @@ function activatePanel(name) {
   document.querySelectorAll('nav.pillnav button').forEach(b => b.classList.toggle('active', b.dataset.panel === name));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'ask') ensureChatGreeting();
 }
 document.querySelectorAll('nav.pillnav button').forEach(btn => {
   btn.addEventListener('click', () => activatePanel(btn.dataset.panel));
@@ -1890,6 +2005,165 @@ async function loadRankingData() {
   if (!RANKING_SHEET_ID || !RANKING_GID) { RANKING = FALLBACK_RANKING; return; }
   RANKING = await fetchSheet(RANKING_GID, parseRanking, RANKING_SHEET_ID);
 }
+
+// ---------- Ask (Q&A) ----------
+// A fully client-side, rule-based assistant -- no API key, no backend, no
+// generative model involved. It only ever answers using data already loaded
+// into CALENDAR / EXAMS / MENTORS / RANKING, matched via simple bilingual
+// (EN/ZH) keyword and regex patterns against the trainee's question.
+let chatHistory = [];
+
+function addChatBubble(role, text) {
+  chatHistory.push({ role, text });
+  const list = document.getElementById('chatMessages');
+  const row = document.createElement('div');
+  row.className = 'chat-bubble-row ' + role;
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble';
+  bubble.textContent = text;
+  row.appendChild(bubble);
+  list.appendChild(row);
+  list.scrollTop = list.scrollHeight;
+}
+
+function renderChatSuggestions() {
+  const t = I18N[LANG];
+  const box = document.getElementById('chatSuggestions');
+  if (!box) return;
+  const suggestions = [t.ask_sugg_next_exam, t.ask_sugg_today, t.ask_sugg_ranking, t.ask_sugg_mentors];
+  box.innerHTML = '';
+  suggestions.forEach(s => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chat-suggestion-btn';
+    btn.textContent = s;
+    btn.addEventListener('click', () => askAndRespond(s));
+    box.appendChild(btn);
+  });
+}
+
+function ensureChatGreeting() {
+  if (chatHistory.length) return;
+  addChatBubble('bot', I18N[LANG].ask_greeting);
+}
+
+function askAndRespond(q) {
+  if (!q || !q.trim()) return;
+  addChatBubble('user', q.trim());
+  addChatBubble('bot', answerQuestion(q.trim()));
+}
+
+function formatDateHuman(d) {
+  return d.toLocaleDateString(LANG === 'zh' ? 'zh-CN' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function answerQuestion(qRaw) {
+  const t = I18N[LANG];
+  const q = qRaw.toLowerCase();
+
+  // ----- A specific day, e.g. "day 25" / "第25天" (schedule day, or an exam day) -----
+  const dayMatch = q.match(/day\s*(\d+)/) || q.match(/第\s*(\d+)\s*天/);
+  if (dayMatch) {
+    const n = dayMatch[1];
+    const rows = [];
+    Object.keys(CALENDAR).forEach(cohort => {
+      (CALENDAR[cohort] || []).forEach(r => {
+        if ((r.day_label || '').replace(/[^0-9\-]/g, '').split('-').includes(n)) rows.push(r);
+      });
+    });
+    if (rows.length) {
+      const label = rows[0].day_label, date = rows[0].date;
+      const activities = rows.filter(r => r.activity && !/lunch|break/i.test(r.activity))
+        .map(r => '• ' + (r.time_slot ? r.time_slot + ' ' : '') + r.activity.split('\n')[0]);
+      return label + ' (' + date + ')' + (activities.length ? '\n' + activities.join('\n') : '');
+    }
+    const examMatches = EXAMS.filter(e => {
+      const h = (e.date_header || '').toLowerCase();
+      return h.indexOf('day') !== -1 && h.replace(/[^0-9]/g, ' ').split(/\s+/).includes(n);
+    });
+    if (examMatches.length) {
+      return examMatches.map(e => e.date_header + (e.section ? ' — ' + e.section : '') + '\n' + (e.detail || '')).join('\n\n');
+    }
+    return t.ask_ans_day_not_found;
+  }
+
+  // ----- Next / upcoming exam -----
+  if (/exam|考试|测验/.test(q)) {
+    let nextExam = null, nextDate = null;
+    EXAMS.forEach(e => {
+      const d = parseDateFromHeader(e.date_header);
+      if (d && d >= TODAY && (!nextDate || d < nextDate)) { nextDate = d; nextExam = e; }
+    });
+    if (!nextExam) return t.ask_ans_no_exam;
+    const days = Math.round((nextDate - TODAY) / 86400000);
+    const intro = t.ask_ans_next_exam_intro.replace('{date}', formatDateHuman(nextDate)).replace('{days}', days);
+    return intro + '\n' + (nextExam.section ? nextExam.section + ': ' : '') + (nextExam.detail || nextExam.date_header);
+  }
+
+  // ----- Today's schedule -----
+  if (/today|今天/.test(q)) {
+    const todayIso = TODAY.toISOString().slice(0, 10);
+    const rows = (CALENDAR[currentCohortName] || []).filter(r => r.date_iso === todayIso && r.activity && !/lunch|break/i.test(r.activity));
+    if (!rows.length) return t.ask_ans_today_none;
+    const header = t.ask_ans_today_header.replace('{n}', rows.length);
+    const lines = rows.map(r => '• ' + (r.time_slot ? r.time_slot + ' ' : '') + r.activity.split('\n')[0]);
+    return header + '\n' + lines.join('\n');
+  }
+
+  // ----- Ranking / leaderboard -----
+  if (/rank|leaderboard|score|mark|top|排行|排名|成绩|分数/.test(q)) {
+    const hasData = RANKING && RANKING.length && RANKING.some(b => b.length);
+    if (!hasData) return t.ask_ans_ranking_none;
+    const lines = [t.ask_ans_ranking_header];
+    RANKING.forEach((block, i) => {
+      if (!block.length) return;
+      const sorted = block.slice().sort((a, b) => b.mark - a.mark);
+      if (RANKING.length > 1) lines.push(t.ranking_group_label.replace('{n}', i + 1) + ':');
+      sorted.slice(0, 5).forEach((r, idx) => lines.push((idx + 1) + '. ' + r.name + ' — ' + r.mark));
+    });
+    return lines.join('\n');
+  }
+
+  // ----- Mentor / roster lookup (also triggers if the question mentions a
+  // trainee's name directly, even without a "mentor/roster" keyword) -----
+  const mRosterCol = mentorsCohortColumn();
+  const mMaxIdx = mentorsCurrentBlockIndex();
+  const mCurrentRows = mRosterCol ? MENTORS.filter(m => m.__blockIndex === mMaxIdx) : MENTORS;
+  let mNameMatch = null;
+  mCurrentRows.forEach(m => {
+    Object.values(m).forEach(v => {
+      if (typeof v === 'string' && v.trim().length >= 3 && q.includes(v.trim().toLowerCase())) mNameMatch = m;
+    });
+  });
+  if (mNameMatch || /mentor|angel|roster|导师|班长|名册|coach/.test(q)) {
+    const currentRows = mCurrentRows;
+    const nameCols = currentRows.length ? Object.keys(currentRows[0]).filter(k => k !== 'Cohort' && k !== '__blockIndex') : [];
+    const matchedRow = mNameMatch;
+    if (matchedRow) {
+      const parts = nameCols.map(k => matchedRow[k] ? (k + ': ' + matchedRow[k]) : null).filter(Boolean);
+      return parts.join('\n');
+    }
+    if (!currentRows.length) return t.ask_ans_mentor_none;
+    const traineeCol = nameCols.find(c => /trainee/i.test(c)) || nameCols[0];
+    const mentorCol = nameCols.find(c => /mentor/i.test(c));
+    const lines = [t.ask_ans_mentors_header];
+    currentRows.forEach(m => {
+      if (mentorCol && m[mentorCol]) lines.push('• ' + m[traineeCol] + ' — ' + m[mentorCol]);
+      else lines.push('• ' + m[traineeCol]);
+    });
+    return lines.join('\n');
+  }
+
+  return t.ask_fallback;
+}
+
+document.getElementById('chatForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const input = document.getElementById('chatInput');
+  const q = input.value;
+  input.value = '';
+  askAndRespond(q);
+});
 
 function showLoading() {
   ['calendarBody', 'examsBody', 'mentorsBody', 'rankingBody'].forEach(id => {
