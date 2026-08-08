@@ -559,10 +559,18 @@
   .chat-bubble-row { display: flex; }
   .chat-bubble-row.user { justify-content: flex-end; }
   .chat-bubble-row.bot { justify-content: flex-start; }
+  .chat-bubble-col { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; max-width: 82%; }
+  .chat-bubble-row.user .chat-bubble-col { align-items: flex-end; }
   .chat-bubble {
-    max-width: 82%; padding: 11px 15px; border-radius: 18px; font-size: 0.88rem;
+    max-width: 100%; padding: 11px 15px; border-radius: 18px; font-size: 0.88rem;
     line-height: 1.5; white-space: pre-line;
   }
+  .chat-action-btn {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: white;
+    border: none; border-radius: 999px; padding: 8px 16px; font-size: 0.8rem; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+  }
+  .chat-action-btn:hover { opacity: 0.9; }
   .chat-bubble-row.user .chat-bubble {
     background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: white;
     border-bottom-right-radius: 4px;
@@ -1009,7 +1017,8 @@ const I18N = {
     ask_ans_ranking_header: "🏆 Here's the current leaderboard — everyone's doing amazing, keep it up!",
     ask_ans_ranking_none: "No ranking data yet — marks haven't been submitted. Keep up the great work, results will be in soon 🌟",
     ask_ans_mentor_none: "I couldn't find that name on the roster 🌱 Try the trainee's exact name, or WhatsApp HR Celine (018-4615455) or HR Khai Xuan (017-4116266) for help!",
-    ask_ans_mentors_header: '💛 Here are your trainers:',
+    ask_ans_mentors_header: "💛 You'll find our trainers, and each trainee's assigned mentor, right in the Roster tab!",
+    ask_action_open_roster: '👥 Open Roster',
     ask_ans_roster_header: "💛 Here's this batch's roster:",
     ask_ans_mentor_found_prefix: "💛 Here's what I found:",
   },
@@ -1094,7 +1103,8 @@ const I18N = {
     ask_ans_ranking_header: '🏆 这是目前的排行榜，大家都很努力呢！',
     ask_ans_ranking_none: '暂无排行数据，因为分数还没提交哦～继续加油，很快就会有结果的 🌟',
     ask_ans_mentor_none: '在名册上找不到这个名字呢 🌱 可以试试输入完整姓名，或 WhatsApp 联系 HR Celine（018-4615455）或 HR Khai Xuan（017-4116266）帮忙哦！',
-    ask_ans_mentors_header: '💛 这是 URAC 的导师名单：',
+    ask_ans_mentors_header: '💛 我们的导师，还有每位学员的专属导师，都可以在「名册」那边找到哦！',
+    ask_action_open_roster: '👥 前往名册',
     ask_ans_roster_header: '💛 这是本批次的名册：',
     ask_ans_mentor_found_prefix: '💛 苗苗找到了：',
   },
@@ -2078,15 +2088,33 @@ async function loadRankingData() {
 // (EN/ZH) keyword and regex patterns against the trainee's question.
 let chatHistory = [];
 
-function addChatBubble(role, text) {
+function addChatBubble(role, text, action) {
   chatHistory.push({ role, text });
   const list = document.getElementById('chatMessages');
   const row = document.createElement('div');
   row.className = 'chat-bubble-row ' + role;
+  const col = document.createElement('div');
+  col.className = 'chat-bubble-col';
   const bubble = document.createElement('div');
   bubble.className = 'chat-bubble';
   bubble.textContent = text;
-  row.appendChild(bubble);
+  col.appendChild(bubble);
+  // Some answers (e.g. "who are the mentors?") point the trainee to another
+  // tab instead of dumping a list in chat, so they land on live data that
+  // stays accurate as it's updated -- this renders that as a tappable pill
+  // right under the bot's reply.
+  if (action && action.panel && action.label) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chat-action-btn';
+    btn.textContent = action.label;
+    btn.addEventListener('click', () => {
+      activatePanel(action.panel);
+      closeMiaoChat();
+    });
+    col.appendChild(btn);
+  }
+  row.appendChild(col);
   list.appendChild(row);
   list.scrollTop = list.scrollHeight;
 }
@@ -2115,7 +2143,9 @@ function ensureChatGreeting() {
 function askAndRespond(q) {
   if (!q || !q.trim()) return;
   addChatBubble('user', q.trim());
-  addChatBubble('bot', answerQuestion(q.trim()));
+  const ans = answerQuestion(q.trim());
+  if (ans && typeof ans === 'object') addChatBubble('bot', ans.text, ans.action);
+  else addChatBubble('bot', ans);
 }
 
 function formatDateHuman(d) {
@@ -2341,14 +2371,12 @@ function answerQuestion(qRaw) {
       return t.ask_ans_mentor_found_prefix + '\n' + parts.join('\n');
     }
     // "Mentor/trainer" here means the actual instructors who run sessions
-    // (the same names highlighted on the Schedule tab) -- NOT the Roster
-    // sheet's per-trainee "Mentor" column, which is a separate buddy/senior
-    // assignment that's often left blank for a new batch. Asking about
-    // trainers/mentors should never surface trainee names.
+    // (the same names highlighted on the Schedule tab), plus each trainee's
+    // personally assigned mentor -- both live on the Roster tab rather than
+    // being dumped in chat, so trainees learn to check there (and it stays
+    // accurate as mentors get filled in per trainee going forward).
     if (/mentor|trainer|coach|导师|讲师|教练/.test(q)) {
-      const lines = [t.ask_ans_mentors_header];
-      FEEDBACK_TRAINERS.forEach(name => lines.push('• ' + name));
-      return lines.join('\n');
+      return { text: t.ask_ans_mentors_header, action: { panel: 'mentors', label: t.ask_action_open_roster } };
     }
     // Roster/trainee listing (e.g. "who's in this batch", "名册").
     if (!currentRows.length) return t.ask_ans_mentor_none;
