@@ -1009,7 +1009,8 @@ const I18N = {
     ask_ans_ranking_header: "🏆 Here's the current leaderboard — everyone's doing amazing, keep it up!",
     ask_ans_ranking_none: "No ranking data yet — marks haven't been submitted. Keep up the great work, results will be in soon 🌟",
     ask_ans_mentor_none: "I couldn't find that name on the roster 🌱 Try the trainee's exact name, or WhatsApp HR Celine (018-4615455) or HR Khai Xuan (017-4116266) for help!",
-    ask_ans_mentors_header: '💛 Here are the mentors on the current roster:',
+    ask_ans_mentors_header: '💛 Here are your trainers:',
+    ask_ans_roster_header: "💛 Here's this batch's roster:",
     ask_ans_mentor_found_prefix: "💛 Here's what I found:",
   },
   zh: {
@@ -1093,7 +1094,8 @@ const I18N = {
     ask_ans_ranking_header: '🏆 这是目前的排行榜，大家都很努力呢！',
     ask_ans_ranking_none: '暂无排行数据，因为分数还没提交哦～继续加油，很快就会有结果的 🌟',
     ask_ans_mentor_none: '在名册上找不到这个名字呢 🌱 可以试试输入完整姓名，或 WhatsApp 联系 HR Celine（018-4615455）或 HR Khai Xuan（017-4116266）帮忙哦！',
-    ask_ans_mentors_header: '💛 这是目前批次的导师名单：',
+    ask_ans_mentors_header: '💛 这是 URAC 的导师名单：',
+    ask_ans_roster_header: '💛 这是本批次的名册：',
     ask_ans_mentor_found_prefix: '💛 苗苗找到了：',
   },
 };
@@ -2330,7 +2332,7 @@ function answerQuestion(qRaw) {
       if (typeof v === 'string' && v.trim().length >= 3 && q.includes(v.trim().toLowerCase())) mNameMatch = m;
     });
   });
-  if (mNameMatch || /mentor|angel|roster|导师|班长|名册|coach/.test(q)) {
+  if (mNameMatch || /mentor|trainer|angel|roster|导师|讲师|教练|班长|名册|coach/.test(q)) {
     const currentRows = mCurrentRows;
     const nameCols = currentRows.length ? Object.keys(currentRows[0]).filter(k => k !== 'Cohort' && k !== '__blockIndex') : [];
     const matchedRow = mNameMatch;
@@ -2338,14 +2340,21 @@ function answerQuestion(qRaw) {
       const parts = nameCols.map(k => matchedRow[k] ? (k + ': ' + matchedRow[k]) : null).filter(Boolean);
       return t.ask_ans_mentor_found_prefix + '\n' + parts.join('\n');
     }
+    // "Mentor/trainer" here means the actual instructors who run sessions
+    // (the same names highlighted on the Schedule tab) -- NOT the Roster
+    // sheet's per-trainee "Mentor" column, which is a separate buddy/senior
+    // assignment that's often left blank for a new batch. Asking about
+    // trainers/mentors should never surface trainee names.
+    if (/mentor|trainer|coach|导师|讲师|教练/.test(q)) {
+      const lines = [t.ask_ans_mentors_header];
+      FEEDBACK_TRAINERS.forEach(name => lines.push('• ' + name));
+      return lines.join('\n');
+    }
+    // Roster/trainee listing (e.g. "who's in this batch", "名册").
     if (!currentRows.length) return t.ask_ans_mentor_none;
     const traineeCol = nameCols.find(c => /trainee/i.test(c)) || nameCols[0];
-    const mentorCol = nameCols.find(c => /mentor/i.test(c));
-    const lines = [t.ask_ans_mentors_header];
-    currentRows.forEach(m => {
-      if (mentorCol && m[mentorCol]) lines.push('• ' + m[traineeCol] + ' — ' + m[mentorCol]);
-      else lines.push('• ' + m[traineeCol]);
-    });
+    const lines = [t.ask_ans_roster_header];
+    currentRows.forEach(m => lines.push('• ' + m[traineeCol]));
     return lines.join('\n');
   }
 
