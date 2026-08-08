@@ -660,7 +660,7 @@
   <button data-panel="exams" data-i18n="tab_exams">📝 Exams</button>
   <button data-panel="mentors" data-i18n="tab_mentors">👥 Roster</button>
   <button data-panel="feedback" data-i18n="tab_feedback">⭐ Feedback</button>
-  <button data-panel="ask" data-i18n="tab_ask">🤖 Ask</button>
+  <button data-panel="ask" data-i18n="tab_ask">🌱 Miao Miao</button>
 </nav>
 
 <main>
@@ -838,7 +838,7 @@
   <section id="panel-ask" class="panel">
     <h1 class="page-title" data-i18n="tab_ask_full">Ask</h1>
     <div class="welcome-card">
-      <div class="welcome-icon icon-mint">🤖</div>
+      <div class="welcome-icon icon-mint">🌱</div>
       <div>
         <h2 data-i18n="ask_title">Ask URAC Bot</h2>
         <p class="embed-hint" data-i18n="ask_hint">Ask about your schedule, exams, mentors, or ranking — answers come straight from this site's own data.</p>
@@ -884,7 +884,7 @@ const I18N = {
     tab_mentors: '👥 Roster',
     tab_ranking: '🏆 Ranking',
     tab_feedback: '⭐ Feedback',
-    tab_ask: '🤖 Ask',
+    tab_ask: '🌱 Miao Miao',
     badge_today: 'TODAY',
     badge_done: 'Done',
     badge_upcoming: 'Upcoming',
@@ -938,25 +938,26 @@ const I18N = {
     feedback_success_sub: 'Your feedback has been submitted.',
     feedback_submit_another: 'Submit another response',
     feedback_error_incomplete: 'Please answer all required questions before submitting.',
-    tab_ask_full: 'Ask',
-    ask_title: 'Ask URAC Bot',
-    ask_hint: "Ask about your schedule, exams, mentors, or ranking — answers come straight from this site's own data.",
+    tab_ask_full: 'AI 苗苗 (Miao Miao)',
+    ask_title: 'AI 苗苗 (Miao Miao)',
+    ask_hint: "Ask about the URAC programme, schedule, exams, mentors, or ranking — answers come straight from this site's own data and the official FAQ.",
     ask_placeholder: 'Ask a question... e.g. "when is the next exam?"',
     ask_send: 'Send',
-    ask_greeting: "Hi! I'm URAC Bot 🤖 Ask me about the schedule, exams, mentors, or ranking — tap a suggestion below or type your own question.",
+    ask_greeting: "Hi! I'm AI 苗苗 (Miao Miao) 🌱 Ask me about the URAC programme, schedule, exams, mentors, or ranking — tap a suggestion below or type your own question.",
     ask_sugg_next_exam: 'When is the next exam?',
     ask_sugg_today: "What's on today?",
     ask_sugg_ranking: 'Show me the ranking',
     ask_sugg_mentors: 'Who are the mentors?',
-    ask_fallback: "Sorry, I don't have an answer for that yet. Try asking about the next exam, today's schedule, a specific day (e.g. day 25), the ranking, or a mentor's name.",
+    ask_sugg_faq: 'What is URAC?',
+    ask_fallback: "Sorry, I don't have an answer for that yet. Try asking about the URAC programme, the next exam, today's schedule, a specific day (e.g. day 25), the ranking, or a mentor's name. If I still can't help, please contact HR Celine or HR Khai Xuan.",
     ask_ans_next_exam_intro: 'The next exam is on {date} — {days} day(s) from today:',
     ask_ans_no_exam: "I don't see any upcoming exams scheduled yet.",
     ask_ans_today_none: 'No sessions are scheduled for today.',
     ask_ans_today_header: "Today's sessions ({n}):",
-    ask_ans_day_not_found: "I couldn't find that day in the schedule. Try asking like: what's on day 25",
+    ask_ans_day_not_found: "I couldn't find that day in the schedule. Try asking like: what's on day 25. If you still need help, please contact HR Celine or HR Khai Xuan.",
     ask_ans_ranking_header: 'Current leaderboard:',
     ask_ans_ranking_none: "No ranking data yet — marks haven't been submitted.",
-    ask_ans_mentor_none: "I couldn't find that name on the roster. Try asking with the trainee's exact name.",
+    ask_ans_mentor_none: "I couldn't find that name on the roster. Try asking with the trainee's exact name, or contact HR Celine or HR Khai Xuan for help.",
     ask_ans_mentors_header: 'Mentors on the current roster:',
   },
   zh: {
@@ -966,7 +967,7 @@ const I18N = {
     tab_mentors: '👥 名册',
     tab_ranking: '🏆 排行榜',
     tab_feedback: '⭐ 反馈',
-    tab_ask: '🤖 问答',
+    tab_ask: '🌱 苗苗',
     badge_today: '今天',
     badge_done: '已完成',
     badge_upcoming: '即将开始',
@@ -1020,25 +1021,26 @@ const I18N = {
     feedback_success_sub: '您的反馈已提交。',
     feedback_submit_another: '再提交一份',
     feedback_error_incomplete: '请填写所有必填项后再提交。',
-    tab_ask_full: '问答',
-    ask_title: '问问 URAC 机器人',
-    ask_hint: '询问课程表、考试、导师或排行榜 — 答案直接来自本站的数据。',
+    tab_ask_full: 'AI 苗苗',
+    ask_title: 'AI 苗苗',
+    ask_hint: '询问 URAC 课程、课程表、考试、导师或排行榜 — 答案直接来自本站的数据及官方 FAQ。',
     ask_placeholder: '输入问题... 例如"下次考试是什么时候？"',
     ask_send: '发送',
-    ask_greeting: '你好！我是 URAC 机器人 🤖 你可以问我课程表、考试、导师或排行榜 — 点击下方建议或自己输入问题。',
+    ask_greeting: '你好！我是 AI 苗苗 🌱 你可以问我 URAC 课程、课程表、考试、导师或排行榜 — 点击下方建议或自己输入问题。',
     ask_sugg_next_exam: '下次考试是什么时候？',
     ask_sugg_today: '今天有什么课？',
     ask_sugg_ranking: '看看排行榜',
     ask_sugg_mentors: '导师有哪些？',
-    ask_fallback: '抱歉，我暂时无法回答这个问题。可以试着问下次考试、今天的课程、某一天（例如"第25天"）、排行榜，或某位导师的名字。',
+    ask_sugg_faq: '什么是 URAC？',
+    ask_fallback: '抱歉，我暂时无法回答这个问题。可以试着问 URAC 课程、下次考试、今天的课程、某一天（例如"第25天"）、排行榜，或某位导师的名字。如果还是无法解决，请联系 HR Celine 或 HR Khai Xuan。',
     ask_ans_next_exam_intro: '下次考试是 {date} — 距今还有 {days} 天：',
     ask_ans_no_exam: '暂时没有安排中的考试。',
     ask_ans_today_none: '今天没有安排课程。',
     ask_ans_today_header: '今天的课程（{n} 节）：',
-    ask_ans_day_not_found: '我找不到那一天的课程表。可以试着问"第25天有什么课"。',
+    ask_ans_day_not_found: '我找不到那一天的课程表。可以试着问"第25天有什么课"。如仍需协助，请联系 HR Celine 或 HR Khai Xuan。',
     ask_ans_ranking_header: '当前排行榜：',
     ask_ans_ranking_none: '暂无排行数据 — 还没有提交分数。',
-    ask_ans_mentor_none: '在名册上找不到这个名字，请尝试输入学员的完整姓名。',
+    ask_ans_mentor_none: '在名册上找不到这个名字，请尝试输入学员的完整姓名，或联系 HR Celine 或 HR Khai Xuan 协助。',
     ask_ans_mentors_header: '当前批次的导师：',
   },
 };
@@ -2030,7 +2032,7 @@ function renderChatSuggestions() {
   const t = I18N[LANG];
   const box = document.getElementById('chatSuggestions');
   if (!box) return;
-  const suggestions = [t.ask_sugg_next_exam, t.ask_sugg_today, t.ask_sugg_ranking, t.ask_sugg_mentors];
+  const suggestions = [t.ask_sugg_faq, t.ask_sugg_next_exam, t.ask_sugg_today, t.ask_sugg_ranking, t.ask_sugg_mentors];
   box.innerHTML = '';
   suggestions.forEach(s => {
     const btn = document.createElement('button');
@@ -2057,9 +2059,111 @@ function formatDateHuman(d) {
   return d.toLocaleDateString(LANG === 'zh' ? 'zh-CN' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+// ----- FAQ knowledge base -----
+// Sourced from the official "URAC FAQ" document (programme rules, attendance,
+// assessment, logbook, retake, learning-journey policy). These are static
+// policy answers, unlike the live-data lookups below, so they're checked
+// first with a keyword-overlap match; each entry's "kw" list uses fairly
+// specific phrases so a genuine live-data question (e.g. "when is the next
+// exam", "show me the ranking") won't accidentally match a policy answer.
+const FAQ = [
+  { a: 'URAC（UR Academy）是 UR Group 为培养 Certified Light Therapist 而设立的专业培训课程。',
+    kw: ['什么是urac', 'urac是什么', 'urac 是什么', 'what is urac'] },
+  { a: '帮助学员掌握专业知识、实操技能及顾客服务流程，并成为 Certified Light Therapist。',
+    kw: ['urac的目标', 'urac目标', '培训目标', 'goal of urac', 'purpose of urac'] },
+  { a: 'URAC 培训期为 1 个月。',
+    kw: ['培训需要多久', '培训多久', '培训期', 'training period', 'how long is the training', 'how long is urac'] },
+  { a: '主要包括：\n• 理念课程 (Theory)\n• 五项管理\n• UR Must Know\n• DISC Personality\n• Skin Anatomy\n• Skin Physiology\n• Facial Skin Pigmentation\n• UV Light & Sunblock\n• Skin Care Products\n• Light Therapy\n• Medical Facial\n• Customer Flow\n• Treatment Skills',
+    kw: ['学习什么内容', '会学什么', '课程内容有哪些', 'what will i learn', 'course content'] },
+  { a: '是的，学员需完成指定课程及培训要求。',
+    kw: ['需要完成所有课程', '必须完成所有课程', 'do i need to complete all courses'] },
+  { a: '请通知 HR 或班主任，并提交 MC。',
+    kw: ['生病无法上课', '生病请假', 'sick leave', '请假怎么办'] },
+  { a: '请补看课程录影并完成自我复习。课程录影可以找 HR 拿哦。',
+    kw: ['缺课后怎么办', '缺课怎么办', 'miss class', 'missed class'] },
+  { a: '有，出席率必须达到 90% 或以上。',
+    kw: ['attendance有要求', 'attendance要求', '出席率', '考勤要求', 'attendance requirement'] },
+  { a: 'Assessment 包括：\n• Online Assessment（Zoom）\n• Onsite Assessment（现场）\n• Logbook Review',
+    kw: ['assessment怎么进行', 'assessment如何进行', 'types of assessment', 'assessment组成'] },
+  { a: '采用问答形式进行。',
+    kw: ['online assessment怎么考', 'online assessment如何', 'how is online assessment'] },
+  { a: '请：\n• 提前10分钟进入 Zoom\n• 保持网络稳定\n• 开启镜头\n• 独自在安静环境考试\n• 不可参考任何资料',
+    kw: ['online assessment前需要注意', 'online assessment注意', 'zoom考试注意', 'before online assessment'] },
+  { a: '采用现场呈现方式进行。',
+    kw: ['onsite assessment怎么考', 'onsite assessment如何'] },
+  { a: '请穿着制服并佩戴 Name Tag，头发要绑好，有美甲的也要记得卸掉哦。',
+    kw: ['onsite assessment穿什么', '考试穿什么', 'uniform assessment', 'dress code assessment'] },
+  { a: '不可以携带任何通讯设备。',
+    kw: ['可以带手机吗', '带手机', 'phone during assessment'] },
+  { a: '主要包括：\n理论：\n• UR Must Know\n• UR Theory\n实操：\n• Make Up Removal\n• Face Washing\n• Oxyinfuse\n• Skin Renewal Whitening\n流程：\n• New Customer Flow\n• Existing Customer Flow',
+    kw: ['assessment会考什么', 'assessment考什么', 'what does assessment cover', 'assessment内容'] },
+  { a: 'Assessment 成绩必须达到 80% 或以上。',
+    kw: ['多少分才算通过', 'passing marks', '及格分数', 'pass percentage'] },
+  { a: '学员必须：\n✅ Assessment 达到80%以上\n✅ Attendance 达到90%以上\n✅ 无 misconduct\n✅ 完成并提交 Logbook',
+    kw: ['通过urac的条件', '怎样才算通过urac', 'graduation requirement', 'how to pass urac', '毕业条件'] },
+  { a: '违反公司纪律、考试规则或培训规定的行为。',
+    kw: ['misconduct', '什么是misconduct'] },
+  { a: 'Logbook 是记录学习及实操进度的重要文件。',
+    kw: ['logbook是什么', 'what is logbook'] },
+  { a: '必须于 Day 28 前提交给 HR。',
+    kw: ['logbook几时提交', 'logbook什么时候交', 'logbook截止', 'logbook deadline', 'when to submit logbook', ['logbook', '提交']] },
+  { a: 'Trainer、Branch Manager 和 Mentor（其中两个签名才算合格哦）',
+    kw: ['logbook需要谁签名', 'logbook签名', 'who signs logbook'] },
+  { a: '不可以，任何造假行为均不被允许。',
+    kw: ['抄袭', '代签', 'logbook造假', 'fake signature'] },
+  { a: '有一次 retake 的机会。会安排一星期内重考。',
+    kw: ['考试失败', '第一次没过', 'fail assessment', 'failed the exam', 'retake机会'] },
+  { a: '会和 top management 开会 review 哦。',
+    kw: ['retake后还是失败', 'retake失败', 'fail retake', 'failed the retake'] },
+  { a: '请提供您的入职日期或培训进度，苗苗会协助您了解目前阶段。',
+    kw: ['进行到哪个阶段', '现在在哪个阶段', 'what stage am i', 'my progress'] },
+  { a: '请告诉苗苗您目前的学习进度，苗苗会协助您了解下一阶段重点。',
+    kw: ['接下来要完成什么', '下一步要做什么', 'what should i do next', 'next steps'] },
+  { a: '建议：\n• 完成所有课程\n• 复习理论知识\n• 熟悉 Customer Flow\n• 多练习 Treatment Skills\n• 完成 Logbook',
+    kw: ['如何准备assessment', '怎么准备考试', 'prepare for assessment', 'how to prepare for assessment'] },
+  { a: '您可以先询问苗苗 🌱，如需进一步确认，请联系 HR。',
+    kw: ['课程内容有疑问', '有疑问怎么办', 'who do i ask questions'] },
+];
+
+// Strips spaces/punctuation so keyword matching isn't thrown off by things
+// like "什么是 URAC？" (space + full-width punctuation) vs a keyword written
+// as "什么是urac" -- works for both Chinese (no word boundaries needed) and
+// English (spaces stripped consistently from both sides still match).
+function normalizeForFaq(s) {
+  return s.replace(/[\s？?！!，,。.、]/g, '');
+}
+function matchFaq(q) {
+  const qn = normalizeForFaq(q);
+  let best = null, bestScore = 0;
+  FAQ.forEach(item => {
+    let score = 0;
+    item.kw.forEach(k => {
+      // A kw entry can be a plain phrase (must appear as-is), or an array of
+      // tokens that must ALL appear somewhere in the question (order/adjacency
+      // don't matter) -- useful for phrasings with variable wording in between,
+      // e.g. "Logbook 几时需要提交" vs "Logbook 什么时候提交".
+      if (Array.isArray(k)) {
+        const toks = k.map(normalizeForFaq);
+        if (toks.every(tok => qn.includes(tok))) {
+          score = Math.max(score, toks.reduce((s, tok) => s + tok.length, 0));
+        }
+      } else {
+        const kn = normalizeForFaq(k);
+        if (qn.includes(kn)) score = Math.max(score, kn.length);
+      }
+    });
+    if (score > bestScore) { bestScore = score; best = item; }
+  });
+  return bestScore >= 4 ? best : null;
+}
+
 function answerQuestion(qRaw) {
   const t = I18N[LANG];
   const q = qRaw.toLowerCase();
+
+  // ----- FAQ policy questions (programme, attendance, assessment, logbook, retake) -----
+  const faqHit = matchFaq(q);
+  if (faqHit) return faqHit.a;
 
   // ----- A specific day, e.g. "day 25" / "第25天" (schedule day, or an exam day) -----
   const dayMatch = q.match(/day\s*(\d+)/) || q.match(/第\s*(\d+)\s*天/);
