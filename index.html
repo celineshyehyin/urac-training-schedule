@@ -1360,6 +1360,7 @@ function examChipClass(part) {
   if (/^\d{1,4}(:\d{2})?\s*[ap]m\s*-\s*\d{1,4}(:\d{2})?\s*[ap]m$/i.test(part)) return { cls: 'exam-chip-time', icon: '🕒 ' };
   if (/^zoom$/i.test(part) || /^online$/i.test(part)) return { cls: 'exam-chip-format', icon: '💻 ' };
   if (/^on site/i.test(part) || /线下/.test(part)) return { cls: 'exam-chip-format', icon: '🏢 ' };
+  if (/在各自的/.test(part) || /outlet/i.test(part)) return { cls: 'exam-chip-format', icon: '🏢 ' };
   if (/^all$/i.test(part)) return { cls: 'exam-chip-all', icon: '' };
   return { cls: '', icon: '' };
 }
