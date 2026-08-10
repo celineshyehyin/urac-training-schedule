@@ -1560,11 +1560,16 @@ function renderCalendar() {
     const dateMain = dateLines[0] || '';
     const dateNotes = dateLines.slice(1);
 
+    // Slots aren't always entered into the sheet in chronological order, so
+    // sort them by start time before rendering (e.g. "2pm-4pm" should render
+    // above "4pm-6pm" even if it was typed in second).
+    const sortedSlots = day.slots.slice().sort((a, b) => timeSlotMinutes(a.time_slot) - timeSlotMinutes(b.time_slot));
+
     // Trainers are collected from every slot in the day and shown once,
     // together, in their own row underneath the topics -- kept fully
     // separate from the topic text rather than mixed into it.
     let dayTrainers = [];
-    const slotRows = day.slots.map(s => {
+    const slotRows = sortedSlots.map(s => {
       const parsed = parseSlot(s);
       parsed.trainers.forEach(t => { if (!dayTrainers.includes(t)) dayTrainers.push(t); });
       return `
@@ -1575,8 +1580,7 @@ function renderCalendar() {
     }).join('');
     const trainersBlock = dayTrainers.length ? `
       <div class="day-trainers">
-        <span class="day-trainers-label">🧑‍🏫</span>
-        ${dayTrainers.map(t => `<span class="activity-trainer">${escapeHtml(t)}</span>`).join('')}
+        ${dayTrainers.map(t => `<span class="activity-trainer">🧑‍🏫 ${escapeHtml(t)}</span>`).join('')}
       </div>` : '';
 
     card.innerHTML = `
@@ -1610,6 +1614,24 @@ function weekdayClass(weekday) {
   if (w.startsWith('sat')) return 'sat';
   if (w.startsWith('sun')) return 'sun';
   return 'mon';
+}
+
+// Parses a free-text time-slot label (e.g. "4pm-6pm", "930am-1030am",
+// "11am-1200pm") into minutes-since-midnight for its START time, purely so
+// slots within a day can be sorted chronologically -- the sheet's row order
+// doesn't always match clock order. Anything unparsable sorts to the end.
+function timeSlotMinutes(str) {
+  const m = (str || '').match(/(\d{1,4})\s*(am|pm)/i);
+  if (!m) return 9999;
+  const digits = m[1];
+  const period = m[2].toLowerCase();
+  let hour, minute;
+  if (digits.length <= 2) { hour = parseInt(digits, 10); minute = 0; }
+  else if (digits.length === 3) { hour = parseInt(digits.slice(0, 1), 10); minute = parseInt(digits.slice(1), 10); }
+  else { hour = parseInt(digits.slice(0, 2), 10); minute = parseInt(digits.slice(2), 10); }
+  if (period === 'pm' && hour !== 12) hour += 12;
+  if (period === 'am' && hour === 12) hour = 0;
+  return hour * 60 + minute;
 }
 
 // A slot's "activity" cell sometimes bundles the topic and the assigned
