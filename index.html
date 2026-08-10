@@ -1360,17 +1360,27 @@ function formatSlot(s) {
   const raw = s.activity || '';
   const blocks = raw.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
   let topicLines = blocks.length ? blocks[0].split('\n').map(l => l.trim()).filter(Boolean) : [];
-  const trainers = [];
-  // Every blank-line-separated block after the first is a group of trainers,
-  // one per line.
-  blocks.slice(1).forEach(block => {
-    block.split('\n').map(l => l.trim()).filter(Boolean).forEach(l => trainers.push(l));
-  });
-  // No blank line present -- check whether the topic's own last line is
-  // actually a trainer credit (or, if it's a single line, whether the whole
-  // cell is just a trainer name).
-  if (blocks.length === 1 && topicLines.length && TRAINER_LINE_RE.test(topicLines[topicLines.length - 1])) {
-    trainers.unshift(topicLines.pop());
+  let trainers = [];
+  // Preferred path: the Calendar sheet has an explicit "trainers" column
+  // (comma, "/" or newline separated) so the trainer for a slot doesn't have
+  // to be squeezed into the free-text activity cell at all. Falls back to the
+  // old regex-based extraction below for rows added before this column
+  // existed, so nothing breaks for historical data.
+  const explicitTrainers = (s.trainers || s.Trainers || '').trim();
+  if (explicitTrainers) {
+    trainers = explicitTrainers.split(/[,/\n]/).map(t => t.trim()).filter(Boolean);
+  } else {
+    // Every blank-line-separated block after the first is a group of trainers,
+    // one per line.
+    blocks.slice(1).forEach(block => {
+      block.split('\n').map(l => l.trim()).filter(Boolean).forEach(l => trainers.push(l));
+    });
+    // No blank line present -- check whether the topic's own last line is
+    // actually a trainer credit (or, if it's a single line, whether the whole
+    // cell is just a trainer name).
+    if (blocks.length === 1 && topicLines.length && TRAINER_LINE_RE.test(topicLines[topicLines.length - 1])) {
+      trainers.unshift(topicLines.pop());
+    }
   }
   const topic = topicLines.join('\n');
   return `
@@ -1589,18 +1599,27 @@ function renderExamLine(line) {
   }).join('')}</div>`;
 }
 
+// The sheet's source_sheet cells carry a "(For URAC)" suffix that's only
+// meaningful as an internal sheet label, not to trainees reading the exam
+// timetable, so it's stripped from the displayed title here rather than
+// editing every row of the live sheet.
+function cleanSourceSheetLabel(name) {
+  return (name || '').replace(/\s*\(For\s+URAC\)\s*/i, '').trim();
+}
+
 function renderExams() {
   const body = document.getElementById('examsBody');
   if (!EXAMS.length) { body.innerHTML = `<div class="empty">${I18N[LANG].empty_calendar}</div>`; return; }
   body.innerHTML = EXAMS.map(e => {
     const lines = (e.detail || '').split('|').map(s => s.trim()).filter(Boolean);
+    const sourceLabel = cleanSourceSheetLabel(e.source_sheet);
     return `
     <div class="exam-card">
       <div class="exam-card-head">
         <div class="exam-icon">📝</div>
         <div class="exam-title-wrap">
-          <h3>${escapeHtml(e.section || e.source_sheet)}</h3>
-          ${e.section ? `<div class="meta">${escapeHtml(e.source_sheet)}</div>` : ''}
+          <h3>${escapeHtml(e.section || sourceLabel)}</h3>
+          ${e.section ? `<div class="meta">${escapeHtml(sourceLabel)}</div>` : ''}
         </div>
         ${e.date_header ? `<span class="date-pill exam-date-pill">📅 ${escapeHtml(e.date_header)}</span>` : ''}
       </div>
