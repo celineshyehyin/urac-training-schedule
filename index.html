@@ -726,7 +726,7 @@
     <div class="welcome-card">
       <div class="welcome-icon">👋</div>
       <div>
-        <h2 data-i18n="dash_welcome">Welcome back!</h2>
+        <h2 id="dashWelcome" data-i18n="dash_welcome">Welcome back!</h2>
         <p data-i18n="dash_welcome_sub">Here's what's happening across the training program today.</p>
       </div>
     </div>
@@ -959,6 +959,7 @@ const I18N = {
     lang_btn: '中文',
     dash_page_title: 'Dashboard',
     dash_welcome: 'Welcome back!',
+    dash_welcome_batch: 'Welcome, {batch}!',
     dash_welcome_sub: "Here's what's happening across the training program today.",
     dash_stat_trainees: 'Trainees',
     dash_stat_today: 'Today',
@@ -1045,6 +1046,7 @@ const I18N = {
     lang_btn: 'EN',
     dash_page_title: '主页',
     dash_welcome: '欢迎回来！',
+    dash_welcome_batch: '欢迎，{batch}！',
     dash_welcome_sub: '这是今天培训项目的最新动态。',
     dash_stat_trainees: '学员人数',
     dash_stat_today: '今日',
@@ -1448,6 +1450,17 @@ function renderDashboard() {
   const t = I18N[LANG];
   const todayIso = TODAY.toISOString().slice(0, 10);
 
+  // Greets with the current batch number (e.g. "Welcome, Batch 34!") so
+  // trainees immediately know which batch they're looking at, instead of
+  // the generic "Welcome back!" -- falls back to the generic greeting if
+  // CURRENT_BATCH_LABEL is ever cleared out.
+  const welcomeEl = document.getElementById('dashWelcome');
+  if (welcomeEl) {
+    welcomeEl.textContent = CURRENT_BATCH_LABEL
+      ? t.dash_welcome_batch.replace('{batch}', CURRENT_BATCH_LABEL)
+      : t.dash_welcome;
+  }
+
   document.getElementById('dashDate').textContent = TODAY.toLocaleDateString(
     LANG === 'zh' ? 'zh-CN' : 'en-US',
     { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
@@ -1683,17 +1696,8 @@ function renderMentors() {
   const classMonitor = firstNonEmpty(monitorCol);
   const headTeacher = firstNonEmpty(headTeacherCol);
 
-  // "Batch 34" etc is a manually maintained label for the newest cohort --
-  // only show it when the block being viewed actually IS the newest one, so
-  // it never mislabels a past batch pulled up via the trainer PIN.
-  const blockMap = rosterCohortBlockMap();
-  const maxBlockIdx = (blockMap && blockMap.size) ? Math.max(...blockMap.values()) : null;
-  const isCurrentBatch = maxBlockIdx === null || (rows.length && rows[0].__blockIndex === maxBlockIdx);
-
   if (infoEl) {
-    const pills = [];
-    if (isCurrentBatch && CURRENT_BATCH_LABEL) pills.push(`<span class="date-pill">🔢 ${escapeHtml(CURRENT_BATCH_LABEL)}</span>`);
-    pills.push(`<span class="date-pill">👥 ${rows.length} trainees</span>`);
+    const pills = [`<span class="date-pill">👥 ${rows.length} trainees</span>`];
     if (classMonitor) pills.push(`<span class="date-pill">🎯 Class Monitor: ${escapeHtml(classMonitor)}</span>`);
     if (headTeacher) pills.push(`<span class="date-pill">👩‍🏫 班主任: ${escapeHtml(headTeacher)}</span>`);
     infoEl.innerHTML = pills.join('');
