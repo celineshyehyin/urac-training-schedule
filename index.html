@@ -1638,9 +1638,9 @@ function renderCalendar() {
 // differences (e.g. "FORTH WEEK" vs "FOURTH WEEK").
 function weekIcon(week) {
   const w = (week || '').toLowerCase();
-  if (/first/.test(w)) return '💻';
-  if (/second/.test(w) || /third/.test(w)) return '🏢';
-  if (/for(th|urth)/.test(w)) return '🏥';
+  if (/\bfirst\b/.test(w)) return '💻';
+  if (/\bsecond\b/.test(w) || /\bthird\b/.test(w)) return '🏢';
+  if (/\bfor(th|urth)\b/.test(w)) return '🏥';
   return '';
 }
 
