@@ -816,9 +816,6 @@
       <button id="nextBannerBtn" data-i18n="dash_view_schedule">View schedule</button>
     </div>
 
-    <div class="section-label" data-i18n="dash_cohorts">Cohorts</div>
-    <div class="cohort-grid" id="cohortGrid"></div>
-
     <div class="section-label" data-i18n="dash_meet_batch">Meet the Batch</div>
     <div class="toolbar">
       <select id="rosterCohortSelect"></select>
@@ -1586,29 +1583,6 @@ function renderDashboard() {
     titleEl.textContent = t.dash_no_sessions_today;
     subEl.textContent = daysToExam !== null ? t.dash_next_exam_in.replace('{n}', daysToExam) : '';
   }
-
-  const thumbColors = ['#cdeee0', '#f1eafb', '#fdebf1', '#fdf1de'];
-  const grid = document.getElementById('cohortGrid');
-  grid.innerHTML = cohortNames.map((name, i) => {
-    const isCurrent = name.toLowerCase().includes('current');
-    const shortName = name.replace(/^Cohort\s*-\s*/i, '').replace(/\s*\(current\)/i, '').trim();
-    const label = shortName + (isCurrent ? ' (' + t.dash_current + ')' : '');
-    const mCount = mentorsCountForCohort(name);
-    const traineeCount = mCount !== null ? mCount : (isCurrent ? MENTORS.length : 0);
-    return `<div class="cohort-card">
-      <div class="cohort-thumb" style="background:${thumbColors[i % thumbColors.length]}">🎓</div>
-      <h4>${escapeHtml(label)}</h4>
-      <div class="meta">${traineeCount} ${t.dash_trainees_word}</div>
-      <button data-cohort="${escapeHtml(name)}">${t.dash_view_schedule}</button>
-    </div>`;
-  }).join('');
-  grid.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      cohortSelect.value = btn.dataset.cohort;
-      renderCalendar();
-      activatePanel('calendar');
-    });
-  });
 
   // "Meet the Batch" now lives here as the full trainee roster (photos,
   // outlet/position, Class Monitor / 班主任, Angel & Mentor assignments) --
