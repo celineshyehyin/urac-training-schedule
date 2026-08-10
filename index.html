@@ -1891,10 +1891,18 @@ function renderDashboard() {
       const titleBadge = c.title
         ? `<span class="trainer-subject-badge">${c.icon || '🎓'} ${escapeHtml(c.title)}</span>`
         : '';
+      // Some committee members (the Dr.-titled officers) also teach lessons
+      // on the Schedule, per the Calendar sheet -- shown as a second badge
+      // underneath their organizational title, same visual style as the
+      // "Meet the Trainers" subject badges above.
+      const lessonsBadge = c.lessons
+        ? `<span class="trainer-subject-badge">📚 ${escapeHtml(c.lessons)}</span>`
+        : '';
       return `<div class="trainee-card trainer-card">
         <div class="trainee-avatar"${avatarStyle}>${avatarInner}</div>
         <h4>${escapeHtml(name)}</h4>
         ${titleBadge}
+        ${lessonsBadge}
       </div>`;
     }).join('');
   }
@@ -2127,12 +2135,12 @@ const COMMITTEE = [
   { name: 'Liang', title: 'Senior Creative & Culture Designer', icon: '🎨' },
   { name: 'Carol', title: 'Creative & Culture Designer', icon: '🎨' },
   { name: 'Xin Ru', title: 'Creative & Culture Designer', icon: '🎨' },
-  { name: 'Dr. Nicole', title: 'Vice People Officer', icon: '🧑‍💼' },
-  { name: 'Dr. Jem', title: 'Lead People Officer', icon: '🧑‍💼' },
-  { name: 'Dr. Xuan', title: 'Lead Operating Officer', icon: '🧑‍💼' },
-  { name: 'Dr. Fong', title: 'CEO', icon: '👑' },
-  { name: 'Dr. Jaye', title: 'COO', icon: '🧑‍💼' },
-  { name: 'Dr. Jovyn', title: 'CPO', icon: '🧑‍💼' },
+  { name: 'Dr. Nicole', title: 'Vice People Officer', icon: '🧑‍💼', lessons: 'On Job Briefing' },
+  { name: 'Dr. Jem', title: 'Lead People Officer', icon: '🧑‍💼', lessons: 'UR Break & Build System, 靶心能力 & Customer Flow Made Simple' },
+  { name: 'Dr. Xuan', title: 'Lead Operating Officer', icon: '🧑‍💼', lessons: 'Skin Anatomy & Physiology, UV Light, Sunblock & Pigmentation' },
+  { name: 'Dr. Fong', title: 'CEO', icon: '👑', lessons: 'UR Must Know & ISO Briefing' },
+  { name: 'Dr. Jaye', title: 'COO', icon: '🧑‍💼', lessons: '5 项管理' },
+  { name: 'Dr. Jovyn', title: 'CPO', icon: '🧑‍💼', lessons: 'URAC Study Group & Align' },
   { name: 'Steve', title: 'CFO', icon: '🧑‍💼' },
 ];
 function committeePhoto(name) {
