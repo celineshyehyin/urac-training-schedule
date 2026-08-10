@@ -1627,8 +1627,14 @@ function renderCalendar() {
     // Each slot shows its own trainer(s) directly underneath its topic,
     // right where that lesson lives, instead of grouping every trainer for
     // the day into one shared block at the bottom of the card.
-    const slotRows = sortedSlots.map(s => {
-      const parsed = parseSlot(s);
+    const parsedSlots = sortedSlots.map(s => ({ slot: s, parsed: parseSlot(s) }));
+    // The venue (e.g. "UR KLINIK BM") is really a property of the whole day's
+    // onsite location, not just the Morning Meeting slot it happens to be
+    // written on -- shown once up in the card header instead of buried
+    // inside that one slot, so it's the first thing trainees see.
+    const dayVenueEntry = parsedSlots.find(({ parsed }) => parsed.venue);
+    const dayVenue = dayVenueEntry ? dayVenueEntry.parsed.venue : '';
+    const slotRows = parsedSlots.map(({ slot: s, parsed }) => {
       const isAssessment = /assessment/i.test(parsed.topic);
       const slotTrainers = parsed.trainers.length ? `
         <div class="day-trainers">
@@ -1637,7 +1643,6 @@ function renderCalendar() {
       return `
         <div class="day-slot-row${isAssessment ? ' is-assessment' : ''}">
           ${s.time_slot ? `<span class="day-slot-time">${escapeHtml(s.time_slot)}</span>` : ''}
-          ${parsed.venue ? `<span class="day-slot-venue">📍 ${escapeHtml(parsed.venue)}</span>` : ''}
           ${parsed.topic ? `<div class="day-slot-topic${isAssessment ? ' is-assessment-topic' : ''}">${isAssessment ? '📌 ' : ''}${escapeHtml(parsed.topic)}</div>` : ''}
           ${slotTrainers}
         </div>`;
@@ -1651,6 +1656,7 @@ function renderCalendar() {
           <div class="day-sub">
             ${escapeHtml(dateMain)}
             ${dateNotes.map(n => `<span class="day-note-pill">📌 ${escapeHtml(n)}</span>`).join('')}
+            ${dayVenue ? `<span class="day-note-pill venue">📍 ${escapeHtml(dayVenue)}</span>` : ''}
           </div>
         </div>
       </div>
