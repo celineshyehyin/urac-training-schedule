@@ -331,12 +331,14 @@
     padding: 10px 8px 14px; box-shadow: 0 3px 10px rgba(201,138,26,0.07);
     position: relative;
   }
+  .plant-card:has(.plant-svg-garden) { width: 148px; }
   .plant-rank {
     position: absolute; top: 8px; left: 10px; font-size: 0.68rem;
     font-weight: 800; color: var(--gold-dark); background: var(--gold-light);
     padding: 1px 8px; border-radius: 999px;
   }
   .plant-svg { width: 64px; height: 96px; display: block; margin: 6px auto 2px; }
+  .plant-svg-garden { width: 128px; }
   .plant-name { font-weight: 700; font-size: 0.8rem; color: var(--ink); word-break: break-word; margin-bottom: 2px; }
   .plant-score { font-weight: 800; font-size: 0.86rem; color: var(--gold-dark); }
   .plant-stage-label { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
@@ -1006,6 +1008,7 @@ const I18N = {
     plant_stage_1: 'Sprouting',
     plant_stage_2: 'Blooming',
     plant_stage_3: 'Full Bloom',
+    plant_stage_4: 'Flourishing Garden',
     tab_feedback_full: 'Feedback',
     feedback_title: 'Feedback on Trainers',
     feedback_optional: '(optional)',
@@ -1097,6 +1100,7 @@ const I18N = {
     plant_stage_1: '发芽中',
     plant_stage_2: '开花中',
     plant_stage_3: '盛开',
+    plant_stage_4: '繁花花园',
     tab_feedback_full: '反馈',
     feedback_title: '讲师反馈',
     feedback_optional: '（选填）',
@@ -1842,17 +1846,67 @@ function formatScore(n) {
   return Number(n || 0).toLocaleString();
 }
 
-// Growth stage is based on a trainee's rank relative to their own group, not
-// an absolute mark scale (marks aren't on a fixed 0-100 range across every
-// sheet a trainer might type into). Stage 0 = just planted, stage 3 = full
-// bloom with the most petals; the best rank in a group always reaches full
-// bloom and the weakest always starts as a seed, with sprouting/blooming
-// stages spread evenly between them.
-function plantStageIndex(rankIdx, total) {
-  if (total <= 1) return 3;
-  const frac = rankIdx / (total - 1); // 0 = best rank, 1 = worst rank
-  const stage = Math.round((1 - frac) * 3);
-  return Math.max(0, Math.min(3, stage));
+// Growth stage is driven by the trainee's own mark against fixed thresholds
+// (not by their rank), so a mark always maps to the same stage no matter how
+// the rest of the group scores:
+//   0 marks       -> seed
+//   1-50          -> sprout
+//   51-300        -> blooming (a few petals)
+//   301-700       -> full bloom
+//   701+          -> garden -- once fully bloomed, extra flowers keep
+//                    sprouting alongside the main one for every further 300
+//                    marks, up to a cap so the card doesn't get overcrowded
+function plantStageFromMark(mark) {
+  const m = Number(mark) || 0;
+  if (m <= 0) return 0;
+  if (m <= 50) return 1;
+  if (m <= 300) return 2;
+  if (m <= 700) return 3;
+  return 4;
+}
+
+// Fixed spots for the extra "garden" flowers that appear once a trainee
+// passes 700 marks -- capped at 4 so higher and higher marks keep the same
+// visual ceiling instead of growing without bound.
+const GARDEN_EXTRA_SPOTS = [
+  { x: 16, topY: 34, stemTop: 46, stemH: 30, color: '#f7a1c4' },
+  { x: 84, topY: 30, stemTop: 42, stemH: 34, color: '#c99bec' },
+  { x: 28, topY: 50, stemTop: 60, stemH: 16, color: '#f4b0e0' },
+  { x: 72, topY: 54, stemTop: 62, stemH: 14, color: '#8fd3f4' },
+];
+function gardenExtraCount(mark) {
+  const m = Number(mark) || 0;
+  return Math.max(0, Math.min(GARDEN_EXTRA_SPOTS.length, Math.floor((m - 700) / 300) + 1));
+}
+// Same full-bloom flower as stage 3, just re-centered so extra garden
+// flowers can be planted around it once a trainee passes 700 marks.
+function gardenSVG(mark) {
+  const soil = '<ellipse cx="50" cy="82" rx="44" ry="6" fill="#d8b788"/>';
+  const mainStem = '<rect x="48" y="38" width="4" height="44" rx="2" fill="#4caf6b"/>';
+  const mainLeaves = `<ellipse cx="36" cy="60" rx="9" ry="4.5" fill="#5fbf7a" transform="rotate(-30 36 60)"/>
+    <ellipse cx="64" cy="64" rx="9" ry="4.5" fill="#5fbf7a" transform="rotate(30 64 64)"/>`;
+  const mainFlower = `<g transform="translate(50 26)" fill="#f793bb">
+      <ellipse cx="0" cy="-11" rx="5.5" ry="10"/>
+      <ellipse cx="0" cy="11" rx="5.5" ry="10"/>
+      <ellipse cx="-11" cy="0" rx="10" ry="5.5"/>
+      <ellipse cx="11" cy="0" rx="10" ry="5.5"/>
+      <ellipse cx="-8" cy="-8" rx="9.5" ry="5" transform="rotate(-45 -8 -8)"/>
+      <ellipse cx="8" cy="-8" rx="9.5" ry="5" transform="rotate(45 8 -8)"/>
+      <ellipse cx="-8" cy="8" rx="9.5" ry="5" transform="rotate(45 -8 8)"/>
+      <ellipse cx="8" cy="8" rx="9.5" ry="5" transform="rotate(-45 8 8)"/>
+      <circle cx="0" cy="0" r="6" fill="#f4b942"/>
+    </g>
+    <text x="62" y="14" font-size="12">✨</text>`;
+  const extras = GARDEN_EXTRA_SPOTS.slice(0, gardenExtraCount(mark)).map(p => `
+    <rect x="${p.x - 1.5}" y="${p.stemTop}" width="3" height="${p.stemH}" rx="1.5" fill="#4caf6b"/>
+    <g transform="translate(${p.x} ${p.topY})" fill="${p.color}">
+      <ellipse cx="0" cy="-4" rx="3" ry="4.5"/>
+      <ellipse cx="0" cy="4" rx="3" ry="4.5"/>
+      <ellipse cx="-4" cy="0" rx="4.5" ry="3"/>
+      <ellipse cx="4" cy="0" rx="4.5" ry="3"/>
+      <circle cx="0" cy="0" r="2.6" fill="#f4b942"/>
+    </g>`).join('');
+  return `<svg viewBox="0 0 100 90" class="plant-svg plant-svg-garden">${soil}${extras}${mainStem}${mainLeaves}${mainFlower}</svg>`;
 }
 
 // Hand-drawn stage icons for the ranking "garden": seed -> sprout -> budding
@@ -1911,14 +1965,14 @@ function renderRanking() {
   const t = I18N[LANG];
   if (!RANKING.length) { body.innerHTML = `<div class="empty">${t.empty_ranking}</div>`; return; }
   body.innerHTML = RANKING.map((rows, gi) => {
-    const total = rows.length;
     const gardenHtml = `<div class="plant-garden">${
       rows.map((r, i) => {
-        const stage = plantStageIndex(i, total);
+        const stage = plantStageFromMark(r.mark);
         const stageLabel = t['plant_stage_' + stage];
+        const svg = stage === 4 ? gardenSVG(r.mark) : plantSVG(stage);
         return `<div class="plant-card">
           <div class="plant-rank">#${i + 1}</div>
-          ${plantSVG(stage)}
+          ${svg}
           <div class="plant-name">${escapeHtml(r.name)}</div>
           <div class="plant-score">${formatScore(r.mark)}</div>
           <div class="plant-stage-label">${escapeHtml(stageLabel)}</div>
