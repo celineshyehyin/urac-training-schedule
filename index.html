@@ -980,6 +980,10 @@
       <div class="feedback-form-card">
         <form id="feedbackForm" novalidate>
           <div class="form-group">
+            <label for="fbEmail">EMAIL<span class="req">*</span></label>
+            <input type="email" id="fbEmail" required>
+          </div>
+          <div class="form-group">
             <label for="fbTrainer">TRAINER'S NAME 导师<span class="req">*</span></label>
             <select id="fbTrainer" required>
               <option value="" data-i18n="feedback_select_placeholder">-- Please select --</option>
@@ -2462,13 +2466,15 @@ function renderRanking() {
 // This is the REAL production "Feedback on Trainers" form -- the one
 // already linked to the "Feedback on Trainers (Responses)" spreadsheet
 // (3,800+ existing responses) that HR actually uses. It collects the
-// responder's email via Google's built-in verified-email collection
-// (tied to whichever Google account is signed in) rather than a normal
-// question, so there's no entry ID / form field for it -- same background
-// no-cors POST pattern as the Evaluation form already relies on the
-// visiting browser's signed-in Google session to attach it.
+// responder's email via a required "Responder input" field (a plain
+// fillable email question, not sign-in verified) -- submitted under the
+// special field name "emailAddress" rather than a normal entry.NNNN id.
+// Because it's a required field on the form, omitting it causes Google
+// to silently reject the whole submission -- same background no-cors
+// POST pattern as the Evaluation form otherwise.
 const FEEDBACK_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSd89DSrdnzUGQT57WiJY2gtXIKo0nQuGPKGGlZ046lsiDwaMg/formResponse';
 const FEEDBACK_ENTRIES = {
+  email: 'emailAddress',
   trainer: 'entry.1533412749',
   topic: 'entry.495688173',
   topicOther: 'entry.495688173.other_option_response',
@@ -2590,13 +2596,14 @@ function resetFeedbackForm() {
 document.getElementById('feedbackForm').addEventListener('submit', function (e) {
   e.preventDefault();
   const form = e.target;
+  const email = document.getElementById('fbEmail').value.trim();
   const trainer = document.getElementById('fbTrainer').value;
   const topic = document.getElementById('fbTopic').value;
   let missingScale = false;
   FEEDBACK_SCALES.forEach((scale, si) => {
     if (!form.querySelector(`input[name="fbScale${si}"]:checked`)) missingScale = true;
   });
-  if (!trainer || !topic || missingScale) {
+  if (!email || !trainer || !topic || missingScale) {
     alert(I18N[LANG].feedback_error_incomplete);
     return;
   }
@@ -2606,6 +2613,7 @@ document.getElementById('feedbackForm').addEventListener('submit', function (e) 
   btn.textContent = I18N[LANG].feedback_submitting;
 
   const params = new URLSearchParams();
+  params.append(FEEDBACK_ENTRIES.email, email);
   params.append(FEEDBACK_ENTRIES.trainer, trainer);
   params.append(FEEDBACK_ENTRIES.topic, topic);
   if (topic === 'Other:') {
