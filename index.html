@@ -1680,15 +1680,29 @@ function parseSlot(s) {
   }
   // Some rows carry the trainer's name BOTH in the explicit "trainers" column
   // AND baked into the tail of the free-text activity cell (e.g. "PERSONALITY:
-  // DISC\nAM Hester"). Strip any trailing topic line that's a trainer-role
-  // credit or already matches a known trainer for this slot, so the name
+  // DISC\nAM Hester"). Strip a trailing topic line in that case so the name
   // shows up once -- in its own separate row -- instead of twice.
-  while (topicLines.length && (
-    TRAINER_LINE_RE.test(topicLines[topicLines.length - 1]) ||
-    trainers.some(t => t.toLowerCase() === topicLines[topicLines.length - 1].toLowerCase())
-  )) {
-    const popped = topicLines.pop();
-    if (!trainers.some(t => t.toLowerCase() === popped.toLowerCase())) trainers.unshift(popped);
+  if (explicitTrainers) {
+    // Trainers are already known from the column, so only drop a trailing
+    // topic line if it's an exact duplicate of one of them. Do NOT fall back
+    // to the role-title regex here: a lesson topic can legitimately start
+    // with a word like "Therapist" (e.g. "THERAPIST TARGETING SKILLS"), and
+    // matching on that alone would wrongly eat real topic text.
+    while (topicLines.length && trainers.some(t => t.toLowerCase() === topicLines[topicLines.length - 1].toLowerCase())) {
+      topicLines.pop();
+    }
+  } else {
+    // No explicit column -- this is the only place trainer names come from,
+    // so the role-title regex is safe to use to peel trailing credit lines
+    // off the topic (as long as it doesn't consume the last remaining line,
+    // which is presumed to be the real topic).
+    while (topicLines.length > 1 && (
+      TRAINER_LINE_RE.test(topicLines[topicLines.length - 1]) ||
+      trainers.some(t => t.toLowerCase() === topicLines[topicLines.length - 1].toLowerCase())
+    )) {
+      const popped = topicLines.pop();
+      if (!trainers.some(t => t.toLowerCase() === popped.toLowerCase())) trainers.unshift(popped);
+    }
   }
   const topic = topicLines.join('\n');
   return { topic, trainers };
