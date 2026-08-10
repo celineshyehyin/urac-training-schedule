@@ -1540,7 +1540,11 @@ function statusBadge(dateIso) {
   const d = new Date(dateIso);
   if (d.getTime() === TODAY.getTime()) return `<span class="badge today">${t.badge_today}</span>`;
   if (d < TODAY) return `<span class="badge past">${t.badge_done}</span>`;
-  return `<span class="badge future">${t.badge_upcoming}</span>`;
+  // Future days no longer get an "Upcoming" badge -- with most days on the
+  // calendar being in the future at any given time, the badge was showing on
+  // nearly every card and wasn't telling trainees anything they didn't
+  // already know. Today/Done still carry real signal, so those stay.
+  return '';
 }
 
 function renderCalendar() {
@@ -1615,9 +1619,12 @@ function renderCalendar() {
     // A day's "date" cell sometimes carries an extra annotation on a second
     // line (e.g. a date followed by "Management Meeting") -- split that off
     // into its own small badge instead of running it straight into the date text.
+    // Internal HR/admin-only meeting notes ("Management Meeting", "Finance
+    // Meeting") aren't relevant to trainees' own schedule, so they're
+    // filtered out here rather than shown as a badge on the card.
     const dateLines = (day.date || '').split('\n').map(s => s.trim()).filter(Boolean);
     const dateMain = dateLines[0] || '';
-    const dateNotes = dateLines.slice(1);
+    const dateNotes = dateLines.slice(1).filter(n => !/management meeting|finance meeting/i.test(n));
 
     // Slots aren't always entered into the sheet in chronological order, so
     // sort them by start time before rendering (e.g. "2pm-4pm" should render
