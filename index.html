@@ -758,7 +758,7 @@
   <button data-panel="calendar" data-i18n="tab_calendar">📅 Schedule</button>
   <button data-panel="exams" data-i18n="tab_exams">📝 Exams</button>
   <button data-panel="ranking" data-i18n="tab_ranking">🏆 Ranking</button>
-  <button data-panel="mentors" data-i18n="tab_mentors">👥 Trainers &amp; Trainees</button>
+  <button data-panel="mentors" data-i18n="tab_mentors">👥 Trainers &amp; Committee</button>
   <button data-panel="feedback" data-i18n="tab_feedback">⭐ Feedback</button>
 </nav>
 
@@ -820,10 +820,11 @@
     <div class="cohort-grid" id="cohortGrid"></div>
 
     <div class="section-label" data-i18n="dash_meet_batch">Meet the Batch</div>
-    <div class="trainee-grid" id="dashTraineeGallery"></div>
-
-    <div class="section-label" data-i18n="dash_meet_trainers">Meet the Trainers</div>
-    <div class="trainee-grid" id="dashTrainerGallery"></div>
+    <div class="toolbar">
+      <select id="rosterCohortSelect"></select>
+    </div>
+    <div class="roster-pills" id="rosterInfo"></div>
+    <div class="trainee-grid" id="mentorsBody"></div>
   </section>
 
   <section id="panel-calendar" class="panel">
@@ -855,19 +856,15 @@
   </section>
 
   <section id="panel-mentors" class="panel">
-    <h1 class="page-title" data-i18n="tab_mentors_full">Trainers &amp; Trainees</h1>
+    <h1 class="page-title" data-i18n="tab_mentors_full">Trainers &amp; Committee</h1>
     <div class="welcome-card">
       <div class="welcome-icon icon-amber">👥</div>
       <div>
-        <h2 data-i18n="roster_title">Trainers &amp; Trainees</h2>
-        <p class="embed-hint" data-i18n="roster_hint">Meet this batch's trainees, class monitor, and mentors.</p>
+        <h2 data-i18n="dash_meet_trainers">Meet the Trainers</h2>
+        <p class="embed-hint" data-i18n="roster_hint">Meet the trainers and committee leading this batch.</p>
       </div>
     </div>
-    <div class="toolbar">
-      <select id="rosterCohortSelect"></select>
-    </div>
-    <div class="roster-pills" id="rosterInfo"></div>
-    <div class="trainee-grid" id="mentorsBody"></div>
+    <div class="trainee-grid" id="dashTrainerGallery"></div>
   </section>
 
   <section id="panel-ranking" class="panel">
@@ -983,7 +980,7 @@ const I18N = {
     tab_dashboard: '🏠 Dashboard',
     tab_calendar: '📅 Schedule',
     tab_exams: '📝 Exams',
-    tab_mentors: '👥 Trainers & Trainees',
+    tab_mentors: '👥 Trainers & Committee',
     tab_ranking: '🏆 Ranking',
     tab_feedback: '⭐ Feedback',
     tab_ask: '🌱 Any questions? Ask AI 苗苗!',
@@ -1029,9 +1026,9 @@ const I18N = {
     tab_exams_full: 'Exams',
     exams_title: 'Exam Schedule',
     exams_hint: 'Timetables and room assignments for every assessment.',
-    tab_mentors_full: 'Trainers & Trainees',
+    tab_mentors_full: 'Trainers & Committee',
     roster_title: 'Trainers & Trainees',
-    roster_hint: "Meet this batch's trainees, class monitor, and mentors.",
+    roster_hint: "Meet the trainers and committee leading this batch.",
     plant_stage_0: 'Seed',
     plant_stage_1: 'Sprouting',
     plant_stage_2: 'Blooming',
@@ -1076,7 +1073,7 @@ const I18N = {
     tab_dashboard: '🏠 主页',
     tab_calendar: '📅 课程表',
     tab_exams: '📝 考试',
-    tab_mentors: '👥 导师与学员',
+    tab_mentors: '👥 讲师与委员会',
     tab_ranking: '🏆 排行榜',
     tab_feedback: '⭐ 反馈',
     tab_ask: '🌱 有问题？来问 AI 苗苗！',
@@ -1122,9 +1119,9 @@ const I18N = {
     tab_exams_full: '考试',
     exams_title: '考试安排',
     exams_hint: '各项考核的时间表与场地安排。',
-    tab_mentors_full: '导师与学员',
+    tab_mentors_full: '讲师与委员会',
     roster_title: '导师与学员',
-    roster_hint: '查看本批次学员、班长和导师。',
+    roster_hint: '认识本批次的讲师与委员会成员。',
     plant_stage_0: '种子',
     plant_stage_1: '发芽中',
     plant_stage_2: '开花中',
@@ -1603,38 +1600,19 @@ function renderDashboard() {
     });
   });
 
-  // "Meet the Batch" gallery -- reuses the same trainee-card/trainee-avatar
-  // styling and photo lookup as the Trainers & Trainees tab, but always shows
-  // the current (most recently added) batch regardless of which cohort is
-  // selected elsewhere on the dashboard.
-  const galleryEl = document.getElementById('dashTraineeGallery');
-  if (galleryEl) {
-    const cohortCol = mentorsCohortColumn();
-    const maxIdx = mentorsCurrentBlockIndex();
-    const currentRows = cohortCol ? MENTORS.filter(m => m.__blockIndex === maxIdx) : MENTORS;
-    if (currentRows.length) {
-      const nameCol = Object.keys(currentRows[0]).filter(k => k !== cohortCol && k !== '__blockIndex').find(c => /trainees?/i.test(c))
-        || Object.keys(currentRows[0])[0];
-      galleryEl.innerHTML = currentRows.map((m, i) => {
-        const name = (m[nameCol] || '').trim();
-        if (!name) return '';
-        const initials = name.split(/\s+/).filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase() || '?';
-        const photo = traineePhoto(name);
-        const avatarInner = photo ? `<img src="${photo}" alt="${escapeHtml(name)}">` : escapeHtml(initials);
-        const avatarStyle = photo ? '' : ` style="background:${TRAINEE_AVATAR_COLORS[i % TRAINEE_AVATAR_COLORS.length]}"`;
-        return `<div class="trainee-card">
-          <div class="trainee-avatar"${avatarStyle}>${avatarInner}</div>
-          <h4>${escapeHtml(name)}</h4>
-        </div>`;
-      }).join('');
-    } else {
-      galleryEl.innerHTML = '';
-    }
-  }
+  // "Meet the Batch" now lives here as the full trainee roster (photos,
+  // outlet/position, Class Monitor / 班主任, Angel & Mentor assignments) --
+  // this is the same renderMentors() output that used to be parked on its
+  // own "Trainers & Trainees" tab, just rendered into this panel's
+  // rosterCohortSelect/rosterInfo/mentorsBody elements instead.
+  renderMentors();
 
-  // "Meet the Trainers" gallery -- a fixed, manually curated list (see
-  // TRAINER_NAMES) rather than anything pulled from the Roster sheet, since
-  // trainers aren't tied to a single cohort the way trainees are.
+  // "Meet the Trainers" gallery -- lives on the "Trainers & Committee" tab
+  // (dashTrainerGallery there), not this panel. It's a fixed, manually
+  // curated list (see TRAINERS below) rather than anything pulled from the
+  // Roster sheet, since trainers aren't tied to a single cohort the way
+  // trainees are -- still rendered from here so it refreshes in step with
+  // the rest of the dashboard/language switch.
   const trainerGalleryEl = document.getElementById('dashTrainerGallery');
   if (trainerGalleryEl) {
     trainerGalleryEl.innerHTML = TRAINERS.map((tr, i) => {
@@ -1790,8 +1768,9 @@ function traineePhoto(name) {
   return TRAINEE_PHOTOS[(name || '').trim().toLowerCase()] || null;
 }
 
-// Curated list of trainers shown on the Dashboard's "Meet the Trainers"
-// gallery, in the same order as the trainer's "Trainer Introduction" slide.
+// Curated list of trainers shown on the "Trainers & Committee" tab's "Meet
+// the Trainers" gallery, in the same order as the trainer's "Trainer
+// Introduction" slide.
 // This is a manually maintained list (unlike trainees, trainers aren't tied
 // to a single cohort's roster block) -- add an entry here plus a matching
 // photo in trainer_photos.json whenever the trainer line-up changes.
