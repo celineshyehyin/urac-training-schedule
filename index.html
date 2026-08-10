@@ -856,14 +856,16 @@
   </section>
 
   <section id="panel-mentors" class="panel">
-    <h1 class="page-title" data-i18n="tab_mentors_full">Trainers &amp; Committee</h1>
+    <h1 class="page-title" data-i18n="tab_mentors_full">Meet the Trainers &amp; Committee</h1>
     <div class="welcome-card">
       <div class="welcome-icon icon-amber">👥</div>
       <div>
-        <h2 data-i18n="dash_meet_trainers">Meet the Trainers</h2>
+        <h2 data-i18n="mentors_welcome_title">Trainers &amp; Committee</h2>
         <p class="embed-hint" data-i18n="roster_hint">Meet the trainers and committee leading this batch.</p>
       </div>
     </div>
+
+    <div class="section-label" data-i18n="dash_meet_trainers">Meet the Trainers</div>
     <div class="trainee-grid" id="dashTrainerGallery"></div>
 
     <div class="section-label" data-i18n="dash_meet_committee">Meet the Committee</div>
@@ -1031,7 +1033,8 @@ const I18N = {
     tab_exams_full: 'Exams',
     exams_title: 'Exam Schedule',
     exams_hint: 'Timetables and room assignments for every assessment.',
-    tab_mentors_full: 'Trainers & Committee',
+    tab_mentors_full: 'Meet the Trainers & Committee',
+    mentors_welcome_title: 'Trainers & Committee',
     roster_title: 'Trainers & Trainees',
     roster_hint: "Meet the trainers and committee leading this batch.",
     plant_stage_0: 'Seed',
@@ -1125,7 +1128,8 @@ const I18N = {
     tab_exams_full: '考试',
     exams_title: '考试安排',
     exams_hint: '各项考核的时间表与场地安排。',
-    tab_mentors_full: '讲师与委员会',
+    tab_mentors_full: '认识讲师与委员会',
+    mentors_welcome_title: '讲师与委员会',
     roster_title: '导师与学员',
     roster_hint: '认识本批次的讲师与委员会成员。',
     plant_stage_0: '种子',
@@ -1651,9 +1655,13 @@ function renderDashboard() {
       const avatarInner = photo ? `<img src="${photo}" alt="${escapeHtml(name)}">` : escapeHtml(initials);
       const ringColor = TRAINEE_AVATAR_COLORS[i % TRAINEE_AVATAR_COLORS.length];
       const avatarStyle = ` style="${photo ? '' : `background:${ringColor};`}border-color:${ringColor}"`;
+      const titleBadge = c.title
+        ? `<span class="trainer-subject-badge">${c.icon || '🎓'} ${escapeHtml(c.title)}</span>`
+        : '';
       return `<div class="trainee-card trainer-card">
         <div class="trainee-avatar"${avatarStyle}>${avatarInner}</div>
         <h4>${escapeHtml(name)}</h4>
+        ${titleBadge}
       </div>`;
     }).join('');
   }
@@ -1800,9 +1808,10 @@ function traineePhoto(name) {
 // to a single cohort's roster block) -- add an entry here plus a matching
 // photo in trainer_photos.json whenever the trainer line-up changes.
 // "subject" is cross-referenced from the sessions each name is credited with
-// on the Schedule tab (see FEEDBACK_TRAINERS below for full name/title) --
-// Sim Mei, Rayna and Phei Chia don't appear in the Schedule data this site
-// has, so their subject is left blank until confirmed.
+// on the Schedule tab (see FEEDBACK_TRAINERS below for full name/title) for
+// most trainers -- Sim Mei, Rayna and Phei Chia don't appear in the Schedule
+// data this site has, so theirs is their role/title instead, as confirmed
+// directly by the program coordinator.
 const TRAINERS = [
   { name: 'Janice', subject: 'Skin Care Knowledge', icon: '🧴' },
   { name: 'Enna', subject: 'Treatment Role Play', icon: '🧖‍♀️' },
@@ -1810,12 +1819,12 @@ const TRAINERS = [
   { name: 'Margaret', subject: 'Oxyinfusion Treatment', icon: '✨' },
   { name: 'Tiffany', subject: 'Treatment Demo & Role Play', icon: '🧖‍♀️' },
   { name: 'Ai Mei', subject: 'Treatment Demo & Role Play', icon: '🧖‍♀️' },
-  { name: 'Sim Mei', subject: '', icon: '🎓' },
-  { name: 'Rayna', subject: '', icon: '🎓' },
+  { name: 'Sim Mei', subject: 'Trainer (KL Region)', icon: '📍' },
+  { name: 'Rayna', subject: 'Trainer (JB Region)', icon: '📍' },
   { name: 'Nicole', subject: 'POS System & Customer Flow', icon: '💳' },
   { name: 'Hester', subject: 'Personality: DISC', icon: '🧠' },
   { name: 'Sharon', subject: 'Oxyinfusion & SRW Treatment', icon: '✨' },
-  { name: 'Phei Chia', subject: '', icon: '🎓' },
+  { name: 'Phei Chia', subject: 'Asst. Area Manager', icon: '🧑‍💼' },
 ];
 function trainerPhoto(name) {
   return TRAINER_PHOTOS[(name || '').trim().toLowerCase()] || null;
@@ -1828,15 +1837,15 @@ function trainerPhoto(name) {
 // committee line-up changes. Khai Xuan has no headshot on the source slide
 // yet, so his card falls back to initials until one is supplied.
 const COMMITTEE = [
-  { name: 'Adeline' },
-  { name: 'Meredith' },
-  { name: 'Estee' },
-  { name: 'Ching Thing' },
-  { name: 'Celine' },
-  { name: 'Khai Xuan' },
-  { name: 'Liang' },
-  { name: 'Carol' },
-  { name: 'Xin Ru' },
+  { name: 'Adeline', title: 'Asst. Recruitment Manager', icon: '🧑‍💼' },
+  { name: 'Meredith', title: 'Recruitment Consultant', icon: '🧑‍💼' },
+  { name: 'Estee', title: 'Recruitment Consultant', icon: '🧑‍💼' },
+  { name: 'Ching Thing', title: 'Senior HR Executive', icon: '📋' },
+  { name: 'Celine', title: 'HR Executive', icon: '📋' },
+  { name: 'Khai Xuan', title: 'HR Executive', icon: '📋' },
+  { name: 'Liang', title: 'Senior Creative & Culture Designer', icon: '🎨' },
+  { name: 'Carol', title: 'Creative & Culture Designer', icon: '🎨' },
+  { name: 'Xin Ru', title: 'Creative & Culture Designer', icon: '🎨' },
 ];
 function committeePhoto(name) {
   return COMMITTEE_PHOTOS[(name || '').trim().toLowerCase()] || null;
