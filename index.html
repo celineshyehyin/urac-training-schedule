@@ -507,6 +507,29 @@
   }
   .trainee-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .trainee-card h4 { margin: 0 0 8px; font-size: 0.95rem; color: var(--ink); }
+
+  /* Cute touches for the "Meet the Trainers" gallery: a playful colored ring
+     around each photo, a gentle hover bounce, and a little sparkle sticker
+     peeking out the corner of the card. */
+  .trainer-card {
+    position: relative; transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .trainer-card:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 8px 18px rgba(201,138,26,0.16);
+  }
+  .trainer-card::after {
+    content: '✦'; position: absolute; top: 8px; right: 12px;
+    font-size: 0.8rem; color: var(--gold); opacity: 0.7;
+  }
+  .trainer-card .trainee-avatar {
+    width: 58px; height: 58px; border: 3px solid var(--gold-light);
+  }
+  .trainer-subject-badge {
+    display: inline-block; margin-top: 2px; font-size: 0.68rem; font-weight: 700;
+    color: var(--gold-dark); background: var(--gold-light);
+    padding: 4px 10px; border-radius: 999px; line-height: 1.3;
+  }
   .trainee-card .badge-outlet {
     display: inline-block; background: var(--gold-light); color: var(--gold-dark);
     font-size: 0.7rem; font-weight: 700; padding: 3px 11px; border-radius: 999px;
@@ -1614,14 +1637,20 @@ function renderDashboard() {
   // trainers aren't tied to a single cohort the way trainees are.
   const trainerGalleryEl = document.getElementById('dashTrainerGallery');
   if (trainerGalleryEl) {
-    trainerGalleryEl.innerHTML = TRAINER_NAMES.map((name, i) => {
+    trainerGalleryEl.innerHTML = TRAINERS.map((tr, i) => {
+      const name = tr.name;
       const initials = name.split(/\s+/).filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase() || '?';
       const photo = trainerPhoto(name);
       const avatarInner = photo ? `<img src="${photo}" alt="${escapeHtml(name)}">` : escapeHtml(initials);
-      const avatarStyle = photo ? '' : ` style="background:${TRAINEE_AVATAR_COLORS[i % TRAINEE_AVATAR_COLORS.length]}"`;
-      return `<div class="trainee-card">
+      const ringColor = TRAINEE_AVATAR_COLORS[i % TRAINEE_AVATAR_COLORS.length];
+      const avatarStyle = ` style="${photo ? '' : `background:${ringColor};`}border-color:${ringColor}"`;
+      const subjectBadge = tr.subject
+        ? `<span class="trainer-subject-badge">${tr.icon || '🎓'} ${escapeHtml(tr.subject)}</span>`
+        : '';
+      return `<div class="trainee-card trainer-card">
         <div class="trainee-avatar"${avatarStyle}>${avatarInner}</div>
         <h4>${escapeHtml(name)}</h4>
+        ${subjectBadge}
       </div>`;
     }).join('');
   }
@@ -1764,9 +1793,26 @@ function traineePhoto(name) {
 // Curated list of trainers shown on the Dashboard's "Meet the Trainers"
 // gallery, in the same order as the trainer's "Trainer Introduction" slide.
 // This is a manually maintained list (unlike trainees, trainers aren't tied
-// to a single cohort's roster block) -- add a name here plus a matching
+// to a single cohort's roster block) -- add an entry here plus a matching
 // photo in trainer_photos.json whenever the trainer line-up changes.
-const TRAINER_NAMES = ['Janice', 'Enna', 'Katherine', 'Margaret', 'Tiffany', 'Ai Mei', 'Sim Mei', 'Rayna', 'Nicole', 'Hester', 'Sharon', 'Phei Chia'];
+// "subject" is cross-referenced from the sessions each name is credited with
+// on the Schedule tab (see FEEDBACK_TRAINERS below for full name/title) --
+// Sim Mei, Rayna and Phei Chia don't appear in the Schedule data this site
+// has, so their subject is left blank until confirmed.
+const TRAINERS = [
+  { name: 'Janice', subject: 'Skin Care Knowledge', icon: '🧴' },
+  { name: 'Enna', subject: 'Treatment Role Play', icon: '🧖‍♀️' },
+  { name: 'Katherine', subject: 'Customer Flow & Skin Analysis', icon: '📸' },
+  { name: 'Margaret', subject: 'Oxyinfusion Treatment', icon: '✨' },
+  { name: 'Tiffany', subject: 'Treatment Demo & Role Play', icon: '🧖‍♀️' },
+  { name: 'Ai Mei', subject: 'Treatment Demo & Role Play', icon: '🧖‍♀️' },
+  { name: 'Sim Mei', subject: '', icon: '🎓' },
+  { name: 'Rayna', subject: '', icon: '🎓' },
+  { name: 'Nicole', subject: 'POS System & Customer Flow', icon: '💳' },
+  { name: 'Hester', subject: 'Personality: DISC', icon: '🧠' },
+  { name: 'Sharon', subject: 'Oxyinfusion & SRW Treatment', icon: '✨' },
+  { name: 'Phei Chia', subject: '', icon: '🎓' },
+];
 function trainerPhoto(name) {
   return TRAINER_PHOTOS[(name || '').trim().toLowerCase()] || null;
 }
