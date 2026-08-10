@@ -360,7 +360,27 @@
   }
   .embed-frame-sheet { height: 70vh; min-height: 480px; }
   .embed-frame-form { height: 1500px; }
-  .embed-frame-attendance { height: 900px; }
+
+  /* Attendance tab's call-to-action card -- the actual Google Form requires
+     Google sign-in (verified email) plus a photo upload, both of which
+     Google only allows on the real viewform page, not inside an iframe, so
+     rather than embed a mostly-blank Google-branded "click to open" card we
+     show our own platform-styled card with a button that opens it in a new
+     tab. */
+  .attendance-cta-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 22px;
+    padding: 34px 24px; text-align: center; box-shadow: 0 4px 14px rgba(201,138,26,0.08);
+  }
+  .attendance-cta-icon { font-size: 2.4rem; margin-bottom: 10px; }
+  .attendance-cta-card h3 { margin: 0 0 8px; font-size: 1.15rem; color: var(--ink); }
+  .attendance-cta-card p { margin: 0 auto 22px; max-width: 420px; color: var(--muted); font-size: 0.88rem; }
+  .attendance-cta-btn {
+    display: inline-block; text-decoration: none;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: white;
+    border-radius: 999px; padding: 14px 28px; font-size: 0.95rem; font-weight: 800;
+    box-shadow: 0 4px 12px rgba(201,138,26,0.3);
+  }
+  .attendance-cta-btn:hover { opacity: 0.92; }
 
   .page-title { margin: 6px 0 18px; font-size: 1.7rem; color: var(--ink); }
   .welcome-card {
@@ -835,8 +855,11 @@
         <p class="embed-hint" data-i18n="attendance_hint">Mark your attendance for today's session — pick your name, choose Clock In or Clock Out, and upload a quick photo as proof.</p>
       </div>
     </div>
-    <div class="embed-card">
-      <iframe class="embed-frame embed-frame-attendance" src="https://docs.google.com/forms/d/e/1FAIpQLSeznMPafJk5LcxT3prkku4KXG2iSDl9LcvtLi7UhG6zDamrQQ/viewform?embedded=true" loading="lazy">Loading…</iframe>
+    <div class="attendance-cta-card">
+      <div class="attendance-cta-icon">🕐</div>
+      <h3 data-i18n="attendance_cta_title">Ready to clock in?</h3>
+      <p data-i18n="attendance_cta_sub">This opens the attendance form in a new tab. Sign in with Google to upload your photo and submit.</p>
+      <a class="attendance-cta-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeznMPafJk5LcxT3prkku4KXG2iSDl9LcvtLi7UhG6zDamrQQ/viewform" target="_blank" rel="noopener" data-i18n="attendance_cta_btn">Open Attendance Form ↗</a>
     </div>
   </section>
 
@@ -1044,6 +1067,9 @@ const I18N = {
     tab_attendance_full: 'Attendance',
     attendance_title: 'Clock In / Clock Out',
     attendance_hint: "Mark your attendance for today's session — pick your name, choose Clock In or Clock Out, and upload a quick photo as proof.",
+    attendance_cta_title: 'Ready to clock in?',
+    attendance_cta_sub: 'This opens the attendance form in a new tab. Sign in with Google to upload your photo and submit.',
+    attendance_cta_btn: 'Open Attendance Form ↗',
     tab_calendar_full: 'Schedule',
     schedule_title: 'Training Schedule',
     schedule_hint: "Browse each cohort's day-by-day sessions and timings.",
@@ -1143,6 +1169,9 @@ const I18N = {
     tab_attendance_full: '考勤',
     attendance_title: '打卡',
     attendance_hint: '为今天的课程打卡 —— 选择你的姓名，选择签到或签退，并上传一张照片作为凭证。',
+    attendance_cta_title: '准备好打卡了吗？',
+    attendance_cta_sub: '这将在新标签页中打开打卡表格。请使用 Google 账号登录以上传照片并提交。',
+    attendance_cta_btn: '打开打卡表格 ↗',
     tab_calendar_full: '课程表',
     schedule_title: '培训课程表',
     schedule_hint: '查看各批次每日课程安排与时间。',
