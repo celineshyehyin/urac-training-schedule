@@ -220,9 +220,7 @@
   }
   .day-slot-topic { white-space: pre-line; line-height: 1.35; }
   .day-trainers {
-    margin: 8px 14px 0;
-    padding-top: 10px;
-    border-top: 1px dashed var(--border);
+    margin-top: 6px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -433,32 +431,32 @@
   .welcome-icon.icon-amber { background: #fdf1de; }
   .welcome-icon.icon-pink { background: #fdebf1; }
   .exam-countdown-card {
-    background: linear-gradient(135deg, #c2436d, #d1477a);
-    color: white; border-radius: 22px; padding: 20px 22px 22px; margin-bottom: 26px;
-    box-shadow: 0 6px 16px rgba(209,71,122,0.3);
+    background: linear-gradient(135deg, #fdebf1, #fbdcea);
+    color: var(--ink); border: 1px solid #f6c9dc; border-radius: 22px; padding: 20px 22px 22px; margin-bottom: 26px;
+    box-shadow: 0 6px 16px rgba(194,87,138,0.14);
   }
   .exam-countdown-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
   .exam-countdown-icon {
     flex: 0 0 auto; width: 46px; height: 46px; border-radius: 14px;
-    background: rgba(255,255,255,0.22);
+    background: rgba(194,87,138,0.14);
     display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
   }
   .exam-countdown-label {
-    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.9;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #c2578a;
   }
-  .exam-countdown-date { font-size: 1.02rem; font-weight: 800; margin-top: 2px; }
+  .exam-countdown-date { font-size: 1.02rem; font-weight: 800; margin-top: 2px; color: var(--ink); }
   .exam-countdown-clock { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .countdown-unit {
-    background: rgba(255,255,255,0.18); border-radius: 14px; padding: 10px 12px;
+    background: #fffdf7; border: 1px solid #f6c9dc; border-radius: 14px; padding: 10px 12px;
     min-width: 62px; text-align: center; flex: 1 1 62px;
   }
-  .countdown-num { font-size: 1.55rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  .countdown-num { font-size: 1.55rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; color: #c2578a; }
   .countdown-unit-label {
     font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
-    margin-top: 4px; opacity: 0.85;
+    margin-top: 4px; color: var(--muted);
   }
-  .countdown-sep { font-size: 1.3rem; font-weight: 800; opacity: 0.55; }
-  .exam-countdown-empty { font-size: 0.88rem; opacity: 0.92; }
+  .countdown-sep { font-size: 1.3rem; font-weight: 800; color: #f0b8d0; }
+  .exam-countdown-empty { font-size: 0.88rem; color: var(--muted); }
   .section-label {
     font-weight: 700;
     color: var(--ink);
@@ -1577,23 +1575,22 @@ function renderCalendar() {
     // above "4pm-6pm" even if it was typed in second).
     const sortedSlots = day.slots.slice().sort((a, b) => timeSlotMinutes(a.time_slot) - timeSlotMinutes(b.time_slot));
 
-    // Trainers are collected from every slot in the day and shown once,
-    // together, in their own row underneath the topics -- kept fully
-    // separate from the topic text rather than mixed into it.
-    let dayTrainers = [];
+    // Each slot shows its own trainer(s) directly underneath its topic,
+    // right where that lesson lives, instead of grouping every trainer for
+    // the day into one shared block at the bottom of the card.
     const slotRows = sortedSlots.map(s => {
       const parsed = parseSlot(s);
-      parsed.trainers.forEach(t => { if (!dayTrainers.includes(t)) dayTrainers.push(t); });
+      const slotTrainers = parsed.trainers.length ? `
+        <div class="day-trainers">
+          ${parsed.trainers.map(t => `<span class="activity-trainer">🧑‍🏫 ${escapeHtml(t)}</span>`).join('')}
+        </div>` : '';
       return `
         <div class="day-slot-row">
           ${s.time_slot ? `<span class="day-slot-time">${escapeHtml(s.time_slot)}</span>` : ''}
           ${parsed.topic ? `<div class="day-slot-topic">${escapeHtml(parsed.topic)}</div>` : ''}
+          ${slotTrainers}
         </div>`;
     }).join('');
-    const trainersBlock = dayTrainers.length ? `
-      <div class="day-trainers">
-        ${dayTrainers.map(t => `<span class="activity-trainer">🧑‍🏫 ${escapeHtml(t)}</span>`).join('')}
-      </div>` : '';
 
     card.innerHTML = `
       <div class="day-card-head">
@@ -1607,7 +1604,6 @@ function renderCalendar() {
         </div>
       </div>
       <div class="day-card-body">${slotRows}</div>
-      ${trainersBlock}
     `;
     gridEl.appendChild(card);
   });
