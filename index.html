@@ -1648,6 +1648,18 @@ function parseSlot(s) {
       trainers.unshift(topicLines.pop());
     }
   }
+  // Some rows carry the trainer's name BOTH in the explicit "trainers" column
+  // AND baked into the tail of the free-text activity cell (e.g. "PERSONALITY:
+  // DISC\nAM Hester"). Strip any trailing topic line that's a trainer-role
+  // credit or already matches a known trainer for this slot, so the name
+  // shows up once -- in its own separate row -- instead of twice.
+  while (topicLines.length && (
+    TRAINER_LINE_RE.test(topicLines[topicLines.length - 1]) ||
+    trainers.some(t => t.toLowerCase() === topicLines[topicLines.length - 1].toLowerCase())
+  )) {
+    const popped = topicLines.pop();
+    if (!trainers.some(t => t.toLowerCase() === popped.toLowerCase())) trainers.unshift(popped);
+  }
   const topic = topicLines.join('\n');
   return { topic, trainers };
 }
