@@ -1017,10 +1017,13 @@
 
     <!-- Trainer-only view -- shown instead of the trainee feedback form once
          the trainer PIN is unlocked (see isTrainerUnlocked()/renderFeedbackAccess()).
-         The evaluation form also requires Google sign-in (verified email +
-         a per-trainee rating flow across multiple sections), so like the
-         Attendance tab this links out to the real Google Form rather than
-         attempting a background/no-redirect submission. -->
+         The real Google Form is a multi-page, sign-in-gated flow (trainer/topic
+         page, then one page per trainee). Google only saves answers for pages
+         it has actually recorded a real browser session visiting -- a
+         background fetch() from here has no way to replicate that, so marks
+         submitted through an in-house replica of this form were silently
+         being dropped past page 1. Like the Attendance tab, this links out to
+         the real Google Form instead of attempting a background submission. -->
     <div id="feedbackTrainerView" style="display:none">
       <div class="welcome-card">
         <div class="welcome-icon icon-amber">🥇</div>
@@ -1029,25 +1032,11 @@
           <p class="embed-hint" data-i18n="eval_hint">Trainer view: rate each trainee's proactivity and leave feedback for the Best URAC award.</p>
         </div>
       </div>
-      <div class="feedback-form-card">
-        <form id="evalForm" novalidate>
-          <div class="form-group">
-            <label>TRAINER'S NAME 导师<span class="req">*</span></label>
-            <div id="evalTrainerChecks" class="check-options"></div>
-          </div>
-          <div class="form-group">
-            <label>TOPICS 课题<span class="req">*</span></label>
-            <div id="evalTopicChecks" class="check-options"></div>
-          </div>
-          <div id="evalTrainees"></div>
-          <button type="submit" class="submit-btn" id="evalSubmitBtn" data-i18n="eval_submit">Submit Evaluation</button>
-        </form>
-        <div class="form-success" id="evalSuccess" style="display:none">
-          <div class="icon">🎉</div>
-          <h3 data-i18n="eval_success_title">Thank you!</h3>
-          <p data-i18n="eval_success_sub">Your evaluation has been submitted.</p>
-          <button type="button" class="submit-btn btn-secondary" id="evalAnotherBtn" data-i18n="eval_submit_another">Submit another response</button>
-        </div>
+      <div class="attendance-cta-card">
+        <div class="attendance-cta-icon">🥇</div>
+        <h3 data-i18n="eval_cta_title">Ready to submit your evaluation?</h3>
+        <p data-i18n="eval_cta_sub">This opens the evaluation form in a new tab. Sign in with Google, then rate each trainee across all pages before hitting Submit on the last page.</p>
+        <a class="attendance-cta-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSfwy4QMvNuQYJPAOuVYtIqapguAn8C7Y-54CbQY187q1M52jg/viewform" target="_blank" rel="noopener" data-i18n="eval_cta_btn">Open Evaluation Form ↗</a>
       </div>
     </div>
   </section>
@@ -1188,12 +1177,9 @@ const I18N = {
     eval_full: 'Best URAC Evaluation',
     eval_title: 'Best URAC Evaluation Form',
     eval_hint: "Trainer view: rate each trainee's proactivity and leave feedback for the Best URAC award.",
-    eval_submit: 'Submit Evaluation',
-    eval_submitting: 'Submitting...',
-    eval_success_title: 'Thank you!',
-    eval_success_sub: 'Your evaluation has been submitted.',
-    eval_submit_another: 'Submit another response',
-    eval_error_incomplete: 'Please select at least one trainer, one topic, and rate every trainee before submitting.',
+    eval_cta_title: 'Ready to submit your evaluation?',
+    eval_cta_sub: 'This opens the evaluation form in a new tab. Sign in with Google, then rate each trainee across all pages before hitting Submit on the last page.',
+    eval_cta_btn: 'Open Evaluation Form ↗',
     tab_ask_full: 'AI 苗苗 (Miao Miao)',
     ask_title: 'AI 苗苗 (Miao Miao)',
     ask_hint: "Your learning buddy! 🌱",
@@ -1305,12 +1291,9 @@ const I18N = {
     eval_full: '最佳 URAC 评分',
     eval_title: '最佳 URAC 评分表',
     eval_hint: '讲师视图：为每位学员的积极度评分，并为最佳 URAC 奖留言。',
-    eval_submit: '提交评分',
-    eval_submitting: '提交中...',
-    eval_success_title: '谢谢！',
-    eval_success_sub: '您的评分已提交。',
-    eval_submit_another: '再提交一份',
-    eval_error_incomplete: '请至少选择一位导师、一个课题，并为每位学员评分后再提交。',
+    eval_cta_title: '准备好提交评分了吗？',
+    eval_cta_sub: '这将在新标签页打开评分表。请用 Google 登入，逐页为每位学员评分，并在最后一页点击提交。',
+    eval_cta_btn: '打开评分表 ↗',
     tab_ask_full: 'AI 苗苗',
     ask_title: 'AI 苗苗',
     ask_hint: '你的学习小伙伴！🌱',
@@ -2548,128 +2531,16 @@ document.getElementById('feedbackForm').addEventListener('submit', function (e) 
 document.getElementById('fbAnotherBtn').addEventListener('click', resetFeedbackForm);
 
 // ---------- Best URAC Evaluation form (trainer-only view of the Feedback tab) ----------
-const EVAL_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfwy4QMvNuQYJPAOuVYtIqapguAn8C7Y-54CbQY187q1M52jg/formResponse';
-const EVAL_ENTRIES = {
-  trainer: 'entry.1712562674',
-  topic: 'entry.1673126182',
-};
-const EVAL_TRAINERS = [
-  'DR. FONG TOH JENG', 'DR. TAN SOO HUA (JAYE)', 'DR NG CHIA WEN (JOVYN)', 'DR. NICOLE NG I',
-  'DR. LIM JIA YING (JEM)', 'DR. LIM WEN XUAN', 'AM WONG PIT KHI (HESTER)', 'CONSULTANT KHOO WEI SIN (JANICE)',
-  'AM NG SAN FOO (SHARON)', 'CONSULTANT CHAI XIN JIE (KATHERINE)', 'CONSULTANT LAW YI ERN (ENNA)',
-  'THERAPIST NG SHI HUI (TIFFANY)', 'CONSULTANT MARGARET CHIN SIEW THENG', 'THERAPIST CHAN AI MEI',
-  'URAC班主任', 'HRE CELINE TEH SHYEH YIN',
-];
-const EVAL_TOPICS = [
-  'ABL 5 项管理', 'ABL UR MUST KNOW', 'ABL LIGHT THERAPY TREATMENT',
-  'ABL SKIN ANATOMY, PIGMENTATION,UV AND SUNBLOCK', 'ABL DISC', 'ABL THERAPIST 靶心能力',
-  'ABL UR SKIN CARE', 'ABL OXYINFUSION & SRW TREATMENT', 'DEMO & ROLE PLAY 5 ANGLE PHOTO TAKING',
-  'DEMO & ROLE PLAY 1 FACE WASHING', 'ROLE PLAY 2 FACE WASH', 'DEMO & ROLE PLAY 1 OXYINFUSION & SRW',
-  'ROLE PLAY 2 OXYINFUSION & SRW', 'DEMO & ROLE PLAY POS SYSTEM', 'OTHERS (FOR BONUS MARKS, ONLY FOR 班主任)',
-];
-const EVAL_TRAINEES = [
-  { key: 'joevie', name: 'Joevie - KL Therapist', bio: '25 y/o · 察言观色，开朗， 善于沟通', proactivity: 'entry.559327954', bonus: 'entry.908682611', overall: 'entry.1384704877' },
-  { key: 'yomiko', name: 'Yomiko - KL Therapist', bio: '21 y/o · type c 慢热，沟通和表达能力好', proactivity: 'entry.2050780947', bonus: 'entry.1556019678', overall: 'entry.1111713962' },
-  { key: 'limwanyi', name: 'Lim Wan Yi - PG URAC', bio: '18 y/o · Type S 性格，单纯、有礼貌、亲和力', proactivity: 'entry.417665947', bonus: 'entry.1203982453', overall: 'entry.18745320' },
-  { key: 'thengziying', name: 'Theng Zi Ying - KL URAC', bio: '22 y/o · 优点：学习能力，勇于突破，好胜心；缺点：社交能力和表达，慢热', proactivity: 'entry.14737046', bonus: 'entry.904691350', overall: 'entry.2059818590' },
-  { key: 'zoelle', name: 'Zoelle - JB Therapist', bio: '30 y/o · 学习态度积极', proactivity: 'entry.1668193962', bonus: 'entry.1846370883', overall: 'entry.1612764288' },
-];
-
-function renderEvalForm() {
-  const trainerWrap = document.getElementById('evalTrainerChecks');
-  if (!trainerWrap) return;
-  trainerWrap.innerHTML = EVAL_TRAINERS.map(name => `
-    <label class="check-option">
-      <input type="checkbox" name="evalTrainer" value="${escapeHtml(name)}">
-      <span>${escapeHtml(name)}</span>
-    </label>
-  `).join('');
-
-  const topicWrap = document.getElementById('evalTopicChecks');
-  topicWrap.innerHTML = EVAL_TOPICS.map(name => `
-    <label class="check-option">
-      <input type="checkbox" name="evalTopic" value="${escapeHtml(name)}">
-      <span>${escapeHtml(name)}</span>
-    </label>
-  `).join('');
-
-  const traineesWrap = document.getElementById('evalTrainees');
-  traineesWrap.innerHTML = EVAL_TRAINEES.map(t => `
-    <div class="form-group eval-trainee-card">
-      <label>${escapeHtml(t.name)} — PROACTIVITY 积极度<span class="req">*</span></label>
-      <p class="eval-trainee-bio">${escapeHtml(t.bio)}</p>
-      <div class="scale-options">
-        ${[1, 2, 3].map(n => `
-          <label class="scale-option">
-            <input type="radio" name="evalProactivity_${t.key}" value="${n}" required>
-            <span>${n}</span>
-          </label>
-        `).join('')}
-      </div>
-      <input type="text" id="evalBonus_${t.key}" placeholder="BONUS (IF ANY - TO GIVE VALID REASON UNDER FEEDBACK)" style="margin-top:10px">
-      <textarea id="evalOverall_${t.key}" rows="3" placeholder="Overall Feedback 整体评论" style="margin-top:10px"></textarea>
-    </div>
-  `).join('');
-  traineesWrap.querySelectorAll('.scale-option input').forEach(input => {
-    input.addEventListener('change', () => {
-      const group = input.closest('.scale-options');
-      group.querySelectorAll('.scale-option').forEach(l => l.classList.remove('selected'));
-      input.closest('.scale-option').classList.add('selected');
-    });
-  });
-}
-renderEvalForm();
-
-function resetEvalForm() {
-  const form = document.getElementById('evalForm');
-  if (!form) return;
-  form.reset();
-  form.querySelectorAll('.scale-option.selected').forEach(l => l.classList.remove('selected'));
-  form.style.display = 'block';
-  document.getElementById('evalSuccess').style.display = 'none';
-}
-
-const evalFormEl = document.getElementById('evalForm');
-if (evalFormEl) {
-  evalFormEl.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const form = e.target;
-    const trainers = Array.from(form.querySelectorAll('input[name="evalTrainer"]:checked')).map(i => i.value);
-    const topics = Array.from(form.querySelectorAll('input[name="evalTopic"]:checked')).map(i => i.value);
-    let missingProactivity = false;
-    EVAL_TRAINEES.forEach(t => {
-      if (!form.querySelector(`input[name="evalProactivity_${t.key}"]:checked`)) missingProactivity = true;
-    });
-    if (!trainers.length || !topics.length || missingProactivity) {
-      alert(I18N[LANG].eval_error_incomplete);
-      return;
-    }
-
-    const btn = document.getElementById('evalSubmitBtn');
-    btn.disabled = true;
-    btn.textContent = I18N[LANG].eval_submitting;
-
-    const params = new URLSearchParams();
-    trainers.forEach(v => params.append(EVAL_ENTRIES.trainer, v));
-    topics.forEach(v => params.append(EVAL_ENTRIES.topic, v));
-    EVAL_TRAINEES.forEach(t => {
-      const checked = form.querySelector(`input[name="evalProactivity_${t.key}"]:checked`);
-      params.append(t.proactivity, checked.value);
-      params.append(t.bonus, document.getElementById(`evalBonus_${t.key}`).value);
-      params.append(t.overall, document.getElementById(`evalOverall_${t.key}`).value);
-    });
-
-    fetch(EVAL_FORM_URL, { method: 'POST', mode: 'no-cors', body: params })
-      .catch(() => {})
-      .finally(() => {
-        btn.disabled = false;
-        btn.textContent = I18N[LANG].eval_submit;
-        form.style.display = 'none';
-        document.getElementById('evalSuccess').style.display = 'block';
-      });
-  });
-  document.getElementById('evalAnotherBtn').addEventListener('click', resetEvalForm);
-}
+// This used to be a native in-house replica of the real Google Form, submitting
+// via a background fetch(). That approach was scrapped: the real form is a
+// multi-page, sign-in-gated flow (trainer/topic page, then one page per
+// trainee), and Google's backend only records answers for pages an actual
+// browser session has visited -- a single crafted POST has no way to
+// replicate that server-side page-visit state, so every trainee's rating,
+// bonus, and feedback text was being silently dropped past page 1 even
+// though the request "succeeded". The trainer view now links out to the
+// real Google Form instead (see the .attendance-cta-card markup above),
+// exactly like the Attendance tab already does for the same reason.
 
 // ---------- Live Google Sheet data loading ----------
 // Tokenizes RFC4180-ish CSV into rows of raw string arrays: handles quoted
