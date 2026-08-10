@@ -207,6 +207,14 @@
     font-size: 0.82rem;
   }
   .day-slot-row:first-child { border-top: none; }
+  .day-slot-row.is-assessment {
+    background: #fdecec;
+    border-radius: 12px;
+    padding: 8px 10px;
+    margin: 4px 0;
+    border-top: none;
+  }
+  .day-slot-topic.is-assessment-topic { color: #c94a4a; font-weight: 700; }
   .day-slot-time {
     display: inline-block;
     background: #e8f3fb;
@@ -1566,7 +1574,7 @@ function renderCalendar() {
     if (day.week !== lastWeek) {
       const h = document.createElement('div');
       h.className = 'week-heading';
-      h.textContent = '🗓️ ' + (day.week || 'Other');
+      h.textContent = '🗓️ ' + (day.week || 'Other') + ' ' + weekIcon(day.week);
       body.appendChild(h);
       gridEl = document.createElement('div');
       gridEl.className = 'week-grid';
@@ -1593,14 +1601,15 @@ function renderCalendar() {
     // the day into one shared block at the bottom of the card.
     const slotRows = sortedSlots.map(s => {
       const parsed = parseSlot(s);
+      const isAssessment = /assessment/i.test(parsed.topic);
       const slotTrainers = parsed.trainers.length ? `
         <div class="day-trainers">
           ${parsed.trainers.map(t => `<span class="activity-trainer">🧑‍🏫 ${escapeHtml(t)}</span>`).join('')}
         </div>` : '';
       return `
-        <div class="day-slot-row">
+        <div class="day-slot-row${isAssessment ? ' is-assessment' : ''}">
           ${s.time_slot ? `<span class="day-slot-time">${escapeHtml(s.time_slot)}</span>` : ''}
-          ${parsed.topic ? `<div class="day-slot-topic">${escapeHtml(parsed.topic)}</div>` : ''}
+          ${parsed.topic ? `<div class="day-slot-topic${isAssessment ? ' is-assessment-topic' : ''}">${isAssessment ? '📌 ' : ''}${escapeHtml(parsed.topic)}</div>` : ''}
           ${slotTrainers}
         </div>`;
     }).join('');
@@ -1620,6 +1629,19 @@ function renderCalendar() {
     `;
     gridEl.appendChild(card);
   });
+}
+
+// Picks a small icon to show beside a week's heading based on which phase of
+// the programme it is -- Zoom training in week 1, onsite training in weeks
+// 2-3, clinic attachment in week 4. Matches loosely on the week label's
+// ordinal word so it isn't thrown off by minor sheet wording/spelling
+// differences (e.g. "FORTH WEEK" vs "FOURTH WEEK").
+function weekIcon(week) {
+  const w = (week || '').toLowerCase();
+  if (/first/.test(w)) return '💻';
+  if (/second/.test(w) || /third/.test(w)) return '🏢';
+  if (/for(th|urth)/.test(w)) return '🏥';
+  return '';
 }
 
 // Maps the sheet's free-text weekday label ("Mon", "Tues", "Thurs", ...) to a
