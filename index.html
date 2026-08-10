@@ -1546,6 +1546,15 @@ function renderCalendar() {
   let dayMap = new Map();
   let order = [];
 
+  // Most rows carry the weekday ("Mon", "Tues", ...) in their own dedicated
+  // column, which is what powers the coloured weekday pill at the top of
+  // each day card. Some weeks' rows instead leave that column blank and
+  // record the weekday as a standalone placeholder row (no time slot) whose
+  // Activity cell just says "Wed" or "Thurs" -- caught below so it fills in
+  // the day's weekday pill instead of showing up as a bogus lesson entry at
+  // the bottom of the card.
+  const WEEKDAY_WORD_RE = /^(mon|monday|tue|tues|tuesday|wed|wednesday|thu|thur|thurs|thursday|fri|friday|sat|saturday|sun|sunday)$/i;
+
   rows.forEach(r => {
     if (search) {
       const hay = (r.activity + ' ' + r.week + ' ' + r.day_label).toLowerCase();
@@ -1553,10 +1562,17 @@ function renderCalendar() {
     }
     const key = r.week + '|' + r.day_label + '|' + r.date;
     if (!dayMap.has(key)) {
-      dayMap.set(key, { week: r.week, day_label: r.day_label, date: r.date, date_iso: r.date_iso, weekday: r.weekday, slots: [] });
+      dayMap.set(key, { week: r.week, day_label: r.day_label, date: r.date, date_iso: r.date_iso, weekday: '', slots: [] });
       order.push(key);
     }
-    dayMap.get(key).slots.push(r);
+    const entry = dayMap.get(key);
+    if (r.weekday && !entry.weekday) entry.weekday = r.weekday;
+    const trimmedActivity = (r.activity || '').trim();
+    if (!r.time_slot && !entry.weekday && WEEKDAY_WORD_RE.test(trimmedActivity)) {
+      entry.weekday = trimmedActivity;
+      return; // placeholder row only -- not a real lesson slot
+    }
+    entry.slots.push(r);
   });
 
   if (order.length === 0) {
@@ -1574,7 +1590,7 @@ function renderCalendar() {
     if (day.week !== lastWeek) {
       const h = document.createElement('div');
       h.className = 'week-heading';
-      h.textContent = '🗓️ ' + (day.week || 'Other') + ' ' + weekIcon(day.week);
+      h.textContent = '🗓️ ' + weekDisplayLabel(day.week) + ' ' + weekIcon(day.week);
       body.appendChild(h);
       gridEl = document.createElement('div');
       gridEl.className = 'week-grid';
@@ -1642,6 +1658,18 @@ function weekIcon(week) {
   if (/\bsecond\b/.test(w) || /\bthird\b/.test(w)) return '🏢';
   if (/\bfor(th|urth)\b/.test(w)) return '🏥';
   return '';
+}
+
+// FIRST/SECOND WEEK already spell out their phase in the sheet text itself
+// ("FIRST WEEK (ZOOM TRAINING)"), but THIRD WEEK/FORTH WEEK don't -- this
+// appends the same style of label for those two purely for display, without
+// needing the sheet text itself to be rewritten.
+function weekDisplayLabel(week) {
+  const label = week || 'Other';
+  if (/\(/.test(label)) return label; // already has its own parenthetical
+  if (/\bthird\b/i.test(label)) return label + ' (ONSITE TRAINING)';
+  if (/\bfor(th|urth)\b/i.test(label)) return label + ' (CLINIC ATTACHMENT)';
+  return label;
 }
 
 // Maps the sheet's free-text weekday label ("Mon", "Tues", "Thurs", ...) to a
