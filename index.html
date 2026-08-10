@@ -227,6 +227,18 @@
     margin-bottom: 4px;
   }
   .day-slot-topic { white-space: pre-line; line-height: 1.35; }
+  .day-slot-venue {
+    display: inline-block;
+    background: var(--gold-light);
+    color: var(--gold-dark);
+    font-weight: 700;
+    font-size: 0.64rem;
+    padding: 2px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+    margin-bottom: 4px;
+    margin-left: 5px;
+  }
   .day-trainers {
     margin-top: 6px;
     display: flex;
@@ -1625,6 +1637,7 @@ function renderCalendar() {
       return `
         <div class="day-slot-row${isAssessment ? ' is-assessment' : ''}">
           ${s.time_slot ? `<span class="day-slot-time">${escapeHtml(s.time_slot)}</span>` : ''}
+          ${parsed.venue ? `<span class="day-slot-venue">📍 ${escapeHtml(parsed.venue)}</span>` : ''}
           ${parsed.topic ? `<div class="day-slot-topic${isAssessment ? ' is-assessment-topic' : ''}">${isAssessment ? '📌 ' : ''}${escapeHtml(parsed.topic)}</div>` : ''}
           ${slotTrainers}
         </div>`;
@@ -1767,8 +1780,28 @@ function parseSlot(s) {
       if (!trainers.some(t => t.toLowerCase() === popped.toLowerCase())) trainers.unshift(popped);
     }
   }
-  const topic = topicLines.join('\n');
-  return { topic, trainers };
+  // Some slots (usually the recurring "Each Outlet Morning Meeting") name a
+  // specific training venue -- written either as a trailing "(UR KLINIK BM)"
+  // line under the topic, or as the entire activity cell on its own (just
+  // "UR KLINIK GL", no topic text at all). Pull that out into its own
+  // `venue` field so it can be shown as a badge trainees can spot at a
+  // glance, instead of being buried inside the topic paragraph.
+  let venue = '';
+  if (topicLines.length) {
+    const venueMatch = topicLines[topicLines.length - 1].match(/^\(?\s*(UR KLINIK[^)]*)\)?\s*$/i);
+    if (venueMatch) {
+      venue = venueMatch[1].trim();
+      topicLines.pop();
+    }
+  }
+  let topic = topicLines.join('\n');
+  // Shorten the recurring morning-meeting label. A venue-only row (topic
+  // ended up empty once its venue line was pulled out above) is still that
+  // same daily meeting, just missing the label text in the sheet.
+  if (/^each outlet morning meeting$/i.test(topic) || (!topic && venue)) {
+    topic = 'Morning Meeting';
+  }
+  return { topic, trainers, venue };
 }
 
 function escapeHtml(s) {
