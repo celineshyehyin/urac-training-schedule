@@ -360,6 +360,7 @@
   }
   .embed-frame-sheet { height: 70vh; min-height: 480px; }
   .embed-frame-form { height: 1500px; }
+  .embed-frame-attendance { height: 900px; }
 
   .page-title { margin: 6px 0 18px; font-size: 1.7rem; color: var(--ink); }
   .welcome-card {
@@ -755,6 +756,7 @@
 
 <nav class="pillnav">
   <button data-panel="dashboard" data-i18n="tab_dashboard" class="active">🏠 Dashboard</button>
+  <button data-panel="attendance" data-i18n="tab_attendance">✅ Attendance</button>
   <button data-panel="calendar" data-i18n="tab_calendar">📅 Schedule</button>
   <button data-panel="exams" data-i18n="tab_exams">📝 Exams</button>
   <button data-panel="ranking" data-i18n="tab_ranking">🏆 Ranking</button>
@@ -822,6 +824,20 @@
     </div>
     <div class="roster-pills" id="rosterInfo"></div>
     <div class="trainee-grid" id="mentorsBody"></div>
+  </section>
+
+  <section id="panel-attendance" class="panel">
+    <h1 class="page-title" data-i18n="tab_attendance_full">Attendance</h1>
+    <div class="welcome-card">
+      <div class="welcome-icon icon-mint">✅</div>
+      <div>
+        <h2 data-i18n="attendance_title">Clock In / Clock Out</h2>
+        <p class="embed-hint" data-i18n="attendance_hint">Mark your attendance for today's session — pick your name, choose Clock In or Clock Out, and upload a quick photo as proof.</p>
+      </div>
+    </div>
+    <div class="embed-card">
+      <iframe class="embed-frame embed-frame-attendance" src="https://docs.google.com/forms/d/e/1FAIpQLSeznMPafJk5LcxT3prkku4KXG2iSDl9LcvtLi7UhG6zDamrQQ/viewform?embedded=true" loading="lazy">Loading…</iframe>
+    </div>
   </section>
 
   <section id="panel-calendar" class="panel">
@@ -981,6 +997,7 @@ TODAY.setHours(0,0,0,0);
 const I18N = {
   en: {
     tab_dashboard: '🏠 Dashboard',
+    tab_attendance: '✅ Attendance',
     tab_calendar: '📅 Schedule',
     tab_exams: '📝 Exams',
     tab_mentors: '👥 Trainers & Committee',
@@ -1024,6 +1041,9 @@ const I18N = {
     dash_tag_today: 'Today',
     dash_tag_upcoming: 'Upcoming',
     ranking_title: 'Live Leaderboard',
+    tab_attendance_full: 'Attendance',
+    attendance_title: 'Clock In / Clock Out',
+    attendance_hint: "Mark your attendance for today's session — pick your name, choose Clock In or Clock Out, and upload a quick photo as proof.",
     tab_calendar_full: 'Schedule',
     schedule_title: 'Training Schedule',
     schedule_hint: "Browse each cohort's day-by-day sessions and timings.",
@@ -1076,6 +1096,7 @@ const I18N = {
   },
   zh: {
     tab_dashboard: '🏠 主页',
+    tab_attendance: '✅ 考勤',
     tab_calendar: '📅 课程表',
     tab_exams: '📝 考试',
     tab_mentors: '👥 讲师与委员会',
@@ -1119,6 +1140,9 @@ const I18N = {
     dash_tag_today: '今天',
     dash_tag_upcoming: '即将开始',
     ranking_title: '实时排行榜',
+    tab_attendance_full: '考勤',
+    attendance_title: '打卡',
+    attendance_hint: '为今天的课程打卡 —— 选择你的姓名，选择签到或签退，并上传一张照片作为凭证。',
     tab_calendar_full: '课程表',
     schedule_title: '培训课程表',
     schedule_hint: '查看各批次每日课程安排与时间。',
