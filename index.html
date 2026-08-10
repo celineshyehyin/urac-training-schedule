@@ -921,49 +921,74 @@
   </section>
 
   <section id="panel-feedback" class="panel">
-    <h1 class="page-title" data-i18n="tab_feedback_full">Feedback</h1>
-    <div class="welcome-card">
-      <div class="welcome-icon icon-pink">⭐</div>
-      <div>
-        <h2 data-i18n="feedback_title">Feedback on Trainers</h2>
-        <p class="embed-hint" data-i18n="feedback_hint">Have feedback for a trainer? Fill this in — it goes straight to the program coordinator.</p>
+    <h1 class="page-title" id="feedbackPageTitle" data-i18n="tab_feedback_full">Feedback</h1>
+
+    <div id="feedbackTraineeView">
+      <div class="welcome-card">
+        <div class="welcome-icon icon-pink">⭐</div>
+        <div>
+          <h2 data-i18n="feedback_title">Feedback on Trainers</h2>
+          <p class="embed-hint" data-i18n="feedback_hint">Have feedback for a trainer? Fill this in — it goes straight to the program coordinator.</p>
+        </div>
+      </div>
+      <div class="feedback-form-card">
+        <form id="feedbackForm" novalidate>
+          <div class="form-group">
+            <label for="fbEmail">Email <span class="opt" data-i18n="feedback_optional">(optional)</span></label>
+            <input type="email" id="fbEmail" placeholder="you@example.com" autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="fbTrainer">TRAINER'S NAME 导师<span class="req">*</span></label>
+            <select id="fbTrainer" required>
+              <option value="" data-i18n="feedback_select_placeholder">-- Please select --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="fbTopic">TOPICS 课题<span class="req">*</span></label>
+            <select id="fbTopic" required>
+              <option value="" data-i18n="feedback_select_placeholder">-- Please select --</option>
+            </select>
+            <input type="text" id="fbTopicOther" placeholder="Please specify... 请注明" style="display:none;margin-top:9px">
+          </div>
+          <div class="form-group">
+            <label for="fbDate">DATE 日期 <span class="opt" data-i18n="feedback_optional">(optional)</span></label>
+            <input type="date" id="fbDate">
+          </div>
+          <div id="fbScales"></div>
+          <div class="form-group">
+            <label for="fbComment">WHAT DO YOU LIKE MOST ABOUT THE TRAINER? 您最喜欢导师的哪一点 <span class="opt" data-i18n="feedback_optional">(optional)</span></label>
+            <textarea id="fbComment" rows="3"></textarea>
+          </div>
+          <button type="submit" class="submit-btn" id="fbSubmitBtn" data-i18n="feedback_submit">Submit Feedback</button>
+        </form>
+        <div class="form-success" id="feedbackSuccess" style="display:none">
+          <div class="icon">🎉</div>
+          <h3 data-i18n="feedback_success_title">Thank you!</h3>
+          <p data-i18n="feedback_success_sub">Your feedback has been submitted.</p>
+          <button type="button" class="submit-btn btn-secondary" id="fbAnotherBtn" data-i18n="feedback_submit_another">Submit another response</button>
+        </div>
       </div>
     </div>
-    <div class="feedback-form-card">
-      <form id="feedbackForm" novalidate>
-        <div class="form-group">
-          <label for="fbEmail">Email <span class="opt" data-i18n="feedback_optional">(optional)</span></label>
-          <input type="email" id="fbEmail" placeholder="you@example.com" autocomplete="email">
+
+    <!-- Trainer-only view -- shown instead of the trainee feedback form once
+         the trainer PIN is unlocked (see isTrainerUnlocked()/renderFeedbackAccess()).
+         The evaluation form also requires Google sign-in (verified email +
+         a per-trainee rating flow across multiple sections), so like the
+         Attendance tab this links out to the real Google Form rather than
+         attempting a background/no-redirect submission. -->
+    <div id="feedbackTrainerView" style="display:none">
+      <div class="welcome-card">
+        <div class="welcome-icon icon-amber">🥇</div>
+        <div>
+          <h2 data-i18n="eval_title">Best URAC Evaluation Form</h2>
+          <p class="embed-hint" data-i18n="eval_hint">Trainer view: rate each trainee's proactivity and leave feedback for the Best URAC award.</p>
         </div>
-        <div class="form-group">
-          <label for="fbTrainer">TRAINER'S NAME 导师<span class="req">*</span></label>
-          <select id="fbTrainer" required>
-            <option value="" data-i18n="feedback_select_placeholder">-- Please select --</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="fbTopic">TOPICS 课题<span class="req">*</span></label>
-          <select id="fbTopic" required>
-            <option value="" data-i18n="feedback_select_placeholder">-- Please select --</option>
-          </select>
-          <input type="text" id="fbTopicOther" placeholder="Please specify... 请注明" style="display:none;margin-top:9px">
-        </div>
-        <div class="form-group">
-          <label for="fbDate">DATE 日期 <span class="opt" data-i18n="feedback_optional">(optional)</span></label>
-          <input type="date" id="fbDate">
-        </div>
-        <div id="fbScales"></div>
-        <div class="form-group">
-          <label for="fbComment">WHAT DO YOU LIKE MOST ABOUT THE TRAINER? 您最喜欢导师的哪一点 <span class="opt" data-i18n="feedback_optional">(optional)</span></label>
-          <textarea id="fbComment" rows="3"></textarea>
-        </div>
-        <button type="submit" class="submit-btn" id="fbSubmitBtn" data-i18n="feedback_submit">Submit Feedback</button>
-      </form>
-      <div class="form-success" id="feedbackSuccess" style="display:none">
-        <div class="icon">🎉</div>
-        <h3 data-i18n="feedback_success_title">Thank you!</h3>
-        <p data-i18n="feedback_success_sub">Your feedback has been submitted.</p>
-        <button type="button" class="submit-btn btn-secondary" id="fbAnotherBtn" data-i18n="feedback_submit_another">Submit another response</button>
+      </div>
+      <div class="attendance-cta-card">
+        <div class="attendance-cta-icon">🥇</div>
+        <h3 data-i18n="eval_cta_title">Ready to evaluate?</h3>
+        <p data-i18n="eval_cta_sub">This opens the evaluation form in a new tab. Sign in with Google to submit your ratings.</p>
+        <a class="attendance-cta-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSfwy4QMvNuQYJPAOuVYtIqapguAn8C7Y-54CbQY187q1M52jg/viewform" target="_blank" rel="noopener" data-i18n="eval_cta_btn">Open Evaluation Form ↗</a>
       </div>
     </div>
   </section>
@@ -1095,6 +1120,12 @@ const I18N = {
     feedback_success_sub: 'Your feedback has been submitted.',
     feedback_submit_another: 'Submit another response',
     feedback_error_incomplete: 'Please answer all required questions before submitting.',
+    eval_full: 'Best URAC Evaluation',
+    eval_title: 'Best URAC Evaluation Form',
+    eval_hint: "Trainer view: rate each trainee's proactivity and leave feedback for the Best URAC award.",
+    eval_cta_title: 'Ready to evaluate?',
+    eval_cta_sub: 'This opens the evaluation form in a new tab. Sign in with Google to submit your ratings.',
+    eval_cta_btn: 'Open Evaluation Form ↗',
     tab_ask_full: 'AI 苗苗 (Miao Miao)',
     ask_title: 'AI 苗苗 (Miao Miao)',
     ask_hint: "Your learning buddy! 🌱",
@@ -1197,6 +1228,12 @@ const I18N = {
     feedback_success_sub: '您的反馈已提交。',
     feedback_submit_another: '再提交一份',
     feedback_error_incomplete: '请填写所有必填项后再提交。',
+    eval_full: '最佳 URAC 评分',
+    eval_title: '最佳 URAC 评分表',
+    eval_hint: '讲师视图：为每位学员的积极度评分，并为最佳 URAC 奖留言。',
+    eval_cta_title: '准备好评分了吗？',
+    eval_cta_sub: '这将在新标签页中打开评分表。请使用 Google 账号登录以提交您的评分。',
+    eval_cta_btn: '打开评分表 ↗',
     tab_ask_full: 'AI 苗苗',
     ask_title: 'AI 苗苗',
     ask_hint: '你的学习小伙伴！🌱',
@@ -1238,6 +1275,7 @@ function applyLanguage() {
   renderCalendar();
   renderDashboard();
   renderChatSuggestions();
+  renderFeedbackAccess();
 }
 
 document.getElementById('langBtn').addEventListener('click', () => {
@@ -1299,6 +1337,21 @@ function updateTrainerViewBtn() {
   }
 }
 
+// Swaps the Feedback tab's content: trainees always see the "Feedback on
+// Trainers" form, but once a trainer unlocks trainer view (same PIN gate
+// used for past cohorts), it's replaced with the "Best URAC Evaluation
+// Form" CTA instead -- same tab/nav slot, different audience.
+function renderFeedbackAccess() {
+  const t = I18N[LANG];
+  const trainerMode = isTrainerUnlocked();
+  const traineeEl = document.getElementById('feedbackTraineeView');
+  const trainerEl = document.getElementById('feedbackTrainerView');
+  if (traineeEl) traineeEl.style.display = trainerMode ? 'none' : '';
+  if (trainerEl) trainerEl.style.display = trainerMode ? '' : 'none';
+  const titleEl = document.getElementById('feedbackPageTitle');
+  if (titleEl) titleEl.textContent = trainerMode ? t.eval_full : t.tab_feedback_full;
+}
+
 function openPinModal() {
   document.getElementById('pinError').style.display = 'none';
   document.getElementById('pinInput').value = '';
@@ -1318,6 +1371,7 @@ document.getElementById('trainerViewBtn').addEventListener('click', () => {
     renderCalendar();
     renderMentors();
     renderDashboard();
+    renderFeedbackAccess();
   } else {
     openPinModal();
   }
@@ -1334,6 +1388,7 @@ document.getElementById('pinSubmitBtn').addEventListener('click', () => {
     renderCalendar();
     renderMentors();
     renderDashboard();
+    renderFeedbackAccess();
   } else {
     document.getElementById('pinError').style.display = 'block';
   }
