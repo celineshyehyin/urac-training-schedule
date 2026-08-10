@@ -133,38 +133,63 @@
     border-radius: 999px;
   }
   .week-heading:first-child { margin-top: 4px; }
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
+    margin-bottom: 8px;
+  }
   .day-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 20px;
-    padding: 16px 18px;
-    margin-bottom: 14px;
+    padding-bottom: 14px;
     box-shadow: 0 3px 10px rgba(201,138,26,0.06);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
   .day-card-head {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 14px 10px;
+    border-bottom: 1px solid var(--border);
     margin-bottom: 10px;
   }
-  .day-avatar {
+  .day-weekday-pill {
     flex: 0 0 auto;
-    width: 44px; height: 44px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 800; color: white; font-size: 0.95rem;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    padding: 5px 9px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    margin-top: 1px;
   }
-  .day-avatar.status-past { background: linear-gradient(135deg, #d8cfae, #bcae82); }
-  .day-avatar.status-today { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); }
-  .day-avatar.status-future { background: var(--gold-light); color: var(--gold-dark); }
+  .day-card.wd-mon { border-top: 3px solid #f3a9c7; }
+  .day-card.wd-tue { border-top: 3px solid #9dc9ec; }
+  .day-card.wd-wed { border-top: 3px solid #c3a9f0; }
+  .day-card.wd-thu { border-top: 3px solid #8fd6b6; }
+  .day-card.wd-fri { border-top: 3px solid var(--gold); }
+  .day-card.wd-sat { border-top: 3px solid #f0b083; }
+  .day-card.wd-sun { border-top: 3px solid #ec9a9a; }
+  .day-card.wd-mon .day-weekday-pill { background: #fdebf1; color: #c2578a; }
+  .day-card.wd-tue .day-weekday-pill { background: #e8f3fb; color: #2f6fa3; }
+  .day-card.wd-wed .day-weekday-pill { background: #f1eafb; color: #7a4fc2; }
+  .day-card.wd-thu .day-weekday-pill { background: #cdeee0; color: #2f7d5d; }
+  .day-card.wd-fri .day-weekday-pill { background: #fdf1de; color: #c98a1a; }
+  .day-card.wd-sat .day-weekday-pill { background: #fde7d8; color: #c96a2b; }
+  .day-card.wd-sun .day-weekday-pill { background: #fbe3e3; color: #c94a4a; }
+  .day-head-main { min-width: 0; flex: 1; }
   .day-card .day-title {
     font-weight: 700;
-    font-size: 0.98rem;
+    font-size: 0.88rem;
     margin-bottom: 2px;
   }
   .day-card .day-sub {
     color: var(--muted);
-    font-size: 0.82rem;
+    font-size: 0.74rem;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -172,46 +197,47 @@
   }
   .day-note-pill {
     background: var(--gold-light); color: var(--gold-dark);
-    font-size: 0.68rem; font-weight: 700;
-    padding: 2px 9px; border-radius: 999px;
+    font-size: 0.62rem; font-weight: 700;
+    padding: 2px 8px; border-radius: 999px;
   }
-  .slot {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 10px 0;
+  .day-card-body { padding: 0 14px; flex: 1; }
+  .day-slot-row {
+    padding: 8px 0;
     border-top: 1px dashed var(--border);
-    font-size: 0.88rem;
+    font-size: 0.82rem;
   }
-  .slot:first-of-type { border-top: none; }
-  .slot .time {
-    flex: 0 0 auto;
+  .day-slot-row:first-child { border-top: none; }
+  .day-slot-time {
+    display: inline-block;
     background: #e8f3fb;
     color: #2f6fa3;
     font-weight: 700;
-    font-size: 0.72rem;
-    padding: 4px 10px;
+    font-size: 0.64rem;
+    padding: 2px 9px;
     border-radius: 999px;
     white-space: nowrap;
-    margin-top: 1px;
+    margin-bottom: 4px;
   }
-  .activity-wrap { flex: 1; min-width: 0; }
-  .slot .activity { white-space: pre-line; }
-  .activity-trainers {
+  .day-slot-topic { white-space: pre-line; line-height: 1.35; }
+  .day-trainers {
+    margin: 8px 14px 0;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 6px;
-    margin-top: 6px;
   }
+  .day-trainers-label { font-size: 0.8rem; flex: 0 0 auto; }
   .activity-trainer {
     display: inline-flex;
     align-items: center;
     gap: 4px;
     background: #f1eafb;
     color: #7a4fc2;
-    font-size: 0.74rem;
+    font-size: 0.68rem;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 3px 9px;
     border-radius: 999px;
   }
   .badge {
@@ -1474,14 +1500,6 @@ function statusBadge(dateIso) {
   return `<span class="badge future">${t.badge_upcoming}</span>`;
 }
 
-function dayStatusClass(dateIso) {
-  if (!dateIso) return 'future';
-  const d = new Date(dateIso);
-  if (d.getTime() === TODAY.getTime()) return 'today';
-  if (d < TODAY) return 'past';
-  return 'future';
-}
-
 function renderCalendar() {
   const cohort = cohortSelect.value;
   const search = document.getElementById('calSearch').value.trim().toLowerCase();
@@ -1515,7 +1533,11 @@ function renderCalendar() {
     return;
   }
 
+  // Days belonging to the same "week" group are laid out side by side in a
+  // Monday-Sunday style grid (like a weekly planner), one .week-grid row per
+  // week, instead of one long vertical stack of day cards.
   let lastWeek = null;
+  let gridEl = null;
   order.forEach(key => {
     const day = dayMap.get(key);
     if (day.week !== lastWeek) {
@@ -1523,14 +1545,14 @@ function renderCalendar() {
       h.className = 'week-heading';
       h.textContent = '🗓️ ' + (day.week || 'Other');
       body.appendChild(h);
+      gridEl = document.createElement('div');
+      gridEl.className = 'week-grid';
+      body.appendChild(gridEl);
       lastWeek = day.week;
     }
     const card = document.createElement('div');
-    card.className = 'day-card';
+    card.className = 'day-card wd-' + weekdayClass(day.weekday);
     const badge = statusBadge(day.date_iso);
-    const dayStatus = dayStatusClass(day.date_iso);
-    const dayNumMatch = (day.day_label || '').match(/\d+/);
-    const avatarText = dayNumMatch ? dayNumMatch[0] : '📅';
     // A day's "date" cell sometimes carries an extra annotation on a second
     // line (e.g. a date followed by "Management Meeting") -- split that off
     // into its own small badge instead of running it straight into the date text.
@@ -1538,21 +1560,56 @@ function renderCalendar() {
     const dateMain = dateLines[0] || '';
     const dateNotes = dateLines.slice(1);
 
+    // Trainers are collected from every slot in the day and shown once,
+    // together, in their own row underneath the topics -- kept fully
+    // separate from the topic text rather than mixed into it.
+    let dayTrainers = [];
+    const slotRows = day.slots.map(s => {
+      const parsed = parseSlot(s);
+      parsed.trainers.forEach(t => { if (!dayTrainers.includes(t)) dayTrainers.push(t); });
+      return `
+        <div class="day-slot-row">
+          ${s.time_slot ? `<span class="day-slot-time">${escapeHtml(s.time_slot)}</span>` : ''}
+          ${parsed.topic ? `<div class="day-slot-topic">${escapeHtml(parsed.topic)}</div>` : ''}
+        </div>`;
+    }).join('');
+    const trainersBlock = dayTrainers.length ? `
+      <div class="day-trainers">
+        <span class="day-trainers-label">🧑‍🏫</span>
+        ${dayTrainers.map(t => `<span class="activity-trainer">${escapeHtml(t)}</span>`).join('')}
+      </div>` : '';
+
     card.innerHTML = `
       <div class="day-card-head">
-        <div class="day-avatar status-${dayStatus}">${avatarText}</div>
-        <div>
+        <span class="day-weekday-pill">${escapeHtml(day.weekday || '')}</span>
+        <div class="day-head-main">
           <div class="day-title">${escapeHtml(day.day_label || '')} ${badge}</div>
           <div class="day-sub">
-            ${escapeHtml(day.weekday || '')} ${escapeHtml(dateMain)}
+            ${escapeHtml(dateMain)}
             ${dateNotes.map(n => `<span class="day-note-pill">📌 ${escapeHtml(n)}</span>`).join('')}
           </div>
         </div>
       </div>
-      ${day.slots.map(s => formatSlot(s)).join('')}
+      <div class="day-card-body">${slotRows}</div>
+      ${trainersBlock}
     `;
-    body.appendChild(card);
+    gridEl.appendChild(card);
   });
+}
+
+// Maps the sheet's free-text weekday label ("Mon", "Tues", "Thurs", ...) to a
+// short CSS class key so each day card gets its own pastel rainbow-style
+// accent colour running Monday through Sunday.
+function weekdayClass(weekday) {
+  const w = (weekday || '').trim().toLowerCase();
+  if (w.startsWith('mon')) return 'mon';
+  if (w.startsWith('tue')) return 'tue';
+  if (w.startsWith('wed')) return 'wed';
+  if (w.startsWith('thu')) return 'thu';
+  if (w.startsWith('fri')) return 'fri';
+  if (w.startsWith('sat')) return 'sat';
+  if (w.startsWith('sun')) return 'sun';
+  return 'mon';
 }
 
 // A slot's "activity" cell sometimes bundles the topic and the assigned
@@ -1562,10 +1619,10 @@ function renderCalendar() {
 //  2. No blank line at all, just a trailing line carrying a role title
 //     (Dr, AM, Consultant, CEO, ...) right after the topic, or occasionally
 //     the whole cell is nothing but a trainer credit on its own.
-// Both get split apart here so each trainer renders as its own pill instead
-// of being squashed into one run-on line with the topic.
+// Both get split apart here so trainers can be rendered separately from the
+// topic, rather than squashed into one run-on line with it.
 const TRAINER_LINE_RE = /^(DR\.?|CEO|COO|LPO|AM|AAM|CONSULTANT|THERAPIST|MENTOR|ASSESSOR)\b/i;
-function formatSlot(s) {
+function parseSlot(s) {
   const raw = s.activity || '';
   const blocks = raw.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
   let topicLines = blocks.length ? blocks[0].split('\n').map(l => l.trim()).filter(Boolean) : [];
@@ -1592,14 +1649,7 @@ function formatSlot(s) {
     }
   }
   const topic = topicLines.join('\n');
-  return `
-    <div class="slot">
-      <div class="time">${escapeHtml(s.time_slot || '')}</div>
-      <div class="activity-wrap">
-        ${topic ? `<div class="activity">${escapeHtml(topic)}</div>` : ''}
-        ${trainers.length ? `<div class="activity-trainers">${trainers.map(t => `<span class="activity-trainer">🧑‍🏫 ${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-      </div>
-    </div>`;
+  return { topic, trainers };
 }
 
 function escapeHtml(s) {
