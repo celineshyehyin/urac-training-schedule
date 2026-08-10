@@ -432,41 +432,33 @@
   .welcome-card p { margin: 0; color: var(--muted); font-size: 0.9rem; }
   .welcome-icon.icon-amber { background: #fdf1de; }
   .welcome-icon.icon-pink { background: #fdebf1; }
-  .stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 14px;
-    margin-bottom: 26px;
+  .exam-countdown-card {
+    background: linear-gradient(135deg, #c2436d, #d1477a);
+    color: white; border-radius: 22px; padding: 20px 22px 22px; margin-bottom: 26px;
+    box-shadow: 0 6px 16px rgba(209,71,122,0.3);
   }
-  .stat-card {
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 20px 14px;
-    text-align: center;
-    transition: transform 0.15s ease;
+  .exam-countdown-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .exam-countdown-icon {
+    flex: 0 0 auto; width: 46px; height: 46px; border-radius: 14px;
+    background: rgba(255,255,255,0.22);
+    display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
   }
-  .stat-card .icon-circle {
-    width: 46px; height: 46px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 12px; font-size: 1.2rem;
-    color: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  .exam-countdown-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.9;
   }
-  .stat-card .stat-value { font-size: 1.7rem; font-weight: 800; color: var(--ink); }
-  .stat-card .stat-label {
-    font-size: 0.68rem; color: var(--muted); margin-top: 4px;
-    text-transform: uppercase; letter-spacing: 0.03em; font-weight: 700;
+  .exam-countdown-date { font-size: 1.02rem; font-weight: 800; margin-top: 2px; }
+  .exam-countdown-clock { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .countdown-unit {
+    background: rgba(255,255,255,0.18); border-radius: 14px; padding: 10px 12px;
+    min-width: 62px; text-align: center; flex: 1 1 62px;
   }
-  .stat-card.clickable { cursor: pointer; }
-  .stat-card.clickable:hover { transform: translateY(-2px); border-color: var(--gold); }
-  .stat-card.c1 { background: #f1eafb; }
-  .stat-card.c2 { background: #e6f6ee; }
-  .stat-card.c3 { background: #fdebf1; }
-  .stat-card.c4 { background: #fdf1de; }
-  .stat-1 { background: #8a63d2; }
-  .stat-2 { background: #3fa77e; }
-  .stat-3 { background: #d1477a; }
-  .stat-4 { background: #d98a2b; }
+  .countdown-num { font-size: 1.55rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  .countdown-unit-label {
+    font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    margin-top: 4px; opacity: 0.85;
+  }
+  .countdown-sep { font-size: 1.3rem; font-weight: 800; opacity: 0.55; }
+  .exam-countdown-empty { font-size: 0.88rem; opacity: 0.92; }
   .section-label {
     font-weight: 700;
     color: var(--ink);
@@ -844,26 +836,34 @@
       </div>
     </div>
 
-    <div class="stat-grid">
-      <div class="stat-card c1">
-        <div class="icon-circle stat-1">👥</div>
-        <div class="stat-value" id="statTrainees">0</div>
-        <div class="stat-label" data-i18n="dash_stat_trainees">Trainees</div>
+    <div class="exam-countdown-card">
+      <div class="exam-countdown-head">
+        <div class="exam-countdown-icon">⏰</div>
+        <div>
+          <div class="exam-countdown-label" data-i18n="dash_countdown_label">Countdown to Next Exam</div>
+          <div class="exam-countdown-date" id="examCountdownDate"></div>
+        </div>
       </div>
-      <div class="stat-card c2">
-        <div class="icon-circle stat-2">📅</div>
-        <div class="stat-value" id="statToday">0</div>
-        <div class="stat-label" data-i18n="dash_stat_today">Today</div>
-      </div>
-      <div class="stat-card c3">
-        <div class="icon-circle stat-3">⏰</div>
-        <div class="stat-value" id="statExamDays">–</div>
-        <div class="stat-label" data-i18n="dash_stat_exam">Days to Exam</div>
-      </div>
-      <div class="stat-card c4 clickable" id="statFeedbackCard">
-        <div class="icon-circle stat-4">⭐</div>
-        <div class="stat-value" id="statFeedback">0</div>
-        <div class="stat-label" data-i18n="dash_stat_feedback">Feedback</div>
+      <div class="exam-countdown-clock" id="examCountdownClock">
+        <div class="countdown-unit">
+          <div class="countdown-num" id="cdDays">--</div>
+          <div class="countdown-unit-label" data-i18n="dash_countdown_days">Days</div>
+        </div>
+        <div class="countdown-sep">:</div>
+        <div class="countdown-unit">
+          <div class="countdown-num" id="cdHours">--</div>
+          <div class="countdown-unit-label" data-i18n="dash_countdown_hours">Hrs</div>
+        </div>
+        <div class="countdown-sep">:</div>
+        <div class="countdown-unit">
+          <div class="countdown-num" id="cdMinutes">--</div>
+          <div class="countdown-unit-label" data-i18n="dash_countdown_minutes">Min</div>
+        </div>
+        <div class="countdown-sep">:</div>
+        <div class="countdown-unit">
+          <div class="countdown-num" id="cdSeconds">--</div>
+          <div class="countdown-unit-label" data-i18n="dash_countdown_seconds">Sec</div>
+        </div>
       </div>
     </div>
 
@@ -1132,6 +1132,12 @@ const I18N = {
     dash_stat_today: 'Today',
     dash_stat_exam: 'Days to Exam',
     dash_stat_feedback: 'Feedback',
+    dash_countdown_label: 'Countdown to Next Exam',
+    dash_countdown_days: 'Days',
+    dash_countdown_hours: 'Hrs',
+    dash_countdown_minutes: 'Min',
+    dash_countdown_seconds: 'Sec',
+    dash_countdown_none: 'No upcoming exam scheduled',
     dash_this_week: 'This week',
     dash_view_schedule: 'View schedule',
     dash_cohorts: 'Cohorts',
@@ -1243,6 +1249,12 @@ const I18N = {
     dash_stat_today: '今日',
     dash_stat_exam: '距考试天数',
     dash_stat_feedback: '反馈',
+    dash_countdown_label: '距下次考试倒计时',
+    dash_countdown_days: '天',
+    dash_countdown_hours: '时',
+    dash_countdown_minutes: '分',
+    dash_countdown_seconds: '秒',
+    dash_countdown_none: '暂无安排考试',
     dash_this_week: '本周',
     dash_view_schedule: '查看课程表',
     dash_cohorts: '批次',
@@ -1769,14 +1781,9 @@ function renderDashboard() {
     { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
   );
 
-  const currentTraineeCount = mentorsCurrentCount() !== null ? mentorsCurrentCount() : MENTORS.length;
-  document.getElementById('statTrainees').textContent = currentTraineeCount;
-  document.getElementById('statFeedback').textContent = '0';
-
   const todayRows = (CALENDAR[currentCohortName] || []).filter(
     r => r.date_iso === todayIso && r.activity && !/lunch|break/i.test(r.activity)
   );
-  document.getElementById('statToday').textContent = todayRows.length;
 
   let nextExamDate = null;
   EXAMS.forEach(e => {
@@ -1784,7 +1791,7 @@ function renderDashboard() {
     if (d && d >= TODAY && (!nextExamDate || d < nextExamDate)) nextExamDate = d;
   });
   const daysToExam = nextExamDate ? Math.round((nextExamDate - TODAY) / 86400000) : null;
-  document.getElementById('statExamDays').textContent = daysToExam === null ? '–' : daysToExam;
+  startExamCountdown(nextExamDate);
 
   const strip = document.getElementById('weekStrip');
   strip.innerHTML = '';
@@ -1874,7 +1881,56 @@ function renderDashboard() {
   }
 }
 document.getElementById('nextBannerBtn').addEventListener('click', () => activatePanel('calendar'));
-document.getElementById('statFeedbackCard').addEventListener('click', () => activatePanel('feedback'));
+
+// Ticks the Dashboard's "Countdown to Next Exam" clock down to the second.
+// Re-called every time renderDashboard() runs (e.g. on language switch), so
+// any previous interval is cleared first to avoid stacking multiple timers.
+let examCountdownInterval = null;
+function startExamCountdown(examDate) {
+  const t = I18N[LANG];
+  if (examCountdownInterval) clearInterval(examCountdownInterval);
+
+  const dateEl = document.getElementById('examCountdownDate');
+  const clockEl = document.getElementById('examCountdownClock');
+  const cdDays = document.getElementById('cdDays');
+  const cdHours = document.getElementById('cdHours');
+  const cdMinutes = document.getElementById('cdMinutes');
+  const cdSeconds = document.getElementById('cdSeconds');
+
+  if (!examDate) {
+    dateEl.textContent = t.dash_countdown_none;
+    clockEl.style.display = 'none';
+    return;
+  }
+  clockEl.style.display = 'flex';
+  dateEl.textContent = examDate.toLocaleDateString(
+    LANG === 'zh' ? 'zh-CN' : 'en-US',
+    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+  );
+
+  const tick = () => {
+    const diff = examDate.getTime() - Date.now();
+    if (diff <= 0) {
+      cdDays.textContent = '0';
+      cdHours.textContent = '00';
+      cdMinutes.textContent = '00';
+      cdSeconds.textContent = '00';
+      clearInterval(examCountdownInterval);
+      return;
+    }
+    const totalSeconds = Math.floor(diff / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    cdDays.textContent = days;
+    cdHours.textContent = String(hours).padStart(2, '0');
+    cdMinutes.textContent = String(minutes).padStart(2, '0');
+    cdSeconds.textContent = String(seconds).padStart(2, '0');
+  };
+  tick();
+  examCountdownInterval = setInterval(tick, 1000);
+}
 
 // ---------- Exams ----------
 // Exam detail cells are free-form text where "/" separates fields within one
