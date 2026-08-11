@@ -1,0 +1,17 @@
+{
+  "name": "URAC Training Program",
+  "short_name": "URAC Training",
+  "description": "Training calendar, exam schedule, mentor directory & self-study syllabus for UR Academy.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#faf3e0",
+  "theme_color": "#e2a530",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

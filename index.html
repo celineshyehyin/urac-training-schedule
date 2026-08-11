@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>URAC Training Program</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#e2a530">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="URAC Training">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -469,12 +476,19 @@
   .venue-info { flex: 1 1 auto; min-width: 0; }
   .venue-title { margin: 0 0 8px; font-size: 1.05rem; font-weight: 700; color: var(--gold-dark); }
   .venue-address-line { margin: 0 0 3px; font-size: 0.82rem; color: var(--ink); opacity: 0.75; line-height: 1.45; }
+  .venue-btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
   .venue-maps-btn {
-    display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+    display: inline-flex; align-items: center; gap: 6px;
     padding: 7px 16px; border: 1.5px solid var(--gold-dark); border-radius: 999px;
     color: var(--gold-dark); font-size: 0.8rem; font-weight: 600; text-decoration: none;
   }
   .venue-maps-btn:hover { background: rgba(201,138,26,0.14); }
+  .venue-feedback-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 16px; border: 1.5px solid var(--gold-dark); border-radius: 999px;
+    background: var(--gold-dark); color: #fff; font-size: 0.8rem; font-weight: 600; text-decoration: none;
+  }
+  .venue-feedback-btn:hover { background: #b47c16; }
   .exam-countdown-card {
     background: linear-gradient(135deg, #fdebf1, #fbdcea);
     color: var(--ink); border: 1px solid #f6c9dc; border-radius: 22px; padding: 20px 22px 22px; margin-bottom: 26px;
@@ -891,7 +905,9 @@
             <p class="venue-address-line">11 &amp; 11A, Lorong Bukit Minyak Utama 2,</p>
             <p class="venue-address-line">Taman Bukit Minyak Utama,</p>
             <p class="venue-address-line">14000 Bukit Mertajam, Pulau Pinang</p>
-            <a class="venue-maps-btn" href="https://www.google.com/maps/search/?api=1&amp;query=11%20%26%2011A%2C%20Lorong%20Bukit%20Minyak%20Utama%202%2C%20Taman%20Bukit%20Minyak%20Utama%2C%2014000%20Bukit%20Mertajam%2C%20Pulau%20Pinang" target="_blank" rel="noopener">🗺️ Open in Maps</a>
+            <div class="venue-btn-row">
+              <a class="venue-maps-btn" href="https://www.google.com/maps/search/?api=1&amp;query=11%20%26%2011A%2C%20Lorong%20Bukit%20Minyak%20Utama%202%2C%20Taman%20Bukit%20Minyak%20Utama%2C%2014000%20Bukit%20Mertajam%2C%20Pulau%20Pinang" target="_blank" rel="noopener">🗺️ Open in Maps</a>
+            </div>
           </div>
         </div>
       </div>
@@ -902,7 +918,9 @@
             <h4 class="venue-title">📍 UR Klinik Greenlane</h4>
             <p class="venue-address-line">1A, Jalan Delima, Island Glades,</p>
             <p class="venue-address-line">11700 Greenlane, Pulau Pinang</p>
-            <a class="venue-maps-btn" href="https://www.google.com/maps/search/?api=1&amp;query=1A%2C%20Jalan%20Delima%2C%20Island%20Glades%2C%2011700%20Greenlane%2C%20Pulau%20Pinang" target="_blank" rel="noopener">🗺️ Open in Maps</a>
+            <div class="venue-btn-row">
+              <a class="venue-maps-btn" href="https://www.google.com/maps/search/?api=1&amp;query=1A%2C%20Jalan%20Delima%2C%20Island%20Glades%2C%2011700%20Greenlane%2C%20Pulau%20Pinang" target="_blank" rel="noopener">🗺️ Open in Maps</a>
+            </div>
           </div>
         </div>
       </div>
@@ -914,7 +932,9 @@
             <p class="venue-address-line">Level 9 &amp; 10, Menara Liang Court,</p>
             <p class="venue-address-line">37, Jln Sultan Ahmad Shah, Georgetown,</p>
             <p class="venue-address-line">10050 George Town, Penang</p>
-            <a class="venue-maps-btn" href="https://www.google.com/maps/search/?api=1&amp;query=Level%209%20%26%2010%2C%20Menara%20Liang%20Court%2C%2037%2C%20Jln%20Sultan%20Ahmad%20Shah%2C%20Georgetown%2C%2010050%20George%20Town%2C%20Penang" target="_blank" rel="noopener">🗺️ Open in Maps</a>
+            <div class="venue-btn-row">
+              <a class="venue-maps-btn" href="https://www.google.com/maps/search/?api=1&amp;query=Level%209%20%26%2010%2C%20Menara%20Liang%20Court%2C%2037%2C%20Jln%20Sultan%20Ahmad%20Shah%2C%20Georgetown%2C%2010050%20George%20Town%2C%20Penang" target="_blank" rel="noopener">🗺️ Open in Maps</a>
+            </div>
           </div>
         </div>
       </div>
@@ -930,7 +950,10 @@
             <p class="venue-address-line">1C, Jalan Delima, Taman Island Glades,</p>
             <p class="venue-address-line">11700 Gelugor, Pulau Pinang</p>
             <p class="venue-address-line">(Behind UR Klinik GL)</p>
-            <a class="venue-maps-btn" href="https://www.google.com/maps/search/?api=1&amp;query=1C%2C%20Jalan%20Delima%2C%20Taman%20Island%20Glades%2C%2011700%20Gelugor%2C%20Pulau%20Pinang" target="_blank" rel="noopener">🗺️ Open in Maps</a>
+            <div class="venue-btn-row">
+              <a class="venue-maps-btn" href="https://www.google.com/maps/search/?api=1&amp;query=1C%2C%20Jalan%20Delima%2C%20Taman%20Island%20Glades%2C%2011700%20Gelugor%2C%20Pulau%20Pinang" target="_blank" rel="noopener">🗺️ Open in Maps</a>
+              <a class="venue-feedback-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeAQg6hdwEU1fP4hRvNUZ0lJRoX9KY7AI2BzIj11rjDb0GszQ/viewform?usp=header" target="_blank" rel="noopener" data-i18n="dash_hostel_feedback_btn">📝 Hostel Feedback</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1257,6 +1280,7 @@ const I18N = {
     dash_training_centers: 'Training Centre',
     dash_where_stay: "Where you'll stay:",
     dash_hostel_name: '📍 Trainee Hostel',
+    dash_hostel_feedback_btn: '📝 Hostel Feedback',
     tab_ranking_full: 'Ranking',
     dash_ranking_hint2: 'Live leaderboard scored by trainers.',
     dash_open: 'Open',
@@ -1382,6 +1406,7 @@ const I18N = {
     dash_training_centers: '培训中心',
     dash_where_stay: '住宿地点：',
     dash_hostel_name: '📍 学员宿舍',
+    dash_hostel_feedback_btn: '📝 宿舍反馈',
     tab_ranking_full: '排行榜',
     dash_ranking_hint2: '讲师打分的实时排行榜。',
     dash_open: '打开',
@@ -2055,12 +2080,16 @@ function renderDashboard() {
       const avatarInner = photo ? `<img src="${photo}" alt="${escapeHtml(name)}">` : escapeHtml(initials);
       const ringColor = TRAINEE_AVATAR_COLORS[i % TRAINEE_AVATAR_COLORS.length];
       const avatarStyle = ` style="${photo ? '' : `background:${ringColor};`}border-color:${ringColor}"`;
+      const positionBadge = tr.position
+        ? `<span class="trainer-subject-badge">💼 ${escapeHtml(tr.position)}</span>`
+        : '';
       const subjectBadge = tr.subject
         ? `<span class="trainer-subject-badge">${tr.icon || '🎓'} ${escapeHtml(tr.subject)}</span>`
         : '';
       return `<div class="trainee-card trainer-card">
         <div class="trainee-avatar"${avatarStyle}>${avatarInner}</div>
         <h4>${escapeHtml(name)}</h4>
+        ${positionBadge}
         ${subjectBadge}
       </div>`;
     }).join('');
@@ -2293,18 +2322,18 @@ function traineePhoto(name) {
 // data this site has, so theirs is their role/title instead, as confirmed
 // directly by the program coordinator.
 const TRAINERS = [
-  { name: 'Nicole', subject: 'POS System & Customer Flow', icon: '💳' },
-  { name: 'Hester', subject: 'Personality: DISC', icon: '🧠' },
-  { name: 'Sharon', subject: 'Oxyinfusion & SRW Treatment', icon: '✨' },
-  { name: 'Phei Chia', subject: 'Asst. Area Manager', icon: '🧑‍💼' },
-  { name: 'Janice', subject: 'Skin Care Knowledge', icon: '🧴' },
-  { name: 'Enna', subject: 'Treatment Role Play', icon: '🧖‍♀️' },
-  { name: 'Katherine', subject: 'Customer Flow & Skin Analysis', icon: '📸' },
-  { name: 'Margaret', subject: 'Oxyinfusion Treatment', icon: '✨' },
-  { name: 'Tiffany', subject: 'Treatment Demo & Role Play', icon: '🧖‍♀️' },
-  { name: 'Ai Mei', subject: 'Treatment Demo & Role Play', icon: '🧖‍♀️' },
-  { name: 'Sim Mei', subject: 'Trainer (KL Region)', icon: '📍' },
-  { name: 'Rayna', subject: 'Trainer (JB Region)', icon: '📍' },
+  { name: 'Nicole', position: 'Area Manager', subject: 'POS System & Customer Flow', icon: '💳' },
+  { name: 'Hester', position: 'Area Manager', subject: 'Personality: DISC', icon: '🧠' },
+  { name: 'Sharon', position: 'Area Manager', subject: 'Oxyinfusion & SRW Treatment', icon: '✨' },
+  { name: 'Phei Chia', position: 'Asst. Area Manager', icon: '🧑‍💼' },
+  { name: 'Janice', position: 'Consultant', subject: 'Skin Care Knowledge', icon: '🧴' },
+  { name: 'Enna', position: 'Consultant', subject: 'Treatment Role Play', icon: '🧖‍♀️' },
+  { name: 'Katherine', position: 'Consultant', subject: 'Customer Flow & Skin Analysis', icon: '📸' },
+  { name: 'Margaret', position: 'Consultant', subject: 'Oxyinfusion Treatment', icon: '✨' },
+  { name: 'Tiffany', position: 'Therapist', subject: 'Treatment Demo & Role Play', icon: '🧖‍♀️' },
+  { name: 'Ai Mei', position: 'Therapist', subject: 'Treatment Demo & Role Play', icon: '🧖‍♀️' },
+  { name: 'Sim Mei', position: 'Consultant', subject: 'Trainer (KL Region)', icon: '📍' },
+  { name: 'Rayna', position: 'Therapist', subject: 'Trainer (JB Region)', icon: '📍' },
 ];
 function trainerPhoto(name) {
   return TRAINER_PHOTOS[(name || '').trim().toLowerCase()] || null;
