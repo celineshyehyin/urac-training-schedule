@@ -2245,6 +2245,10 @@ function traineePhoto(name) {
 // data this site has, so theirs is their role/title instead, as confirmed
 // directly by the program coordinator.
 const TRAINERS = [
+  { name: 'Nicole', subject: 'POS System & Customer Flow', icon: '💳' },
+  { name: 'Hester', subject: 'Personality: DISC', icon: '🧠' },
+  { name: 'Sharon', subject: 'Oxyinfusion & SRW Treatment', icon: '✨' },
+  { name: 'Phei Chia', subject: 'Asst. Area Manager', icon: '🧑‍💼' },
   { name: 'Janice', subject: 'Skin Care Knowledge', icon: '🧴' },
   { name: 'Enna', subject: 'Treatment Role Play', icon: '🧖‍♀️' },
   { name: 'Katherine', subject: 'Customer Flow & Skin Analysis', icon: '📸' },
@@ -2253,10 +2257,6 @@ const TRAINERS = [
   { name: 'Ai Mei', subject: 'Treatment Demo & Role Play', icon: '🧖‍♀️' },
   { name: 'Sim Mei', subject: 'Trainer (KL Region)', icon: '📍' },
   { name: 'Rayna', subject: 'Trainer (JB Region)', icon: '📍' },
-  { name: 'Nicole', subject: 'POS System & Customer Flow', icon: '💳' },
-  { name: 'Hester', subject: 'Personality: DISC', icon: '🧠' },
-  { name: 'Sharon', subject: 'Oxyinfusion & SRW Treatment', icon: '✨' },
-  { name: 'Phei Chia', subject: 'Asst. Area Manager', icon: '🧑‍💼' },
 ];
 function trainerPhoto(name) {
   return TRAINER_PHOTOS[(name || '').trim().toLowerCase()] || null;
@@ -2268,6 +2268,13 @@ function trainerPhoto(name) {
 // entry here plus a matching photo in committee_photos.json whenever the
 // committee line-up changes.
 const COMMITTEE = [
+  { name: 'Dr. Fong', title: 'CEO', icon: '👑', lessons: 'UR Must Know & ISO Briefing' },
+  { name: 'Dr. Jaye', title: 'COO', icon: '🧑‍💼', lessons: '5 项管理' },
+  { name: 'Dr. Jovyn', title: 'CPO', icon: '🧑‍💼', lessons: 'URAC Study Group & Align' },
+  { name: 'Steve', title: 'CFO', icon: '🧑‍💼' },
+  { name: 'Dr. Nicole', title: 'Vice People Officer', icon: '🧑‍💼', lessons: 'On Job Briefing' },
+  { name: 'Dr. Xuan', title: 'Lead Operating Officer', icon: '🧑‍💼', lessons: 'Skin Anatomy & Physiology, UV Light, Sunblock & Pigmentation' },
+  { name: 'Dr. Jem', title: 'Lead People Officer', icon: '🧑‍💼', lessons: 'UR Break & Build System, 靶心能力 & Customer Flow Made Simple' },
   { name: 'Adeline', title: 'Asst. Recruitment Manager', icon: '🧑‍💼' },
   { name: 'Meredith', title: 'Recruitment Consultant', icon: '🧑‍💼' },
   { name: 'Estee', title: 'Recruitment Consultant', icon: '🧑‍💼' },
@@ -2277,13 +2284,6 @@ const COMMITTEE = [
   { name: 'Liang', title: 'Senior Creative & Culture Designer', icon: '🎨' },
   { name: 'Carol', title: 'Creative & Culture Designer', icon: '🎨' },
   { name: 'Xin Ru', title: 'Creative & Culture Designer', icon: '🎨' },
-  { name: 'Dr. Nicole', title: 'Vice People Officer', icon: '🧑‍💼', lessons: 'On Job Briefing' },
-  { name: 'Dr. Jem', title: 'Lead People Officer', icon: '🧑‍💼', lessons: 'UR Break & Build System, 靶心能力 & Customer Flow Made Simple' },
-  { name: 'Dr. Xuan', title: 'Lead Operating Officer', icon: '🧑‍💼', lessons: 'Skin Anatomy & Physiology, UV Light, Sunblock & Pigmentation' },
-  { name: 'Dr. Fong', title: 'CEO', icon: '👑', lessons: 'UR Must Know & ISO Briefing' },
-  { name: 'Dr. Jaye', title: 'COO', icon: '🧑‍💼', lessons: '5 项管理' },
-  { name: 'Dr. Jovyn', title: 'CPO', icon: '🧑‍💼', lessons: 'URAC Study Group & Align' },
-  { name: 'Steve', title: 'CFO', icon: '🧑‍💼' },
 ];
 function committeePhoto(name) {
   return COMMITTEE_PHOTOS[(name || '').trim().toLowerCase()] || null;
