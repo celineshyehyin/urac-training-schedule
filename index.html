@@ -2081,7 +2081,7 @@ function renderDashboard() {
       const ringColor = TRAINEE_AVATAR_COLORS[i % TRAINEE_AVATAR_COLORS.length];
       const avatarStyle = ` style="${photo ? '' : `background:${ringColor};`}border-color:${ringColor}"`;
       const positionBadge = tr.position
-        ? `<span class="trainer-subject-badge">💼 ${escapeHtml(tr.position)}</span>`
+        ? `<span class="trainer-subject-badge">${positionIcon(tr.position)} ${escapeHtml(tr.position)}</span>`
         : '';
       const subjectBadge = tr.subject
         ? `<span class="trainer-subject-badge">${tr.icon || '🎓'} ${escapeHtml(tr.subject)}</span>`
@@ -2337,6 +2337,13 @@ const TRAINERS = [
 ];
 function trainerPhoto(name) {
   return TRAINER_PHOTOS[(name || '').trim().toLowerCase()] || null;
+}
+function positionIcon(position) {
+  const p = (position || '').toLowerCase();
+  if (p.includes('area manager')) return '👩🏻‍💼';
+  if (p.includes('consultant')) return '👱🏻‍♀️';
+  if (p.includes('therapist')) return '💆🏻‍♀️';
+  return '💼';
 }
 
 // Committee members shown on the "Trainers & Committee" tab's "Meet the
