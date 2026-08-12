@@ -1305,14 +1305,15 @@ const I18N = {
     roster_title: 'Trainers & Trainees',
     roster_hint: "Meet the trainers and committee leading this batch.",
     plant_stage_0: 'Tiny Seed',
-    plant_stage_1: 'Awakening Seed',
-    plant_stage_2: 'Little Sprout',
-    plant_stage_3: 'Growing Sprout',
-    plant_stage_4: 'Young Plant',
-    plant_stage_5: 'Budding Plant',
-    plant_stage_6: 'First Bloom',
-    plant_stage_7: 'Beautiful Bloom',
-    plant_stage_8: 'Flourishing Garden',
+    plant_stage_1: 'First Leaf',
+    plant_stage_2: 'Awakening Seed',
+    plant_stage_3: 'Little Sprout',
+    plant_stage_4: 'Growing Sprout',
+    plant_stage_5: 'Young Plant',
+    plant_stage_6: 'Budding Plant',
+    plant_stage_7: 'First Bloom',
+    plant_stage_8: 'Beautiful Bloom',
+    plant_stage_9: 'Flourishing Garden',
     tab_feedback_full: 'Feedback',
     feedback_title: 'Feedback on Trainers',
     feedback_optional: '(optional)',
@@ -1431,14 +1432,15 @@ const I18N = {
     roster_title: '导师与学员',
     roster_hint: '认识本批次的讲师与委员会成员。',
     plant_stage_0: '小小种子',
-    plant_stage_1: '种子苏醒',
-    plant_stage_2: '小芽初生',
-    plant_stage_3: '茁壮成长',
-    plant_stage_4: '小苗成长',
-    plant_stage_5: '含苞待放',
-    plant_stage_6: '初次绽放',
-    plant_stage_7: '盛放之花',
-    plant_stage_8: '繁花盛开',
+    plant_stage_1: '一片叶子',
+    plant_stage_2: '种子苏醒',
+    plant_stage_3: '小芽初生',
+    plant_stage_4: '茁壮成长',
+    plant_stage_5: '小苗成长',
+    plant_stage_6: '含苞待放',
+    plant_stage_7: '初次绽放',
+    plant_stage_8: '盛放之花',
+    plant_stage_9: '繁花盛开',
     tab_feedback_full: '反馈',
     feedback_title: '讲师反馈',
     feedback_optional: '（选填）',
@@ -2484,7 +2486,8 @@ function formatScore(n) {
 // Growth stage is driven by the trainee's own mark against fixed thresholds
 // (not by their rank), so a mark always maps to the same stage no matter how
 // the rest of the group scores:
-//   0-499        -> tiny seed
+//   0-49         -> tiny seed
+//   50-499       -> first leaf
 //   500-999      -> awakening seed
 //   1,000-1,499  -> little sprout
 //   1,500-2,499  -> growing sprout
@@ -2497,15 +2500,16 @@ function formatScore(n) {
 //                   card doesn't get overcrowded
 function plantStageFromMark(mark) {
   const m = Number(mark) || 0;
-  if (m < 500) return 0;
-  if (m < 1000) return 1;
-  if (m < 1500) return 2;
-  if (m < 2500) return 3;
-  if (m < 3500) return 4;
-  if (m < 4500) return 5;
-  if (m < 6000) return 6;
-  if (m < 7500) return 7;
-  return 8;
+  if (m < 50) return 0;
+  if (m < 500) return 1;
+  if (m < 1000) return 2;
+  if (m < 1500) return 3;
+  if (m < 2500) return 4;
+  if (m < 3500) return 5;
+  if (m < 4500) return 6;
+  if (m < 6000) return 7;
+  if (m < 7500) return 8;
+  return 9;
 }
 
 // Fixed spots for the extra "garden" flowers that appear once a trainee
@@ -2553,11 +2557,11 @@ function gardenSVG(mark) {
   return `<svg viewBox="0 0 100 90" class="plant-svg plant-svg-garden">${soil}${extras}${mainStem}${mainLeaves}${mainFlower}</svg>`;
 }
 
-// Hand-drawn stage icons for the ranking "garden": tiny seed -> awakening
-// seed -> little sprout -> growing sprout -> young plant -> budding plant ->
-// first bloom -> beautiful bloom, all built from plain SVG shapes so no
-// external image assets are needed. Stage 8 (flourishing garden) is handled
-// separately by gardenSVG().
+// Hand-drawn stage icons for the ranking "garden": tiny seed -> first leaf ->
+// awakening seed -> little sprout -> growing sprout -> young plant -> budding
+// plant -> first bloom -> beautiful bloom, all built from plain SVG shapes so
+// no external image assets are needed. Stage 9 (flourishing garden) is
+// handled separately by gardenSVG().
 function plantSVG(stage) {
   const soil = '<ellipse cx="30" cy="82" rx="22" ry="6" fill="#d8b788"/>';
   if (stage === 0) {
@@ -2568,6 +2572,16 @@ function plantSVG(stage) {
     </svg>`;
   }
   if (stage === 1) {
+    // First Leaf -- the seed is still mostly buried, with a single small
+    // leaf unfurling on a short stem right next to it.
+    return `<svg viewBox="0 0 60 90" class="plant-svg">${soil}
+      <ellipse cx="30" cy="76" rx="8" ry="6" fill="#8a5a34"/>
+      <ellipse cx="27" cy="74" rx="3" ry="2" fill="#c9975f" opacity="0.6"/>
+      <rect x="29" y="66" width="3" height="12" rx="1.5" fill="#4caf6b"/>
+      <ellipse cx="35" cy="66" rx="7" ry="4" fill="#6fcf87" transform="rotate(-20 35 66)"/>
+    </svg>`;
+  }
+  if (stage === 2) {
     // Awakening Seed -- the seed cracks open with a tiny green nub poking out.
     return `<svg viewBox="0 0 60 90" class="plant-svg">${soil}
       <ellipse cx="30" cy="76" rx="8" ry="6" fill="#8a5a34"/>
@@ -2576,14 +2590,14 @@ function plantSVG(stage) {
       <ellipse cx="32" cy="55" rx="4" ry="3" fill="#6fcf87" transform="rotate(-20 32 55)"/>
     </svg>`;
   }
-  if (stage === 2) {
+  if (stage === 3) {
     // Little Sprout -- a short stem with one or two tiny leaves.
     return `<svg viewBox="0 0 60 90" class="plant-svg">${soil}
       <rect x="28" y="62" width="4" height="20" rx="2" fill="#4caf6b"/>
       <ellipse cx="20" cy="65" rx="7" ry="4" fill="#6fcf87" transform="rotate(-25 20 65)"/>
     </svg>`;
   }
-  if (stage === 3) {
+  if (stage === 4) {
     // Growing Sprout -- taller stem, more leaves.
     return `<svg viewBox="0 0 60 90" class="plant-svg">${soil}
       <rect x="28" y="52" width="4" height="30" rx="2" fill="#4caf6b"/>
@@ -2591,7 +2605,7 @@ function plantSVG(stage) {
       <ellipse cx="42" cy="62" rx="8" ry="4.5" fill="#5fbf7a" transform="rotate(28 42 62)"/>
     </svg>`;
   }
-  if (stage === 4) {
+  if (stage === 5) {
     // Young Plant -- a complete little plant, still no flower.
     return `<svg viewBox="0 0 60 90" class="plant-svg">${soil}
       <rect x="28" y="42" width="4" height="40" rx="2" fill="#4caf6b"/>
@@ -2601,7 +2615,7 @@ function plantSVG(stage) {
       <ellipse cx="40" cy="70" rx="7" ry="4" fill="#5fbf7a" transform="rotate(20 40 70)"/>
     </svg>`;
   }
-  if (stage === 5) {
+  if (stage === 6) {
     // Budding Plant -- a closed bud appears at the top.
     return `<svg viewBox="0 0 60 90" class="plant-svg">${soil}
       <rect x="28" y="38" width="4" height="44" rx="2" fill="#4caf6b"/>
@@ -2611,7 +2625,7 @@ function plantSVG(stage) {
       <ellipse cx="30" cy="34" rx="3.5" ry="6" fill="#f4b0d8"/>
     </svg>`;
   }
-  if (stage === 6) {
+  if (stage === 7) {
     // First Bloom -- the first flower opens (fewer petals).
     return `<svg viewBox="0 0 60 90" class="plant-svg">${soil}
       <rect x="28" y="38" width="4" height="44" rx="2" fill="#4caf6b"/>
@@ -2626,7 +2640,7 @@ function plantSVG(stage) {
       </g>
     </svg>`;
   }
-  // Beautiful Bloom (stage 7) -- a bigger, fuller flower with more leaves and
+  // Beautiful Bloom (stage 8) -- a bigger, fuller flower with more leaves and
   // a second smaller flower alongside it.
   return `<svg viewBox="0 0 60 90" class="plant-svg">${soil}
     <rect x="28" y="36" width="4" height="46" rx="2" fill="#4caf6b"/>
@@ -2663,7 +2677,7 @@ function renderRanking() {
       rows.map((r, i) => {
         const stage = plantStageFromMark(r.mark);
         const stageLabel = t['plant_stage_' + stage];
-        const svg = stage === 8 ? gardenSVG(r.mark) : plantSVG(stage);
+        const svg = stage === 9 ? gardenSVG(r.mark) : plantSVG(stage);
         return `<div class="plant-card">
           <div class="plant-rank">#${i + 1}</div>
           ${svg}
