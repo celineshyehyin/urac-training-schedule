@@ -840,9 +840,54 @@
   .pin-error { color: var(--red) !important; font-size: 0.78rem !important; margin: 6px 0 0 !important; }
   .pin-modal-actions { display: flex; gap: 10px; margin-top: 16px; }
   .pin-modal-actions .submit-btn { padding: 11px; font-size: 0.85rem; }
+
+  .site-gate-overlay {
+    position: fixed; inset: 0; background: var(--beige, #faf3e0);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px;
+  }
+  .site-gate-card {
+    background: var(--card); border-radius: 24px; padding: 36px 28px;
+    max-width: 360px; width: 100%; box-shadow: 0 10px 34px rgba(0,0,0,0.12);
+    text-align: center;
+  }
+  .site-gate-icon {
+    width: 56px; height: 56px; border-radius: 50%; background: var(--gold-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; margin: 0 auto 14px;
+  }
+  .site-gate-card h2 { margin: 0 0 8px; font-size: 1.15rem; color: var(--ink); }
+  .site-gate-card p { margin: 0 0 18px; font-size: 0.85rem; color: var(--muted); }
+  .site-gate-card input {
+    width: 100%; padding: 13px 14px; border-radius: 14px; border: 1px solid var(--border);
+    background: var(--beige); font-size: 0.95rem; text-align: center; letter-spacing: 0.05em;
+    font-family: inherit; margin-bottom: 8px; box-sizing: border-box;
+  }
+  .site-gate-card input:focus { outline: none; border-color: var(--gold); }
+  .site-gate-card .submit-btn { width: 100%; padding: 13px; font-size: 0.9rem; margin-top: 10px; }
 </style>
 </head>
 <body>
+
+<div class="site-gate-overlay" id="siteGateOverlay">
+  <div class="site-gate-card">
+    <div class="site-gate-icon">🔒</div>
+    <h2 data-i18n="gate_title">Welcome to URAC Training</h2>
+    <p data-i18n="gate_sub">Please enter the password to continue.</p>
+    <input type="password" id="siteGateInput" placeholder="Password" autocomplete="off">
+    <p class="pin-error" id="siteGateError" style="display:none" data-i18n="gate_error">Incorrect password. Please try again.</p>
+    <button type="button" class="submit-btn" id="siteGateSubmitBtn" data-i18n="gate_submit">Enter</button>
+  </div>
+</div>
+<script>
+  (function(){
+    try {
+      if (localStorage.getItem('uracSiteUnlocked') === '1') {
+        document.getElementById('siteGateOverlay').style.display = 'none';
+      }
+    } catch(e) {}
+  })();
+</script>
 
 <header class="topbar">
   <div class="brand">
@@ -1314,6 +1359,11 @@ const I18N = {
     plant_stage_7: 'First Bloom',
     plant_stage_8: 'Beautiful Bloom',
     plant_stage_9: 'Flourishing Garden',
+    gate_title: 'Welcome to URAC Training',
+    gate_sub: 'Please enter the password to continue.',
+    gate_error: 'Incorrect password. Please try again.',
+    gate_submit: 'Enter',
+    gate_placeholder: 'Password',
     tab_feedback_full: 'Feedback',
     feedback_title: 'Feedback on Trainers',
     feedback_optional: '(optional)',
@@ -1441,6 +1491,11 @@ const I18N = {
     plant_stage_7: '初次绽放',
     plant_stage_8: '盛放之花',
     plant_stage_9: '繁花盛开',
+    gate_title: '欢迎使用 URAC 培训平台',
+    gate_sub: '请输入密码以继续。',
+    gate_error: '密码错误，请重试。',
+    gate_submit: '进入',
+    gate_placeholder: '密码',
     tab_feedback_full: '反馈',
     feedback_title: '讲师反馈',
     feedback_optional: '（选填）',
@@ -1532,6 +1587,40 @@ document.getElementById('searchIconBtn').addEventListener('click', () => {
   activatePanel('calendar');
   document.getElementById('calSearch').focus();
 });
+
+// ---------- Site-wide entry gate (soft gate -- deters casual visitors on this public site) ----------
+const SITE_GATE_PASSWORD = "IAMTHEBEST";
+const SITE_GATE_STORAGE_KEY = "uracSiteUnlocked";
+
+function isSiteUnlocked() {
+  try { return localStorage.getItem(SITE_GATE_STORAGE_KEY) === '1'; } catch (e) { return false; }
+}
+function closeSiteGate() {
+  const overlay = document.getElementById('siteGateOverlay');
+  if (overlay) overlay.style.display = 'none';
+}
+(function initSiteGate() {
+  if (isSiteUnlocked()) closeSiteGate();
+  const input = document.getElementById('siteGateInput');
+  const submitBtn = document.getElementById('siteGateSubmitBtn');
+  const errorEl = document.getElementById('siteGateError');
+  if (!input || !submitBtn || !errorEl) return;
+  submitBtn.addEventListener('click', () => {
+    const val = input.value.trim();
+    if (val === SITE_GATE_PASSWORD) {
+      try { localStorage.setItem(SITE_GATE_STORAGE_KEY, '1'); } catch (e) {}
+      errorEl.style.display = 'none';
+      closeSiteGate();
+    } else {
+      errorEl.style.display = 'block';
+      input.value = '';
+      input.focus();
+    }
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submitBtn.click();
+  });
+})();
 
 // ---------- Trainer access (soft gate -- hides past cohorts on this public site) ----------
 const TRAINER_PIN = "TRAINER111";
