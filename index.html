@@ -1635,7 +1635,7 @@ function isCohortPast(name) {
   if (name.toLowerCase().includes('current')) return false;
   const rows = CALENDAR[name];
   if (!rows || !rows.length) return false; // unknown shape -- don't hide it
-  const todayIso = TODAY.toISOString().slice(0, 10);
+  const todayIso = TODAY.getFullYear() + '-' + String(TODAY.getMonth() + 1).padStart(2, '0') + '-' + String(TODAY.getDate()).padStart(2, '0');
   let maxDate = '';
   rows.forEach(r => { if (r.date_iso && r.date_iso > maxDate) maxDate = r.date_iso; });
   return !!maxDate && maxDate < todayIso;
@@ -2088,7 +2088,7 @@ function mentorsCurrentCount() {
 
 function renderDashboard() {
   const t = I18N[LANG];
-  const todayIso = TODAY.toISOString().slice(0, 10);
+  const todayIso = TODAY.getFullYear() + '-' + String(TODAY.getMonth() + 1).padStart(2, '0') + '-' + String(TODAY.getDate()).padStart(2, '0');
 
   // Greets with the current batch number (e.g. "Welcome, Batch 34!") so
   // trainees immediately know which batch they're looking at, instead of
@@ -3489,7 +3489,7 @@ function answerQuestion(qRaw) {
 
   // ----- Today's schedule -----
   if (/today|今天/.test(q)) {
-    const todayIso = TODAY.toISOString().slice(0, 10);
+    const todayIso = TODAY.getFullYear() + '-' + String(TODAY.getMonth() + 1).padStart(2, '0') + '-' + String(TODAY.getDate()).padStart(2, '0');
     const rows = (CALENDAR[currentCohortName] || []).filter(r => r.date_iso === todayIso && r.activity && !/lunch|break/i.test(r.activity));
     if (!rows.length) return t.ask_ans_today_none;
     const header = t.ask_ans_today_header.replace('{n}', rows.length);
