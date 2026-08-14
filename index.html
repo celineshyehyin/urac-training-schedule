@@ -1827,7 +1827,7 @@ function renderCalendar() {
     // Internal HR/admin-only meeting notes ("Management Meeting", "Finance
     // Meeting") aren't relevant to trainees' own schedule, so they're
     // filtered out here rather than shown as a badge on the card.
-    const dateLines = (day.date || '').split('\n).map(s => s.trim()).filter(Boolean);
+    const dateLines = (day.date || '').split(String.fromCharCode(10)).map(s => s.trim()).filter(Boolean);
     const dateMain = dateLines[0] || '';
     const dateNotes = dateLines.slice(1).filter(n => !/management meeting|finance meeting/i.test(n));
 
@@ -2330,7 +2330,7 @@ function renderExams() {
   const body = document.getElementById('examsBody');
   if (!EXAMS.length) { body.innerHTML = `<div class="empty">${I18N[LANG].empty_calendar}</div>`; return; }
   body.innerHTML = EXAMS.map(e => {
-    const lines = (e.detail || '').split('|).map(s => s.trim()).filter(Boolean);
+    const lines = (e.detail || '').split('|').map(s => s.trim()).filter(Boolean);
     const sourceLabel = cleanSourceSheetLabel(e.source_sheet);
     return `
     <div class="exam-card">
