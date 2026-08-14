@@ -1827,7 +1827,7 @@ function renderCalendar() {
     // Internal HR/admin-only meeting notes ("Management Meeting", "Finance
     // Meeting") aren't relevant to trainees' own schedule, so they're
     // filtered out here rather than shown as a badge on the card.
-    const dateLines = (day.date || '').split('\n').map(s => s.trim()).filter(Boolean);
+    const dateLines = (day.date || '').split('\n).map(s => s.trim()).filter(Boolean);
     const dateMain = dateLines[0] || '';
     const dateNotes = dateLines.slice(1).filter(n => !/management meeting|finance meeting/i.test(n));
 
@@ -2142,8 +2142,8 @@ function renderDashboard() {
   if (todayRows.length) {
     tagEl.textContent = t.dash_tag_today;
     titleEl.textContent = t.dash_today_sessions.replace('{n}', todayRows.length);
-    subEl.textContent = ''; subEl.style.display = 'none'; document.getElementById('nextBannerSessions').style.display = ''; document.getElementById('nextBannerSessions').innerHTML = todayRows.map(r => { const lines = (r.activity || '').split('
-').map(s => s.trim()).filter(Boolean); const title = lines.length > 1 ? lines.slice(0, -1).join(' ') : (lines[0] || ''); const trainer = lines.length > 1 ? lines[lines.length - 1] : (r.trainers || ''); return '<div class="today-session-row"><span class="today-session-time">' + escapeHtml(r.time_slot || '') + '</span><div class="today-session-info"><div class="ttl">' + escapeHtml(title) + '</div>' + (trainer ? '<div class="trn">👤 ' + escapeHtml(trainer) + '</div>' : '') + '</div></div>'; }).join('');
+    subEl.textContent = ''; subEl.style.display = 'none'; document.getElementById('nextBannerSessions').style.display = ''; document.getElementById('nextBannerSessions').innerHTML = todayRows.map(r => { const lines = (r.activity || '').split(String.fromCharCode(10)
+).map(s => s.trim()).filter(Boolean); const title = lines.length > 1 ? lines.slice(0, -1).join(' ') : (lines[0] || ''); const trainer = lines.length > 1 ? lines[lines.length - 1] : (r.trainers || ''); return '<div class="today-session-row"><span class="today-session-time">' + escapeHtml(r.time_slot || '') + '</span><div class="today-session-info"><div class="ttl">' + escapeHtml(title) + '</div>' + (trainer ? '<div class="trn">👤 ' + escapeHtml(trainer) + '</div>' : '') + '</div></div>'; }).join('');
   } else {
     tagEl.textContent = t.dash_tag_upcoming;
     titleEl.textContent = t.dash_no_sessions_today;
@@ -2330,7 +2330,7 @@ function renderExams() {
   const body = document.getElementById('examsBody');
   if (!EXAMS.length) { body.innerHTML = `<div class="empty">${I18N[LANG].empty_calendar}</div>`; return; }
   body.innerHTML = EXAMS.map(e => {
-    const lines = (e.detail || '').split('|').map(s => s.trim()).filter(Boolean);
+    const lines = (e.detail || '').split('|).map(s => s.trim()).filter(Boolean);
     const sourceLabel = cleanSourceSheetLabel(e.source_sheet);
     return `
     <div class="exam-card">
