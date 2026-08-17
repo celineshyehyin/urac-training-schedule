@@ -1304,7 +1304,7 @@ const I18N = {
     dash_stat_today: 'Today',
     dash_stat_exam: 'Days to Exam',
     dash_stat_feedback: 'Feedback',
-    dash_countdown_label: 'Countdown to Next Exam',
+    dash_countdown_label: 'Countdown to Week 3 Assessment',
     dash_countdown_days: 'Days',
     dash_countdown_hours: 'Hrs',
     dash_countdown_minutes: 'Min',
@@ -1436,7 +1436,7 @@ const I18N = {
     dash_stat_today: '今日',
     dash_stat_exam: '距考试天数',
     dash_stat_feedback: '反馈',
-    dash_countdown_label: '距下次考试倒计时',
+    dash_countdown_label: '距第三周考核倒计时',
     dash_countdown_days: '天',
     dash_countdown_hours: '时',
     dash_countdown_minutes: '分',
@@ -2113,7 +2113,7 @@ function renderDashboard() {
   let nextExamDate = null;
   EXAMS.forEach(e => {
     const d = parseDateFromHeader(e.date_header);
-    if (d && d >= TODAY && (!nextExamDate || d < nextExamDate)) nextExamDate = d;
+    if (d && /week 3/i.test(e.date_header) && (!nextExamDate || d < nextExamDate)) nextExamDate = d;
   });
   const daysToExam = nextExamDate ? Math.round((nextExamDate - TODAY) / 86400000) : null;
   startExamCountdown(nextExamDate);
