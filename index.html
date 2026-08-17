@@ -109,7 +109,7 @@
   }
   main { max-width: 900px; margin: 0 auto; padding: 18px 14px 60px; }
   .panel { display: none; }
-  .panel.active { display: block; }
+  .panel.active { display: block; } nav.pillnav-sub { position: static; padding: 4px 0 16px; background: transparent; } nav.pillnav-sub button { font-size: 0.82rem; padding: 8px 14px; } .exams-subview { display: none; } .exams-subview.active { display: block; } .arr-table-wrap { overflow-x: auto; margin-top: 12px; border-radius: 12px; } table.arr-table { border-collapse: collapse; width: 100%; font-size: 0.8rem; min-width: 560px; } table.arr-table th, table.arr-table td { border: 1px solid var(--border); padding: 8px 10px; text-align: center; vertical-align: middle; } table.arr-table th { background: var(--gold); color: white; font-weight: 700; white-space: nowrap; } table.arr-table td.arr-time { font-weight: 600; white-space: nowrap; background: #fffdf7; } tr.arr-assessor-row td.arr-time { background: var(--gold); color: white; font-weight: 700; } tr.arr-assessor-row td.arr-assessor { background: #fffdf7; font-weight: 600; } tr.arr-subject-row td.arr-subject-label { background: var(--gold); color: white; font-weight: 700; } tr.arr-subject-row td.arr-subject { background: #fbe4c8; font-weight: 600; } td.arr-rest { background: #fbe4c8; font-weight: 700; font-style: italic; } td.arr-empty { background: #e3e3e3; }
   .toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -1095,7 +1095,7 @@
   </section>
 
   <section id="panel-exams" class="panel">
-    <h1 class="page-title" data-i18n="tab_exams_full">Exams</h1>
+    <h1 class="page-title" data-i18n="tab_exams_full">Exams</h1><nav class="pillnav pillnav-sub" id="examsSubNav"><button data-subtab="schedule" data-i18n="exams_subtab_schedule" class="active">🗓️ Exam Schedule</button><button data-subtab="arrangement" data-i18n="exams_subtab_arrangement">🚪 Treatment Room Arrangement</button></nav><div id="examsScheduleView" class="exams-subview active">
     <div class="welcome-card">
       <div class="welcome-icon icon-pink">📝</div>
       <div>
@@ -1103,7 +1103,7 @@
         <p class="embed-hint" data-i18n="exams_hint">Timetables and room assignments for every assessment.</p>
       </div>
     </div>
-    <div id="examsBody"></div><div class="section-label" data-i18n="arrangement_title">Room, Examiner &amp; Subject Arrangement</div><p class="embed-hint" data-i18n="arrangement_hint">Which treatment room, examiner and subject apply to each exam slot.</p><div id="arrangementBody"></div>
+    <div id="examsBody"></div></div><div id="examsArrangementView" class="exams-subview"><div class="welcome-card"><div class="welcome-icon icon-pink">🚪</div><div><h2 data-i18n="arrangement_title">Room, Examiner &amp; Subject Arrangement</h2><p class="embed-hint" data-i18n="arrangement_hint">Which treatment room, examiner and subject apply to each exam slot.</p></div></div><div id="arrangementBody"></div></div>
   </section>
 
   <section id="panel-mentors" class="panel">
@@ -1344,7 +1344,7 @@ const I18N = {
     schedule_hint: "Browse each cohort's day-by-day sessions and timings.",
     tab_exams_full: 'Exams',
     exams_title: 'Exam Schedule',
-    exams_hint: 'Timetables and room assignments for every assessment.',arrangement_title: 'Room, Examiner & Subject Arrangement',arrangement_hint: 'Which treatment room, examiner and subject apply to each exam slot.',empty_arrangement: 'No room/examiner arrangement has been added yet.',
+    exams_hint: 'Timetables and room assignments for every assessment.',arrangement_title: 'Room, Examiner & Subject Arrangement',arrangement_hint: 'Which treatment room, examiner and subject apply to each exam slot.',empty_arrangement: 'No room/examiner arrangement has been added yet.', exams_subtab_schedule: '🗓️ Exam Schedule', exams_subtab_arrangement: '🚪 Treatment Room Arrangement', arrangement_assessor: 'Assessor', arrangement_subject: 'Subject',
     tab_mentors_full: 'Meet the Trainers & Committee',
     mentors_welcome_title: 'Trainers & Committee',
     roster_title: 'Trainers & Trainees',
@@ -1476,7 +1476,7 @@ const I18N = {
     schedule_hint: '查看各批次每日课程安排与时间。',
     tab_exams_full: '考试',
     exams_title: '考试安排',
-    exams_hint: '各项考核的时间表与场地安排。',arrangement_title: '场地、考官与科目安排',arrangement_hint: '各考试时段对应的治疗室、考官与科目。',empty_arrangement: '暂无场地/考官安排信息。',
+    exams_hint: '各项考核的时间表与场地安排。',arrangement_title: '场地、考官与科目安排',arrangement_hint: '各考试时段对应的治疗室、考官与科目。',empty_arrangement: '暂无场地/考官安排信息。', exams_subtab_schedule: '🗓️ 考试时间表', exams_subtab_arrangement: '🚪 治疗室安排', arrangement_assessor: '考官', arrangement_subject: '科目',
     tab_mentors_full: '认识讲师与委员会',
     mentors_welcome_title: '讲师与委员会',
     roster_title: '导师与学员',
@@ -1583,7 +1583,7 @@ function activatePanel(name) {
 document.querySelectorAll('nav.pillnav button').forEach(btn => {
   btn.addEventListener('click', () => activatePanel(btn.dataset.panel));
 });
-document.getElementById('searchIconBtn').addEventListener('click', () => {
+document.querySelectorAll('#examsSubNav button').forEach(btn => { btn.addEventListener('click', () => { const key = btn.dataset.subtab; document.querySelectorAll('#examsSubNav button').forEach(b => b.classList.toggle('active', b.dataset.subtab === key)); document.querySelectorAll('.exams-subview').forEach(v => v.classList.remove('active')); document.getElementById('exams' + key.charAt(0).toUpperCase() + key.slice(1) + 'View').classList.add('active'); }); }); document.getElementById('searchIconBtn').addEventListener('click', () => {
   activatePanel('calendar');
   document.getElementById('calSearch').focus();
 });
@@ -2347,7 +2347,7 @@ function renderExams() {
   }).join('');
 }
 
-function parseArrangement(text) { const rows = parseCSV(text); return rows.map(r => ({ date_header: (r.date_header || '').trim(), room: (r.room || '').trim(), examiner: (r.examiner || '').trim(), subject: (r.subject || '').trim(), })).filter(r => r.date_header || r.room || r.examiner || r.subject); } function renderArrangement() { const body = document.getElementById('arrangementBody'); if (!ARRANGEMENT.length) { body.innerHTML = '<div class="empty">' + I18N[LANG].empty_arrangement + '</div>'; return; } body.innerHTML = ARRANGEMENT.map(a => { const fieldParts = []; if (a.room) fieldParts.push('🚪 ' + escapeHtml(a.room)); if (a.examiner) fieldParts.push('👤 ' + escapeHtml(a.examiner)); if (a.subject) fieldParts.push('📘 ' + escapeHtml(a.subject)); const lines = fieldParts.map(p => '<div class="exam-line"><span class="exam-chip">' + p + '</span></div>').join(''); const title = a.subject || a.room || I18N[LANG].arrangement_title; const pill = a.date_header ? '<span class="date-pill exam-date-pill">📅 ' + escapeHtml(a.date_header) + '</span>' : ''; return '<div class="exam-card"><div class="exam-card-head"><div class="exam-icon">🗂️</div><div class="exam-title-wrap"><h3>' + escapeHtml(title) + '</h3></div>' + pill + '</div><div class="exam-lines">' + lines + '</div></div>'; }).join(''); } // ---------- Mentors / Roster ----------
+function parseArrangement(text) { const rows = parseCSV(text); return rows.map(r => ({ date_header: (r.date_header || '').trim(), title: (r.title || '').trim(), time_slot: (r.time_slot || '').trim(), col_type: (r.col_type || '').trim(), col_label: (r.col_label || '').trim(), name: (r.name || '').trim(), subject: (r.subject || '').trim(), })).filter(r => r.date_header && r.time_slot); } function renderArrangement() { const body = document.getElementById('arrangementBody'); if (!ARRANGEMENT.length) { body.innerHTML = '<div class="empty">' + I18N[LANG].empty_arrangement + '</div>'; return; } const dateOrder = []; const dateMap = new Map(); ARRANGEMENT.forEach(r => { if (!dateMap.has(r.date_header)) { dateMap.set(r.date_header, { title: r.title, rows: [] }); dateOrder.push(r.date_header); } dateMap.get(r.date_header).rows.push(r); }); body.innerHTML = dateOrder.map(dateKey => { const grp = dateMap.get(dateKey); const rows = grp.rows; const cols = []; rows.forEach(r => { if (r.col_type !== 'rest' && r.col_label && cols.indexOf(r.col_label) === -1) cols.push(r.col_label); }); const slotOrder = []; rows.forEach(r => { if (slotOrder.indexOf(r.time_slot) === -1) slotOrder.push(r.time_slot); }); const assessorMap = {}; rows.filter(r => r.time_slot === 'Assessor').forEach(r => { assessorMap[r.col_label] = r.name; }); const nameHtml = val => val ? val.split('|').map(s => escapeHtml(s.trim())).join('<br>') : ''; const bodyRows = slotOrder.filter(s => s !== 'Assessor').map(slot => { const slotRows = rows.filter(r => r.time_slot === slot); const restRow = slotRows.find(r => r.col_type === 'rest'); if (restRow) { return '<tr><td class="arr-time">' + escapeHtml(slot) + '</td><td class="arr-rest" colspan="' + cols.length + '">' + escapeHtml(restRow.name || 'Rest') + '</td></tr>'; } const nameCells = cols.map(c => { const match = slotRows.find(r => r.col_label === c); const val = match ? match.name : ''; return '<td' + (val ? '' : ' class="arr-empty"') + '>' + nameHtml(val) + '</td>'; }).join(''); let out = '<tr><td class="arr-time">' + escapeHtml(slot) + '</td>' + nameCells + '</tr>'; if (slotRows.some(r => r.subject)) { const subjCells = cols.map(c => { const match = slotRows.find(r => r.col_label === c); return '<td class="arr-subject">' + (match && match.subject ? escapeHtml(match.subject) : '') + '</td>'; }).join(''); out += '<tr class="arr-subject-row"><td class="arr-time arr-subject-label">' + I18N[LANG].arrangement_subject + '</td>' + subjCells + '</tr>'; } return out; }).join(''); const headerCells = cols.map(c => '<th>' + escapeHtml(c) + '</th>').join(''); const assessorCells = cols.map(c => '<td class="arr-assessor">' + (assessorMap[c] ? escapeHtml(assessorMap[c]) : '') + '</td>').join(''); const titleHtml = grp.title ? '<div class="meta">' + escapeHtml(grp.title) + '</div>' : ''; return '<div class="exam-card arr-card"><div class="exam-card-head"><div class="exam-icon">🗂️</div><div class="exam-title-wrap"><h3>' + escapeHtml(dateKey) + '</h3>' + titleHtml + '</div></div><div class="arr-table-wrap"><table class="arr-table"><thead><tr><th></th>' + headerCells + '</tr><tr class="arr-assessor-row"><td class="arr-time">' + I18N[LANG].arrangement_assessor + '</td>' + assessorCells + '</tr></thead><tbody>' + bodyRows + '</tbody></table></div></div>'; }).join(''); } // ---------- Mentors / Roster ----------
 const rosterCohortSelect = document.getElementById('rosterCohortSelect');
 let rosterCohortNames = [];
 
